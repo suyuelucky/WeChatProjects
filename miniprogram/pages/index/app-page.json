@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "index-page": "./index"
+  },
+  "navigationBarTitleText": "绣花针"
+} 

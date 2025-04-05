@@ -1,0 +1,237 @@
+/**app.wxss**/
+@import "./styles/variables.wxss";
+
+/* 阿里巴巴iconfont图标库 */
+@font-face {
+  font-family: 'iconfont';
+  src: url('//at.alicdn.com/t/font_2543795_3i85xecj7ae.eot');
+  src: url('//at.alicdn.com/t/font_2543795_3i85xecj7ae.eot?#iefix') format('embedded-opentype'),
+       url('//at.alicdn.com/t/font_2543795_3i85xecj7ae.woff2') format('woff2'),
+       url('//at.alicdn.com/t/font_2543795_3i85xecj7ae.woff') format('woff'),
+       url('//at.alicdn.com/t/font_2543795_3i85xecj7ae.ttf') format('truetype'),
+       url('//at.alicdn.com/t/font_2543795_3i85xecj7ae.svg#iconfont') format('svg');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 图标代码对应 */
+.icon-user:before { content: "\e7ae"; }
+.icon-edit:before { content: "\e649"; }
+.icon-location:before { content: "\e651"; }
+.icon-vip:before { content: "\e6b3"; }
+.icon-arrow-right:before { content: "\e665"; }
+.icon-wifi-off:before { content: "\e669"; }
+.icon-settings:before { content: "\e78e"; }
+.icon-favorite:before { content: "\e7df"; }
+.icon-feedback:before { content: "\e8e8"; }
+.icon-about:before { content: "\e74e"; }
+.icon-diary:before { content: "\e613"; }
+.icon-ledger:before { content: "\e65e"; }
+.icon-home:before { content: "\e7c6"; }
+.icon-discover:before { content: "\e67e"; }
+.icon-profile:before { content: "\e7bd"; }
+.icon-sync:before { content: "\e786"; }
+.icon-notification:before { content: "\e75a"; }
+
+page {
+  height: 100%;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+  background-color: var(--color-neutral-gray50);
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, 
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 30rpx;
+}
+
+/* 基础样式 */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* 动画 */
+.fade-in {
+  animation: fadeIn var(--transition-duration-normal) var(--transition-timing-ease-in-out);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 特殊样式 - 香奈尔风格 */
+.chanel-bg {
+  background-color: var(--color-brand-primary);
+  color: var(--color-brand-secondary);
+}
+
+.chanel-card {
+  background-color: var(--color-neutral-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.chanel-btn {
+  background-color: var(--color-brand-primary);
+  color: var(--color-brand-secondary);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* 原生组件样式，保持与自定义组件一致 */
+/* 按钮样式 */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  font-weight: var(--font-weight-medium, 500);
+  letter-spacing: var(--letter-spacing-wide, 0.5px);
+  text-transform: uppercase;
+  border-radius: calc(var(--border-radius-md, 8rpx) * 2);
+  min-height: 80rpx;
+  font-size: var(--font-size-sm, 28rpx);
+  padding: calc(var(--spacing-sm, 8rpx) * 2) calc(var(--spacing-md, 16rpx) * 2);
+}
+
+button::after {
+  border: none;
+}
+
+button.primary {
+  background-color: var(--color-brand-primary, #000);
+  color: var(--color-brand-secondary, #fff);
+}
+
+button.secondary {
+  background-color: var(--color-brand-accent, #e5e5e5);
+  color: var(--color-neutral-black, #000);
+}
+
+button.outline {
+  background-color: transparent;
+  color: var(--color-brand-primary, #000);
+  border: 2rpx solid var(--color-brand-primary, #000);
+}
+
+button.ghost {
+  background-color: transparent;
+  color: var(--color-brand-primary, #000);
+}
+
+button.link {
+  background-color: transparent;
+  color: var(--color-brand-primary, #000);
+  text-decoration: underline;
+  padding: 0;
+  min-height: 0;
+}
+
+button.block {
+  display: flex;
+  width: 100%;
+}
+
+button[disabled] {
+  opacity: 0.5;
+}
+
+button.loading {
+  position: relative;
+}
+
+/* 卡片样式 */
+.card {
+  position: relative;
+  background-color: #fff;
+  border-radius: var(--border-radius-md, 8rpx);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  margin-bottom: 20rpx;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.card-subtitle {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.card-body {
+  padding: 20rpx;
+}
+
+.card-cover {
+  width: 100%;
+  height: 300rpx;
+}
+
+.card-cover image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-actions {
+  padding: 20rpx;
+  border-top: 2rpx solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+} 

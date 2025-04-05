@@ -1,0 +1,34 @@
+// app.ts
+App<IAppOption>({
+  globalData: {
+    userInfo: undefined,
+    systemInfo: undefined
+  },
+  onLaunch() {
+    // 获取系统信息
+    wx.getSystemInfo({
+      success: (res) => {
+        this.globalData.systemInfo = res;
+      }
+    });
+    
+    // 读取登录状态
+    const userInfo = wx.getStorageSync('userInfo');
+    if (userInfo) {
+      this.globalData.userInfo = userInfo;
+    }
+    
+    // 记录启动日志
+    const logs = wx.getStorageSync('logs') || []
+    logs.unshift(Date.now())
+    wx.setStorageSync('logs', logs)
+
+    // 登录
+    wx.login({
+      success: res => {
+        console.log(res.code)
+        // 发送 res.code 到后台换取 openId, sessionKey, unionId
+      },
+    })
+  },
+})

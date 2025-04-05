@@ -1,0 +1,113 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, 
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+}
+
+.App-header {
+  background-color: #000;
+  padding: 20px;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 2px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  background-color: #f8f8f8;
+}
+
+.motto {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 60px;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.chanel-btn {
+  padding: 12px 0;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  outline: none;
+  letter-spacing: 1px;
+}
+
+.diary-btn {
+  background-color: #000;
+  color: white;
+  border: none;
+}
+
+.camera-btn {
+  background-color: white;
+  color: #000;
+  border: 1px solid #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.camera-icon {
+  margin-right: 8px;
+}
+
+.chanel-btn:hover {
+  opacity: 0.9;
+}
+
+.chanel-btn:active {
+  transform: scale(0.98);
+}
+
+.App-footer {
+  padding: 20px;
+  background-color: #f0f0f0;
+  color: #666;
+  font-size: 14px;
+}
+
+.offline-warning {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+/* 确保在各种屏幕尺寸上的响应式布局 */
+@media (max-width: 480px) {
+  .motto {
+    font-size: 24px;
+    margin-bottom: 40px;
+  }
+  
+  .actions {
+    max-width: 280px;
+  }
+  
+  .App-header h1 {
+    font-size: 20px;
+  }
+} 

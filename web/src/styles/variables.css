@@ -1,0 +1,275 @@
+/**
+ * 香奈尔美学设计系统 - Web端变量
+ * 
+ * 该文件为Web端提供设计系统变量，使用CSS变量实现
+ * 与小程序变量保持一致，确保两端视觉体验一致
+ */
+
+:root {
+  /* 颜色系统 */
+  /* 品牌色彩 */
+  --color-brand-primary: #000000; /* 香奈尔标志性黑色 */
+  --color-brand-secondary: #FFFFFF; /* 品牌白色 */
+  --color-brand-accent: #BEAF87; /* 典雅金色 */
+  --color-brand-highlight: #E2C39D; /* 高光金色 */
+  
+  /* 中性色彩 */
+  --color-neutral-black: #000000;
+  --color-neutral-gray900: #212121;
+  --color-neutral-gray800: #424242;
+  --color-neutral-gray700: #616161;
+  --color-neutral-gray600: #757575;
+  --color-neutral-gray500: #9E9E9E;
+  --color-neutral-gray400: #BDBDBD;
+  --color-neutral-gray300: #E0E0E0;
+  --color-neutral-gray200: #EEEEEE;
+  --color-neutral-gray100: #F5F5F5;
+  --color-neutral-gray50: #FAFAFA;
+  --color-neutral-white: #FFFFFF;
+  
+  /* 功能色彩 */
+  --color-functional-success: #4A6F3C; /* 优雅的深绿色 */
+  --color-functional-error: #A62626; /* 优雅的深红色 */
+  --color-functional-warning: #CB8E37; /* 优雅的琥珀色 */
+  --color-functional-info: #2D4975; /* 优雅的深蓝色 */
+  
+  /* 半透明覆层 */
+  --color-overlay-light: rgba(255, 255, 255, 0.8);
+  --color-overlay-medium: rgba(255, 255, 255, 0.5);
+  --color-overlay-dark: rgba(0, 0, 0, 0.5);
+  --color-overlay-darker: rgba(0, 0, 0, 0.8);
+  
+  /* 排版系统 */
+  /* 字体家族 */
+  --font-family-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-family-secondary: Georgia, Times, 'Times New Roman', serif;
+  --font-family-monospace: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  
+  /* 字体大小 */
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-xxl: 20px;
+  --font-size-display1: 24px;
+  --font-size-display2: 32px;
+  --font-size-display3: 40px;
+  
+  /* 字重 */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* 行高 */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.8;
+  
+  /* 字间距 */
+  --letter-spacing-tight: -0.05em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.05em;
+  --letter-spacing-wider: 0.1em;
+  
+  /* 间距系统 */
+  --spacing-unit: 4px;
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-xxxl: 64px;
+  
+  /* 内容区域 */
+  --content-max-width: 1200px;
+  --content-padding: 16px;
+  
+  /* 边框系统 */
+  --border-radius-none: 0;
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 16px;
+  --border-radius-circle: 50%;
+  
+  --border-width-thin: 1px;
+  --border-width-medium: 2px;
+  --border-width-thick: 4px;
+  
+  --border-style-solid: solid;
+  --border-style-dashed: dashed;
+  --border-style-dotted: dotted;
+  
+  /* 阴影系统 */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xxl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  
+  /* 过渡效果 */
+  --transition-duration-fast: 150ms;
+  --transition-duration-normal: 300ms;
+  --transition-duration-slow: 500ms;
+  --transition-duration-slower: 750ms;
+  
+  --transition-timing-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --transition-timing-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --transition-timing-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Z轴层级 */
+  --z-index-hide: -1;
+  --z-index-auto: auto;
+  --z-index-base: 0;
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1100;
+  --z-index-fixed: 1200;
+  --z-index-modal: 1300;
+  --z-index-popover: 1400;
+  --z-index-tooltip: 1500;
+  --z-index-toast: 1600;
+}
+
+/* 暗色模式变量 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-brand-primary: #000000; /* 保持品牌色不变 */
+    --color-brand-secondary: #FFFFFF;
+    --color-brand-accent: #BEAF87;
+    --color-brand-highlight: #E2C39D;
+    
+    /* 反转中性色系 */
+    --color-neutral-black: #FFFFFF;
+    --color-neutral-gray900: #F5F5F5;
+    --color-neutral-gray800: #EEEEEE;
+    --color-neutral-gray700: #E0E0E0;
+    --color-neutral-gray600: #BDBDBD;
+    --color-neutral-gray500: #9E9E9E;
+    --color-neutral-gray400: #757575;
+    --color-neutral-gray300: #616161;
+    --color-neutral-gray200: #424242;
+    --color-neutral-gray100: #212121;
+    --color-neutral-gray50: #121212;
+    --color-neutral-white: #000000;
+    
+    /* 调整阴影，在暗色模式中减少强度 */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    --shadow-xxl: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* 响应式工具类 */
+@media (min-width: 576px) {
+  .hidden-sm-up { display: none !important; }
+}
+@media (max-width: 575.98px) {
+  .hidden-xs-down { display: none !important; }
+}
+@media (min-width: 768px) {
+  .hidden-md-up { display: none !important; }
+}
+@media (max-width: 767.98px) {
+  .hidden-sm-down { display: none !important; }
+}
+@media (min-width: 992px) {
+  .hidden-lg-up { display: none !important; }
+}
+@media (max-width: 991.98px) {
+  .hidden-md-down { display: none !important; }
+}
+@media (min-width: 1200px) {
+  .hidden-xl-up { display: none !important; }
+}
+@media (max-width: 1199.98px) {
+  .hidden-lg-down { display: none !important; }
+}
+
+/* 工具类与小程序一致 */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.align-start { align-items: flex-start; }
+.align-end { align-items: flex-end; }
+.align-center { align-items: center; }
+.align-stretch { align-items: stretch; }
+
+.m-0 { margin: 0; }
+.mt-0 { margin-top: 0; }
+.mr-0 { margin-right: 0; }
+.mb-0 { margin-bottom: 0; }
+.ml-0 { margin-left: 0; }
+
+.m-1 { margin: var(--spacing-xs); }
+.mt-1 { margin-top: var(--spacing-xs); }
+.mr-1 { margin-right: var(--spacing-xs); }
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.ml-1 { margin-left: var(--spacing-xs); }
+
+.m-2 { margin: var(--spacing-sm); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mr-2 { margin-right: var(--spacing-sm); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.ml-2 { margin-left: var(--spacing-sm); }
+
+.m-3 { margin: var(--spacing-md); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mr-3 { margin-right: var(--spacing-md); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.ml-3 { margin-left: var(--spacing-md); }
+
+.m-4 { margin: var(--spacing-lg); }
+.mt-4 { margin-top: var(--spacing-lg); }
+.mr-4 { margin-right: var(--spacing-lg); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+.ml-4 { margin-left: var(--spacing-lg); }
+
+.p-0 { padding: 0; }
+.pt-0 { padding-top: 0; }
+.pr-0 { padding-right: 0; }
+.pb-0 { padding-bottom: 0; }
+.pl-0 { padding-left: 0; }
+
+.p-1 { padding: var(--spacing-xs); }
+.pt-1 { padding-top: var(--spacing-xs); }
+.pr-1 { padding-right: var(--spacing-xs); }
+.pb-1 { padding-bottom: var(--spacing-xs); }
+.pl-1 { padding-left: var(--spacing-xs); }
+
+.p-2 { padding: var(--spacing-sm); }
+.pt-2 { padding-top: var(--spacing-sm); }
+.pr-2 { padding-right: var(--spacing-sm); }
+.pb-2 { padding-bottom: var(--spacing-sm); }
+.pl-2 { padding-left: var(--spacing-sm); }
+
+.p-3 { padding: var(--spacing-md); }
+.pt-3 { padding-top: var(--spacing-md); }
+.pr-3 { padding-right: var(--spacing-md); }
+.pb-3 { padding-bottom: var(--spacing-md); }
+.pl-3 { padding-left: var(--spacing-md); }
+
+.p-4 { padding: var(--spacing-lg); }
+.pt-4 { padding-top: var(--spacing-lg); }
+.pr-4 { padding-right: var(--spacing-lg); }
+.pb-4 { padding-bottom: var(--spacing-lg); }
+.pl-4 { padding-left: var(--spacing-lg); } 

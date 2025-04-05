@@ -1,0 +1,447 @@
+/* pages/profile/index.wxss */
+page {
+  background-color: #f8f7f7;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+}
+
+.profile-container {
+  padding-bottom: 60rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.profile-container.offline-mode {
+  background-color: #f4f4f4;
+}
+
+/* 网络状态提示 */
+.network-status-bar {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background-color: #fff9e6;
+  margin-bottom: 20rpx;
+}
+
+.network-status-bar image {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 20rpx;
+}
+
+.network-status-bar text {
+  font-size: 26rpx;
+  color: #e6a23c;
+}
+
+/* 未登录状态 */
+.not-login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 30rpx;
+}
+
+.default-avatar {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 80rpx;
+  margin-bottom: 40rpx;
+  background-color: #f0f0f0;
+}
+
+.login-tips {
+  font-size: 28rpx;
+  color: #666666;
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.login-btn {
+  width: 320rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 用户信息卡片 */
+.user-card {
+  background-color: #ffffff;
+  margin: 30rpx;
+  border-radius: 16rpx;
+  padding: 40rpx 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.user-info {
+  display: flex;
+  margin-bottom: 40rpx;
+}
+
+.avatar-wrapper {
+  position: relative;
+  margin-right: 30rpx;
+}
+
+.avatar {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 70rpx;
+  border: 4rpx solid #ffffff;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.edit-badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.edit-badge image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.user-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.nickname {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-right: 16rpx;
+}
+
+.level-tag {
+  background-color: #f0f9eb;
+  color: #67c23a;
+  font-size: 20rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 10rpx;
+}
+
+.user-location {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.location-icon {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 8rpx;
+}
+
+.user-location text {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.signature {
+  font-size: 26rpx;
+  color: #666666;
+  line-height: 1.4;
+}
+
+/* VIP信息 */
+.vip-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fcf6e8;
+  padding: 20rpx 30rpx;
+  border-radius: 12rpx;
+  margin-bottom: 40rpx;
+}
+
+.vip-left {
+  display: flex;
+  align-items: center;
+}
+
+.vip-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 10rpx;
+}
+
+.vip-level {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #e6a23c;
+}
+
+.vip-right {
+  display: flex;
+  align-items: center;
+}
+
+.vip-expire {
+  font-size: 24rpx;
+  color: #999999;
+  margin-right: 16rpx;
+}
+
+.vip-action {
+  font-size: 24rpx;
+  color: #e6a23c;
+}
+
+/* 数据统计 */
+.stats-bar {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1rpx solid #f0f0f0;
+  padding-top: 30rpx;
+}
+
+.stats-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stats-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+/* 成就徽章 */
+.section {
+  background-color: #ffffff;
+  margin: 30rpx;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333333;
+}
+
+.section-action {
+  display: flex;
+  align-items: center;
+}
+
+.section-action text {
+  font-size: 24rpx;
+  color: #999999;
+  margin-right: 8rpx;
+}
+
+.arrow-icon {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+.badges-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.badge-item {
+  width: calc(33.33% - 20rpx);
+  margin-right: 30rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.badge-item:nth-child(3n) {
+  margin-right: 0;
+}
+
+.badge-icon {
+  width: 100rpx;
+  height: 100rpx;
+  margin-bottom: 16rpx;
+}
+
+.badge-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.badge-name {
+  font-size: 24rpx;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.badge-level {
+  font-size: 20rpx;
+  color: #999999;
+}
+
+/* 功能列表 */
+.function-section {
+  margin-bottom: 40rpx;
+}
+
+.function-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.function-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.function-item:last-child {
+  border-bottom: none;
+}
+
+.function-icon-wrapper {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 35rpx;
+  background-color: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.function-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.function-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.loading-spinner {
+  width: 70rpx;
+  height: 70rpx;
+  border: 6rpx solid #f3f3f3;
+  border-top: 6rpx solid #333333;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+.loading-container text {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 底部信息 */
+.footer {
+  text-align: center;
+  padding: 40rpx 0 20rpx;
+}
+
+.copyright {
+  font-size: 24rpx;
+  color: #999999;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.version {
+  font-size: 24rpx;
+  color: #cccccc;
+}
+
+/* 图标样式 */
+.default-avatar.iconfont {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  text-align: center;
+  color: #cccccc;
+  background-color: #f5f5f5;
+  border-radius: 40px;
+  display: block;
+}
+
+.edit-badge .iconfont {
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.location-icon.iconfont {
+  font-size: 14px;
+  margin-right: 5px;
+  color: #999;
+}
+
+.vip-icon.iconfont {
+  font-size: 18px;
+  color: #ffcc00;
+  margin-right: 5px;
+}
+
+.arrow-icon.iconfont {
+  font-size: 14px;
+  color: #999;
+}
+
+.function-icon-wrapper .iconfont {
+  font-size: 24px;
+  color: #333;
+} 

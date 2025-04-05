@@ -1,0 +1,188 @@
+/* 账本页面样式 */
+.ledger-container {
+  padding: 20rpx;
+  height: 100vh;
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+}
+
+.month-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.arrow {
+  padding: 10rpx;
+  font-size: 32rpx;
+  color: #666;
+}
+
+.current-month {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin: 0 30rpx;
+}
+
+.summary-card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.amount {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.expense {
+  color: #ff5252;
+}
+
+.income {
+  color: #4caf50;
+}
+
+.balance {
+  font-weight: 800;
+}
+
+.chart-container {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  min-height: 300rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.chart-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.chart-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200rpx;
+  background-color: #f5f5f5;
+  border-radius: 8rpx;
+}
+
+.placeholder-text {
+  color: #999;
+  font-size: 28rpx;
+}
+
+.record-list {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.date-title {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.view-all {
+  font-size: 26rpx;
+  color: #0080ff;
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.record-category {
+  display: flex;
+  align-items: center;
+}
+
+.category-icon {
+  margin-right: 10rpx;
+  font-size: 40rpx;
+}
+
+.category-name {
+  font-size: 30rpx;
+}
+
+.record-info {
+  flex: 1;
+  padding: 0 20rpx;
+}
+
+.record-note {
+  font-size: 28rpx;
+  color: #333;
+  display: block;
+}
+
+.record-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.record-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.empty-tip {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 40rpx 0;
+}
+
+.add-record {
+  position: fixed;
+  bottom: 40rpx;
+  right: 40rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background-color: #0080ff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(0, 128, 255, 0.3);
+}
+
+.add-icon {
+  color: #fff;
+  font-size: 60rpx;
+  font-weight: bold;
+} 

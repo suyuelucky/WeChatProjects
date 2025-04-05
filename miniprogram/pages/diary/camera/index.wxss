@@ -1,0 +1,53 @@
+/* 相机页面样式 */
+.camera-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+.camera-controls {
+  position: absolute;
+  bottom: 60rpx;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.control-button {
+  width: 150rpx;
+  height: 150rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.control-icon {
+  font-size: 60rpx;
+  color: white;
+  text-shadow: 0 0 10rpx rgba(0, 0, 0, 0.5);
+}
+
+.shutter-button {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background-color: white;
+  border: 10rpx solid rgba(255, 255, 255, 0.5);
+}
+
+.close-button {
+  position: absolute;
+  top: 60rpx;
+  left: 40rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 40rpx;
+} 

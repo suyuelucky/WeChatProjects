@@ -1,0 +1,124 @@
+<!-- pages/profile/index.wxml -->
+<view class="profile-container {{!isNetworkConnected ? 'offline-mode' : ''}}">
+  <!-- 网络状态提示 -->
+  <view wx:if="{{!isNetworkConnected}}" class="network-status-bar">
+    <text class="iconfont icon-wifi-off"></text>
+    <text>网络连接已断开，请检查网络设置</text>
+  </view>
+
+  <!-- 未登录状态 -->
+  <view wx:if="{{!isLoggedIn && !loadingUserInfo}}" class="not-login-container">
+    <view class="default-avatar iconfont icon-user"></view>
+    <view class="login-tips">登录即可同步数据，尊享更多功能</view>
+    <button class="login-btn" bindtap="goToLogin">立即登录/注册</button>
+  </view>
+
+  <!-- 已登录状态 -->
+  <block wx:if="{{isLoggedIn}}">
+    <!-- 用户信息卡片 -->
+    <view class="user-card">
+      <view class="user-info">
+        <view class="avatar-wrapper" bindtap="editProfile">
+          <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+          <view class="edit-badge">
+            <text class="iconfont icon-edit"></text>
+          </view>
+        </view>
+        <view class="user-details">
+          <view class="name-row">
+            <text class="nickname">{{userInfo.nickName}}</text>
+            <view class="level-tag">Lv.{{userInfo.level}}</view>
+          </view>
+          <view class="user-location" wx:if="{{userInfo.city}}">
+            <text class="iconfont icon-location location-icon"></text>
+            <text>{{userInfo.city}}</text>
+          </view>
+          <view class="signature">{{userInfo.signature || '这个人很懒，什么都没留下'}}</view>
+        </view>
+      </view>
+
+      <!-- VIP信息 -->
+      <view class="vip-info" bindtap="goToVipDetails">
+        <view class="vip-left">
+          <text class="iconfont icon-vip vip-icon"></text>
+          <text class="vip-level">VIP {{userInfo.vipLevel}}</text>
+        </view>
+        <view class="vip-right">
+          <text class="vip-expire">{{userInfo.vipExpireDate}} 到期</text>
+          <text class="vip-action">续费 <text class="iconfont icon-arrow-right"></text></text>
+        </view>
+      </view>
+
+      <!-- 数据统计 -->
+      <view class="stats-bar">
+        <view class="stats-item" bindtap="viewDiaries">
+          <text class="stats-value">{{stats.diaryCount}}</text>
+          <text class="stats-label">日记</text>
+        </view>
+        <view class="stats-item" bindtap="viewLedgers">
+          <text class="stats-value">{{stats.ledgerCount}}</text>
+          <text class="stats-label">账本</text>
+        </view>
+        <view class="stats-item" bindtap="viewFollowing">
+          <text class="stats-value">{{stats.followingCount}}</text>
+          <text class="stats-label">关注</text>
+        </view>
+        <view class="stats-item" bindtap="viewFollowers">
+          <text class="stats-value">{{stats.followersCount}}</text>
+          <text class="stats-label">粉丝</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 成就徽章 -->
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">成就徽章</text>
+        <view class="section-action">
+          <text>查看全部</text>
+          <text class="iconfont icon-arrow-right arrow-icon"></text>
+        </view>
+      </view>
+      <view class="badges-list">
+        <view class="badge-item" wx:for="{{badges}}" wx:key="id" bindtap="viewBadgeDetails" data-id="{{item.id}}">
+          <image class="badge-icon" src="{{item.icon}}" mode="aspectFit"></image>
+          <view class="badge-info">
+            <text class="badge-name">{{item.name}}</text>
+            <text class="badge-level">Lv.{{item.level}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loadingUserInfo}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="section function-section">
+    <view class="function-list">
+      <view 
+        class="function-item" 
+        wx:for="{{functionList}}" 
+        wx:key="id" 
+        bindtap="goToFunction" 
+        data-url="{{item.url}}"
+      >
+        <view class="function-icon-wrapper">
+          <text class="iconfont {{item.iconClass}}"></text>
+        </view>
+        <text class="function-name">{{item.name}}</text>
+        <text class="iconfont icon-arrow-right arrow-icon"></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="footer">
+    <text class="copyright">© 2025 秀花针 版权所有</text>
+    <text class="version">v1.0.0</text>
+  </view>
+</view> 

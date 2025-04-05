@@ -1,0 +1,20 @@
+<!--相机页面-->
+<view class="camera-container">
+  <camera device-position="{{devicePosition}}" flash="{{flash}}" binderror="error" style="width: 100%; height: 100vh;"></camera>
+  
+  <view class="camera-controls">
+    <view class="control-button" bindtap="toggleDevice">
+      <text class="control-icon">🔄</text>
+    </view>
+    <view class="control-button" bindtap="takePhoto">
+      <view class="shutter-button"></view>
+    </view>
+    <view class="control-button" bindtap="toggleFlash">
+      <text class="control-icon">{{flash === 'on' ? '⚡' : '✓'}}</text>
+    </view>
+  </view>
+  
+  <view class="close-button" bindtap="back">
+    <text>✕</text>
+  </view>
+</view> 

@@ -1,0 +1,71 @@
+{
+  "pages": [
+    "pages/discover/index/index",
+    "pages/index/app-page",
+    "pages/diary/index/index",
+    "pages/diary/editor/index",
+    "pages/ledger/index/index",
+    "pages/profile/index/index",
+    "pages/diary/camera/index",
+    "pages/diary/album/index",
+    "pages/networkTest/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "绣花针",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "default"
+  },
+  "tabBar": {
+    "custom": false,
+    "color": "#999999",
+    "selectedColor": "#000000",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/discover/index/index",
+        "text": "发现",
+        "iconPath": "static/images/discover.png",
+        "selectedIconPath": "static/images/discover-active.png"
+      },
+      {
+        "pagePath": "pages/diary/index/index",
+        "text": "日记",
+        "iconPath": "static/images/diary.png",
+        "selectedIconPath": "static/images/diary-active.png"
+      },
+      {
+        "pagePath": "pages/ledger/index/index",
+        "text": "账本",
+        "iconPath": "static/images/ledger.png",
+        "selectedIconPath": "static/images/ledger-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index/index",
+        "text": "我的",
+        "iconPath": "static/images/profile.png",
+        "selectedIconPath": "static/images/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": true,
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255"
+    }
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于记录日记发生的地点"
+    }
+  },
+  "requiredBackgroundModes": ["audio"]
+}

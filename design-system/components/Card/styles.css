@@ -1,0 +1,128 @@
+/**
+ * 卡片组件样式
+ * 基于设计系统的变量
+ */
+
+.ds-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background-color: var(--color-neutral-white);
+  transition: 
+    box-shadow var(--transition-duration-normal) var(--transition-timing-ease-in-out),
+    transform var(--transition-duration-normal) var(--transition-timing-ease-in-out);
+}
+
+/* 变体样式 */
+.ds-card--default {
+  box-shadow: var(--shadow-sm);
+  border: var(--border-width-thin) solid var(--color-neutral-gray200);
+}
+
+.ds-card--outlined {
+  border: var(--border-width-thin) solid var(--color-neutral-gray300);
+}
+
+.ds-card--elevated {
+  box-shadow: var(--shadow-md);
+}
+
+.ds-card--flat {
+  background-color: var(--color-neutral-gray50);
+}
+
+/* 尺寸变体 */
+.ds-card--small {
+  max-width: 300px;
+}
+
+.ds-card--medium {
+  max-width: 400px;
+}
+
+.ds-card--large {
+  max-width: 500px;
+}
+
+/* 卡片可点击 */
+.ds-card--clickable {
+  cursor: pointer;
+}
+
+.ds-card--clickable:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.ds-card--clickable:active {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(0);
+}
+
+/* 卡片封面 */
+.ds-card__cover {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ds-card__cover img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 卡片内容 */
+.ds-card__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--spacing-md);
+}
+
+/* 卡片头部 */
+.ds-card__header {
+  margin-bottom: var(--spacing-sm);
+}
+
+.ds-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--color-neutral-gray900);
+  line-height: var(--line-height-tight);
+}
+
+.ds-card__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-neutral-gray600);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* 卡片主体 */
+.ds-card__body {
+  flex: 1;
+  font-size: var(--font-size-md);
+  color: var(--color-neutral-gray800);
+  line-height: var(--line-height-normal);
+}
+
+/* 卡片动作区 */
+.ds-card__actions {
+  display: flex;
+  align-items: center;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-sm);
+  border-top: var(--border-width-thin) solid var(--color-neutral-gray200);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .ds-card--small,
+  .ds-card--medium,
+  .ds-card--large {
+    max-width: 100%;
+  }
+} 

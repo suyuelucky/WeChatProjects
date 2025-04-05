@@ -1,0 +1,114 @@
+/* 发现页面样式 */
+.discover-container {
+  padding: 20rpx;
+  background-color: #f8f8f8;
+}
+
+.search-bar {
+  margin-bottom: 20rpx;
+}
+
+.search-input {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 10rpx 20rpx;
+  border-radius: 30rpx;
+}
+
+.search-icon {
+  margin-right: 10rpx;
+  font-size: 32rpx;
+  color: #999;
+}
+
+.banner-section {
+  margin-bottom: 30rpx;
+  height: 300rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+}
+
+.navigation-grid {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #fff;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  border-radius: 12rpx;
+}
+
+.grid-item {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.grid-icon {
+  font-size: 48rpx;
+  margin-bottom: 10rpx;
+}
+
+.grid-text {
+  font-size: 24rpx;
+  color: #333;
+}
+
+.content-section {
+  background-color: #fff;
+  padding: 20rpx;
+  border-radius: 12rpx;
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.content-cards {
+  display: flex;
+  flex-direction: column;
+}
+
+.content-card {
+  display: flex;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.card-image {
+  width: 200rpx;
+  height: 150rpx;
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+}
+
+.card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.card-desc {
+  font-size: 26rpx;
+  color: #666;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+} 

@@ -1,0 +1,213 @@
+<!-- components/ConflictResolver/index.wxml -->
+<view class="conflict-resolver {{visible ? 'visible' : ''}}">
+  <view class="conflict-resolver-mask" bindtap="onCancel"></view>
+  <view class="conflict-resolver-container">
+    <view class="conflict-resolver-header">
+      <view class="title">解决数据冲突</view>
+      <view class="subtitle">{{resourceTypeName}}数据存在冲突，请选择解决方式</view>
+      <view class="close-btn" bindtap="onCancel">×</view>
+    </view>
+
+    <view class="conflict-resolver-body">
+      <!-- 策略选择 -->
+      <view class="strategy-selector">
+        <view class="section-title">解决策略</view>
+        <view class="strategy-options">
+          <view 
+            class="strategy-option {{selected === 'client' ? 'selected' : ''}}" 
+            bindtap="onSelectStrategy" 
+            data-strategy="client"
+          >
+            <view class="option-name">使用本地数据</view>
+            <view class="option-desc">保留您在本设备上的更改</view>
+          </view>
+          
+          <view 
+            class="strategy-option {{selected === 'server' ? 'selected' : ''}}" 
+            bindtap="onSelectStrategy" 
+            data-strategy="server"
+          >
+            <view class="option-name">使用服务器数据</view>
+            <view class="option-desc">使用服务器上的最新数据</view>
+          </view>
+          
+          <view 
+            class="strategy-option {{selected === 'lastWrite' ? 'selected' : ''}}" 
+            bindtap="onSelectStrategy" 
+            data-strategy="lastWrite"
+          >
+            <view class="option-name">使用最后修改</view>
+            <view class="option-desc">选择最近修改的数据版本</view>
+          </view>
+          
+          <view 
+            class="strategy-option {{selected === 'merge' ? 'selected' : ''}}" 
+            bindtap="onSelectStrategy" 
+            data-strategy="merge"
+          >
+            <view class="option-name">智能合并</view>
+            <view class="option-desc">尝试合并双方的更改</view>
+          </view>
+          
+          <view 
+            class="strategy-option {{selected === 'manual' ? 'selected' : ''}}" 
+            bindtap="onSelectStrategy" 
+            data-strategy="manual"
+          >
+            <view class="option-name">手动解决</view>
+            <view class="option-desc">逐个字段选择要保留的值</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 标签页切换 -->
+      <view class="tab-selector">
+        <view 
+          class="tab-item {{activeTab === 'diff' ? 'active' : ''}}" 
+          bindtap="onChangeTab" 
+          data-tab="diff"
+        >差异对比</view>
+        <view 
+          class="tab-item {{activeTab === 'preview' ? 'active' : ''}}" 
+          bindtap="onChangeTab" 
+          data-tab="preview"
+        >解决预览</view>
+      </view>
+
+      <!-- 差异对比视图 -->
+      <view class="tab-content" hidden="{{activeTab !== 'diff'}}">
+        <view class="diff-view">
+          <!-- 对比模式切换 -->
+          <view class="compare-mode-selector">
+            <view 
+              class="mode-item {{compareMode === 'side-by-side' ? 'active' : ''}}" 
+              bindtap="onToggleCompareMode" 
+              data-mode="side-by-side"
+            >并排对比</view>
+            <view 
+              class="mode-item {{compareMode === 'inline' ? 'active' : ''}}" 
+              bindtap="onToggleCompareMode" 
+              data-mode="inline"
+            >内联对比</view>
+          </view>
+
+          <!-- 差异字段列表 -->
+          <view class="diff-fields">
+            <view class="section-title">存在差异的字段 ({{diffFields.length}})</view>
+            <scroll-view scroll-y class="field-list">
+              <view 
+                wx:for="{{diffFields}}" 
+                wx:key="field" 
+                class="field-item {{currentField === item.field ? 'selected' : ''}}"
+                bindtap="onSelectField"
+                data-field="{{item.field}}"
+              >
+                <view class="field-name">{{item.field}}</view>
+                <view class="field-change-type">
+                  <text class="change-badge {{item.changeType}}">
+                    {{item.changeType === 'client_changed' ? '本地修改' : 
+                      item.changeType === 'server_changed' ? '服务器修改' : 
+                      item.changeType === 'both_changed' ? '双方修改' : 
+                      item.changeType === 'client_only' ? '仅本地' : 
+                      item.changeType === 'server_only' ? '仅服务器' : '已修改'
+                    }}
+                  </text>
+                </view>
+              </view>
+            </scroll-view>
+          </view>
+
+          <!-- 当前字段值对比 -->
+          <view class="field-comparison">
+            <view class="section-title">
+              字段对比：{{currentField || '(请选择字段)'}}
+              <view class="toggle-detail" bindtap="onToggleDetailView">
+                {{detailView ? '简洁视图' : '详细视图'}}
+              </view>
+            </view>
+
+            <block wx:if="{{currentField}}">
+              <view class="field-detail">
+                <view class="comparison-container {{compareMode}}">
+                  <!-- 本地数据 -->
+                  <view class="comparison-side client">
+                    <view class="source-title">本地数据</view>
+                    <view class="value-container">
+                      <scroll-view scroll-y class="value-display">
+                        <text>{{diffDetails.find(d => d.field === currentField).clientValueDisplay}}</text>
+                      </scroll-view>
+                      <view class="action-buttons">
+                        <button 
+                          class="action-btn use-value" 
+                          bindtap="onSelectFieldValue" 
+                          data-field="{{currentField}}" 
+                          data-source="client"
+                        >使用此值</button>
+                      </view>
+                    </view>
+                  </view>
+
+                  <!-- 服务器数据 -->
+                  <view class="comparison-side server">
+                    <view class="source-title">服务器数据</view>
+                    <view class="value-container">
+                      <scroll-view scroll-y class="value-display">
+                        <text>{{diffDetails.find(d => d.field === currentField).serverValueDisplay}}</text>
+                      </scroll-view>
+                      <view class="action-buttons">
+                        <button 
+                          class="action-btn use-value" 
+                          bindtap="onSelectFieldValue" 
+                          data-field="{{currentField}}" 
+                          data-source="server"
+                        >使用此值</button>
+                      </view>
+                    </view>
+                  </view>
+
+                  <!-- 基准数据 (如果有) -->
+                  <view class="comparison-side base" wx:if="{{detailView && conflictData.baseData}}">
+                    <view class="source-title">原始数据</view>
+                    <view class="value-container">
+                      <scroll-view scroll-y class="value-display">
+                        <text>{{diffDetails.find(d => d.field === currentField).baseValueDisplay}}</text>
+                      </scroll-view>
+                      <view class="action-buttons">
+                        <button 
+                          class="action-btn use-value" 
+                          bindtap="onSelectFieldValue" 
+                          data-field="{{currentField}}" 
+                          data-source="base"
+                        >使用此值</button>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </block>
+            <view class="no-field-selected" wx:else>
+              请从左侧字段列表中选择一个字段进行对比
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 解决预览视图 -->
+      <view class="tab-content" hidden="{{activeTab !== 'preview'}}">
+        <view class="preview-view">
+          <view class="section-title">解决方案预览</view>
+          <view class="preview-container">
+            <scroll-view scroll-y class="preview-content">
+              <text>{{resolvedData ? JSON.stringify(resolvedData, null, 2) : '未生成解决方案'}}</text>
+            </scroll-view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="conflict-resolver-footer">
+      <button class="btn-cancel" bindtap="onCancel">取消</button>
+      <button class="btn-submit" bindtap="onSubmit" loading="{{loading}}">应用解决方案</button>
+    </view>
+  </view>
+</view> 

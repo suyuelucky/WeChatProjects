@@ -1,0 +1,406 @@
+/* components/ConflictResolver/index.wxss */
+
+.conflict-resolver {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: none;
+}
+
+.conflict-resolver.visible {
+  display: block;
+}
+
+.conflict-resolver-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.conflict-resolver-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 650rpx;
+  max-height: 85vh;
+  background-color: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.conflict-resolver-header {
+  padding: 24rpx;
+  border-bottom: 1rpx solid #eee;
+  position: relative;
+}
+
+.title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.subtitle {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.close-btn {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  text-align: center;
+  font-size: 40rpx;
+  color: #999;
+  border-radius: 24rpx;
+}
+
+.close-btn:active {
+  background-color: #f5f5f5;
+}
+
+.conflict-resolver-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 24rpx;
+}
+
+.conflict-resolver-footer {
+  padding: 24rpx;
+  border-top: 1rpx solid #eee;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin: 24rpx 0 16rpx;
+}
+
+/* 策略选择部分 */
+.strategy-options {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -8rpx;
+}
+
+.strategy-option {
+  flex: 1 0 30%;
+  min-width: 180rpx;
+  margin: 8rpx;
+  padding: 16rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  background-color: #f9f9f9;
+}
+
+.strategy-option.selected {
+  border-color: #1aad19;
+  background-color: rgba(26, 173, 25, 0.05);
+}
+
+.option-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.strategy-option.selected .option-name {
+  color: #1aad19;
+}
+
+.option-desc {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 标签页切换 */
+.tab-selector {
+  display: flex;
+  border-bottom: 1rpx solid #eee;
+  margin-top: 24rpx;
+}
+
+.tab-item {
+  padding: 16rpx 0;
+  margin-right: 32rpx;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+}
+
+.tab-item.active {
+  color: #1aad19;
+  font-weight: 500;
+}
+
+.tab-item.active:after {
+  content: '';
+  position: absolute;
+  bottom: -1rpx;
+  left: 0;
+  width: 100%;
+  height: 4rpx;
+  background-color: #1aad19;
+  border-radius: 2rpx;
+}
+
+.tab-content {
+  padding: 16rpx 0;
+}
+
+/* 对比模式切换 */
+.compare-mode-selector {
+  display: flex;
+  margin-bottom: 16rpx;
+}
+
+.mode-item {
+  margin-right: 16rpx;
+  padding: 8rpx 16rpx;
+  font-size: 24rpx;
+  color: #666;
+  background-color: #f5f5f5;
+  border-radius: 4rpx;
+}
+
+.mode-item.active {
+  background-color: #1aad19;
+  color: #fff;
+}
+
+/* 差异字段列表 */
+.diff-fields {
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.field-list {
+  max-height: 200rpx;
+  overflow-y: auto;
+}
+
+.field-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.field-item:last-child {
+  border-bottom: none;
+}
+
+.field-item.selected {
+  background-color: rgba(26, 173, 25, 0.05);
+}
+
+.field-name {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.field-change-type {
+  font-size: 22rpx;
+}
+
+.change-badge {
+  display: inline-block;
+  padding: 4rpx 8rpx;
+  border-radius: 4rpx;
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.change-badge.client_changed {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.change-badge.server_changed {
+  background-color: #f6ffed;
+  color: #52c41a;
+}
+
+.change-badge.both_changed {
+  background-color: #fff7e6;
+  color: #fa8c16;
+}
+
+.change-badge.client_only {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.change-badge.server_only {
+  background-color: #f6ffed;
+  color: #52c41a;
+}
+
+/* 字段值对比 */
+.field-comparison {
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  padding: 16rpx;
+}
+
+.toggle-detail {
+  float: right;
+  font-size: 24rpx;
+  color: #1aad19;
+  font-weight: normal;
+}
+
+.field-detail {
+  margin-top: 16rpx;
+}
+
+.comparison-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.comparison-container.side-by-side {
+  flex-direction: row;
+}
+
+.comparison-side {
+  flex: 1;
+  padding: 8rpx;
+  min-width: 0;
+}
+
+.comparison-container.side-by-side .comparison-side {
+  margin-right: 16rpx;
+}
+
+.comparison-container.side-by-side .comparison-side:last-child {
+  margin-right: 0;
+}
+
+.source-title {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.client .source-title {
+  color: #1890ff;
+}
+
+.server .source-title {
+  color: #52c41a;
+}
+
+.base .source-title {
+  color: #666;
+}
+
+.value-container {
+  border: 1rpx solid #eee;
+  border-radius: 6rpx;
+  padding: 8rpx;
+  background-color: #f9f9f9;
+}
+
+.value-display {
+  width: 100%;
+  max-height: 200rpx;
+  font-size: 24rpx;
+  color: #333;
+  line-height: 1.5;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.action-buttons {
+  margin-top: 8rpx;
+  text-align: right;
+}
+
+.action-btn {
+  display: inline-block;
+  min-width: 120rpx;
+  height: 48rpx;
+  line-height: 48rpx;
+  font-size: 22rpx;
+  padding: 0 16rpx;
+  margin-left: 8rpx;
+  background-color: #f0f0f0;
+  color: #333;
+  text-align: center;
+  border-radius: 4rpx;
+}
+
+.action-btn.use-value {
+  background-color: #1aad19;
+  color: #fff;
+}
+
+.no-field-selected {
+  padding: 40rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 26rpx;
+}
+
+/* 解决预览视图 */
+.preview-container {
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  background-color: #f9f9f9;
+}
+
+.preview-content {
+  width: 100%;
+  max-height: 400rpx;
+  font-size: 24rpx;
+  color: #333;
+  line-height: 1.5;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* 按钮样式 */
+.btn-cancel, .btn-submit {
+  display: inline-block;
+  min-width: 160rpx;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  border-radius: 6rpx;
+  font-size: 28rpx;
+  margin-left: 16rpx;
+}
+
+.btn-cancel {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.btn-submit {
+  background-color: #1aad19;
+  color: #fff;
+} 

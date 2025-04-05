@@ -1,0 +1,108 @@
+<!--pages/networkTest/index.wxml-->
+<view class="container">
+  <view class="page-header">
+    <text class="title">网络适应与离线功能测试</text>
+  </view>
+  
+  <view class="network-status">
+    <view class="status-card">
+      <text class="status-label">当前网络状态:</text>
+      <text class="status-value {{networkStatus.isConnected ? 'connected' : 'disconnected'}}">
+        {{networkStatus.isConnected ? '已连接' : '未连接'}} ({{networkStatus.networkType}})
+      </text>
+    </view>
+  </view>
+  
+  <view class="test-buttons">
+    <button class="test-button offline" disabled="{{isTestRunning}}" bindtap="runOfflineTest">离线功能测试</button>
+    <button class="test-button weak" disabled="{{isTestRunning}}" bindtap="runWeakNetworkTest">弱网环境测试</button>
+    <button class="test-button full" disabled="{{isTestRunning}}" bindtap="runFullTest">综合网络测试</button>
+  </view>
+  
+  <view class="test-progress" wx:if="{{isTestRunning}}">
+    <view class="loading-spinner"></view>
+    <text class="progress-text">测试运行中...</text>
+  </view>
+  
+  <view class="test-results" wx:if="{{testResults}}">
+    <view class="result-header">
+      <text class="result-title">测试结果 - {{testResults.timestamp}}</text>
+      <text class="result-type">
+        {{testResults.type === 'offline' ? '离线功能测试' : 
+         testResults.type === 'weakNetwork' ? '弱网环境测试' : '综合网络测试'}}
+      </text>
+    </view>
+    
+    <view class="result-status {{testResults.success ? 'success' : 'fail'}}">
+      <text class="status-text">{{testResults.success ? '通过' : '失败'}}</text>
+    </view>
+    
+    <view class="result-details" wx:if="{{testResults.type === 'offline'}}">
+      <view class="detail-item">
+        <text class="detail-label">离线操作:</text>
+        <text class="detail-value {{testResults.results.offlineOperation ? 'success' : 'fail'}}">
+          {{testResults.results.offlineOperation ? '成功' : '失败'}}
+        </text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">同步队列添加:</text>
+        <text class="detail-value {{testResults.results.syncQueueAddition ? 'success' : 'fail'}}">
+          {{testResults.results.syncQueueAddition ? '成功' : '失败'}}
+        </text>
+      </view>
+      <view class="detail-item" wx:if="{{testResults.results.errors.length > 0}}">
+        <text class="detail-label">错误信息:</text>
+        <text class="detail-value error">{{testResults.results.errors[0]}}</text>
+      </view>
+    </view>
+    
+    <view class="result-details" wx:elif="{{testResults.type === 'weakNetwork'}}">
+      <view class="detail-item">
+        <text class="detail-label">完成请求数:</text>
+        <text class="detail-value">{{testResults.results.requestsCompleted}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">失败请求数:</text>
+        <text class="detail-value">{{testResults.results.requestsFailed}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">平均响应时间:</text>
+        <text class="detail-value">{{testResults.results.averageResponseTime}}ms</text>
+      </view>
+      <view class="detail-item" wx:if="{{testResults.results.errors.length > 0}}">
+        <text class="detail-label">错误信息:</text>
+        <text class="detail-value error">{{testResults.results.errors[0]}}</text>
+      </view>
+    </view>
+    
+    <view class="result-details" wx:elif="{{testResults.type === 'full'}}">
+      <view class="detail-item">
+        <text class="detail-label">离线测试:</text>
+        <text class="detail-value {{testResults.results.offlineTest.offlineOperation ? 'success' : 'fail'}}">
+          {{testResults.results.offlineTest.offlineOperation ? '通过' : '失败'}}
+        </text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">弱网测试:</text>
+        <text class="detail-value {{testResults.results.weakNetworkTest.requestsCompleted > 0 ? 'success' : 'fail'}}">
+          {{testResults.results.weakNetworkTest.requestsCompleted > 0 ? '通过' : '失败'}}
+        </text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-label">综合结果:</text>
+        <text class="detail-value {{testResults.success ? 'success' : 'fail'}}">
+          {{testResults.message}}
+        </text>
+      </view>
+    </view>
+    
+    <view class="error-message" wx:if="{{testResults.error}}">
+      <text class="error-text">错误: {{testResults.error}}</text>
+    </view>
+  </view>
+  
+  <view class="component-demo">
+    <text class="section-title">网络状态组件示例</text>
+    <OfflineStatusDisplay showDebugInfo="{{true}}" />
+  </view>
+</view> 

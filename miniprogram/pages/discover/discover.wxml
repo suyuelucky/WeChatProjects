@@ -1,0 +1,6 @@
+<navigation-bar title="发现" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<view class="container">
+  <view class="content">
+    <text>发现页内容</text>
+  </view>
+</view>

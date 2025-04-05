@@ -1,0 +1,21 @@
+<!--相册页面-->
+<view class="album-container">
+  <view class="header">
+    <view class="title">选择图片</view>
+    <view class="counter">已选择 {{selectedCount}}/9</view>
+  </view>
+  
+  <view class="album-grid">
+    <view class="grid-item" wx:for="{{images}}" wx:key="index" bindtap="toggleSelect" data-index="{{index}}">
+      <image src="{{item.path}}" mode="aspectFill" class="image"></image>
+      <view class="select-mask {{item.selected ? 'selected' : ''}}">
+        <view class="select-icon" wx:if="{{item.selected}}">✓</view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="bottom-bar">
+    <button class="cancel-btn" bindtap="cancel">取消</button>
+    <button class="confirm-btn {{selectedCount === 0 ? 'disabled' : ''}}" disabled="{{selectedCount === 0}}" bindtap="confirm">确定</button>
+  </view>
+</view> 

@@ -1,0 +1,33 @@
+<button
+  class="ds-button ds-button--{{type}} ds-button--{{size}} {{block ? 'ds-button--block' : ''}} {{disabled ? 'ds-button--disabled' : ''}} {{loading ? 'ds-button--loading' : ''}} {{customClass}}"
+  disabled="{{disabled}}"
+  loading="{{loading}}"
+  form-type="{{formType}}"
+  open-type="{{openType}}"
+  session-from="{{sessionFrom}}"
+  send-message-title="{{sendMessageTitle}}"
+  send-message-path="{{sendMessagePath}}"
+  send-message-img="{{sendMessageImg}}"
+  show-message-card="{{showMessageCard}}"
+  bindtap="onClick"
+  bindgetuserinfo="onGetUserInfo"
+  bindgetphonenumber="onGetPhoneNumber"
+  bindopensetting="onOpenSetting"
+  bindcontact="onContact"
+  bindgetlocation="onGetLocation"
+  binderror="onError"
+  bindlaunchapp="onLaunchApp"
+>
+  <view class="ds-button__content">
+    <block wx:if="{{loading}}">
+      <view class="ds-button__loading"></view>
+    </block>
+    <block wx:elif="{{icon}}">
+      <image class="ds-button__icon" src="{{icon}}" mode="aspectFit"></image>
+    </block>
+    <block wx:if="{{text}}">
+      <text class="ds-button__text">{{text}}</text>
+    </block>
+    <slot></slot>
+  </view>
+</button> 

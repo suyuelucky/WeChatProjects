@@ -1,0 +1,114 @@
+/**
+ * 卡片组件样式，与Web端保持一致的视觉效果
+ * 使用CSS变量，适配小程序环境
+ */
+
+.ds-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: calc(var(--border-radius-md) * 2);
+  overflow: hidden;
+  background-color: var(--color-neutral-white);
+  margin-bottom: calc(var(--spacing-md) * 2);
+}
+
+/* 变体样式 */
+.ds-card--default {
+  box-shadow: var(--shadow-sm);
+  border: 2rpx solid var(--color-neutral-gray200);
+}
+
+.ds-card--outlined {
+  border: 2rpx solid var(--color-neutral-gray300);
+}
+
+.ds-card--elevated {
+  box-shadow: var(--shadow-md);
+}
+
+.ds-card--flat {
+  background-color: var(--color-neutral-gray50);
+}
+
+/* 尺寸变体 - 小程序中使用百分比和rpx */
+.ds-card--small {
+  width: 90%;
+  max-width: 600rpx;
+}
+
+.ds-card--medium {
+  width: 95%;
+  max-width: 800rpx;
+}
+
+.ds-card--large {
+  width: 100%;
+  max-width: 1000rpx;
+}
+
+/* 卡片可点击 */
+.ds-card--clickable {
+  position: relative;
+}
+
+.ds-card--clickable:active {
+  opacity: 0.9;
+}
+
+/* 卡片封面 */
+.ds-card__cover {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ds-card__cover image {
+  width: 100%;
+  height: 350rpx;
+  display: block;
+}
+
+/* 卡片内容 */
+.ds-card__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: calc(var(--spacing-md) * 2);
+}
+
+/* 卡片头部 */
+.ds-card__header {
+  margin-bottom: calc(var(--spacing-sm) * 2);
+}
+
+.ds-card__title {
+  font-size: calc(var(--font-size-lg) * 2);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 calc(var(--spacing-xs) * 2) 0;
+  color: var(--color-neutral-gray900);
+  line-height: var(--line-height-tight);
+}
+
+.ds-card__subtitle {
+  font-size: calc(var(--font-size-sm) * 2);
+  color: var(--color-neutral-gray600);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* 卡片主体 */
+.ds-card__body {
+  flex: 1;
+  font-size: calc(var(--font-size-md) * 2);
+  color: var(--color-neutral-gray800);
+  line-height: var(--line-height-normal);
+  margin-bottom: calc(var(--spacing-md) * 2);
+}
+
+/* 卡片动作区 */
+.ds-card__actions {
+  display: flex;
+  align-items: center;
+  padding-top: calc(var(--spacing-sm) * 2);
+  border-top: 2rpx solid var(--color-neutral-gray200);
+} 

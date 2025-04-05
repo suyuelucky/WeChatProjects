@@ -1,0 +1,61 @@
+<!--账本首页-->
+<view class="ledger-container">
+  <view class="month-selector">
+    <view class="arrow" bindtap="prevMonth">◀</view>
+    <view class="current-month">{{year}}年{{month}}月</view>
+    <view class="arrow" bindtap="nextMonth">▶</view>
+  </view>
+  
+  <view class="summary-card">
+    <view class="summary-item">
+      <text class="label">支出</text>
+      <text class="amount expense">¥{{summary.expense}}</text>
+    </view>
+    <view class="summary-item">
+      <text class="label">收入</text>
+      <text class="amount income">¥{{summary.income}}</text>
+    </view>
+    <view class="summary-item">
+      <text class="label">结余</text>
+      <text class="amount balance {{summary.balance >= 0 ? 'income' : 'expense'}}">¥{{summary.balance}}</text>
+    </view>
+  </view>
+  
+  <view class="chart-container">
+    <view class="chart-title">支出分类</view>
+    <view class="chart-placeholder">
+      <text class="placeholder-text">暂无数据</text>
+    </view>
+  </view>
+  
+  <view class="record-list">
+    <view class="list-header">
+      <view class="date-title">近期记录</view>
+      <view class="view-all" bindtap="viewAllRecords">查看全部 ></view>
+    </view>
+    
+    <block wx:if="{{records.length > 0}}">
+      <view class="record-item" wx:for="{{records}}" wx:key="id" bindtap="viewRecordDetail" data-id="{{item.id}}">
+        <view class="record-category">
+          <text class="category-icon">{{item.icon}}</text>
+          <text class="category-name">{{item.category}}</text>
+        </view>
+        <view class="record-info">
+          <text class="record-note">{{item.note || '无备注'}}</text>
+          <text class="record-time">{{item.time}}</text>
+        </view>
+        <view class="record-amount {{item.type === 'expense' ? 'expense' : 'income'}}">
+          {{item.type === 'expense' ? '-' : '+'}}¥{{item.amount}}
+        </view>
+      </view>
+    </block>
+    
+    <view class="empty-tip" wx:else>
+      <text>暂无记账记录，点击下方按钮开始记账</text>
+    </view>
+  </view>
+  
+  <view class="add-record" bindtap="addRecord">
+    <text class="add-icon">+</text>
+  </view>
+</view> 

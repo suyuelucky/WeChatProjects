@@ -1,0 +1,6 @@
+<navigation-bar title="消息" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<view class="container">
+  <view class="content">
+    <text>消息页内容</text>
+  </view>
+</view>

@@ -1,0 +1,160 @@
+<view class="discover-container {{networkStatus === 'offline' ? 'offline-mode' : ''}}">
+  <!-- 网络状态提示 -->
+  <view class="network-status-bar" wx:if="{{networkStatus === 'offline'}}">
+    <image src="/static/images/icons/offline.png"></image>
+    <text>当前处于离线模式，部分内容可能无法加载</text>
+  </view>
+  
+  <!-- 顶部搜索栏 -->
+  <view class="header">
+    <view class="search-bar {{showSearchBar ? 'show' : ''}}">
+      <view class="search-box" bindtap="{{!showSearchBar ? 'toggleSearchBar' : ''}}">
+        <image class="search-icon" src="/static/images/icons/search.png"></image>
+        <input 
+          wx:if="{{showSearchBar}}"
+          type="text" 
+          bindinput="onSearch" 
+          placeholder="搜索内容" 
+          focus="{{showSearchBar}}"
+          bindblur="toggleSearchBar"
+        />
+        <text wx:else>搜索社区内容</text>
+      </view>
+    </view>
+    
+    <view class="actions">
+      <view class="icon-btn" bindtap="goToSearch">
+        <image src="/static/images/icons/search.png"></image>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 横幅轮播图 -->
+  <swiper 
+    class="banner-swiper" 
+    indicator-dots="{{true}}"
+    indicator-color="rgba(255, 255, 255, 0.6)"
+    indicator-active-color="#000000"
+    autoplay="{{true}}"
+    interval="4000"
+    duration="500"
+    circular="{{true}}"
+  >
+    <swiper-item wx:for="{{banners}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+      <view class="banner-item">
+        <image src="{{item.image}}" mode="aspectFill"></image>
+        <view class="banner-title">
+          <text>{{item.title}}</text>
+        </view>
+      </view>
+    </swiper-item>
+  </swiper>
+  
+  <!-- 分类导航 -->
+  <view class="categories">
+    <view 
+      class="category-item" 
+      wx:for="{{categories}}" 
+      wx:key="id"
+      bindtap="goToCategory"
+      data-id="{{item.id}}"
+    >
+      <image src="{{item.icon}}"></image>
+      <text>{{item.name}}</text>
+    </view>
+  </view>
+  
+  <!-- 标签页切换 -->
+  <view class="tabs">
+    <view 
+      class="tab-item {{activeTab === 'recommend' ? 'active' : ''}}" 
+      data-tab="recommend" 
+      bindtap="switchTab"
+    >推荐</view>
+    <view 
+      class="tab-item {{activeTab === 'following' ? 'active' : ''}}" 
+      data-tab="following" 
+      bindtap="switchTab"
+    >关注</view>
+    <view 
+      class="tab-item {{activeTab === 'official' ? 'active' : ''}}" 
+      data-tab="official" 
+      bindtap="switchTab"
+    >官方</view>
+  </view>
+  
+  <!-- 信息流 -->
+  <scroll-view 
+    scroll-y 
+    enable-passive
+    bindscrolltolower="onReachBottom"
+    class="feed-list"
+    enable-pull-down-refresh="{{true}}"
+    bindrefresherrefresh="onPullDownRefresh"
+    refresher-triggered="{{isLoading}}"
+  >
+    <view wx:if="{{feeds.length === 0}}" class="empty-state">
+      <image src="/static/images/icons/empty.png"></image>
+      <text>暂无内容</text>
+    </view>
+    
+    <view 
+      wx:for="{{feeds}}" 
+      wx:key="id" 
+      class="feed-item"
+      bindtap="goToDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="feed-header">
+        <view class="author-info" catchtap="goToUnitHome" data-unit="{{item.author}}">
+          <image class="avatar" src="{{item.authorAvatar}}"></image>
+          <view class="author-name-wrap">
+            <text class="author-name">{{item.author}}</text>
+            <view wx:if="{{item.isOfficial}}" class="official-badge">官方</view>
+          </view>
+        </view>
+        <text class="publish-time">{{item.publishTime}}</text>
+      </view>
+      
+      <view class="feed-content">
+        <text class="feed-title">{{item.title}}</text>
+        <text class="feed-summary">{{item.summary}}</text>
+      </view>
+      
+      <view class="feed-images" wx:if="{{item.coverImages.length > 0}}">
+        <image 
+          wx:for="{{item.coverImages}}" 
+          wx:for-item="imgSrc" 
+          wx:key="*this"
+          src="{{imgSrc}}" 
+          mode="aspectFill"
+          class="{{item.coverImages.length === 1 ? 'single-image' : item.coverImages.length === 2 ? 'double-image' : 'triple-image'}}"
+        ></image>
+      </view>
+      
+      <view class="feed-footer">
+        <view class="stats-item">
+          <image src="/static/images/icons/view.png"></image>
+          <text>{{item.viewCount}}</text>
+        </view>
+        <view class="stats-item">
+          <image src="/static/images/icons/like.png"></image>
+          <text>{{item.likeCount}}</text>
+        </view>
+        <view class="stats-item">
+          <image src="/static/images/icons/comment.png"></image>
+          <text>{{item.commentCount}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="loading-more" wx:if="{{feeds.length > 0}}">
+      <text>上拉加载更多</text>
+    </view>
+  </scroll-view>
+  
+  <!-- 加载动画 -->
+  <view class="loading-indicator" wx:if="{{isLoading}}">
+    <image src="/static/images/icons/loading.png" class="loading-icon"></image>
+  </view>
+</view> 

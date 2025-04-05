@@ -1,0 +1,24 @@
+<!-- components/OfflineStatusDisplay/index.wxml -->
+<view class="offline-status {{isConnected ? 'online' : 'offline'}} {{isWeakNetwork ? 'weak-network' : ''}}">
+  <view class="status-icon">
+    <view class="dot {{isConnected ? 'green' : 'red'}}"></view>
+  </view>
+  <view class="status-text">
+    <text wx:if="{{isConnected && !isWeakNetwork}}">网络已连接 ({{networkType}})</text>
+    <text wx:elif="{{isConnected && isWeakNetwork}}">弱网环境 ({{networkType}})</text>
+    <text wx:else>当前处于离线状态</text>
+  </view>
+  
+  <view class="sync-info" wx:if="{{showDebugInfo}}">
+    <view class="sync-queue">
+      <text>待同步项: {{syncQueueLength || 0}}</text>
+    </view>
+    <view class="last-sync" wx:if="{{lastSync}}">
+      <text>上次同步: {{lastSync}}</text>
+    </view>
+  </view>
+  
+  <view class="actions" wx:if="{{syncQueueLength > 0 && isConnected}}">
+    <button class="sync-button" size="mini" bindtap="handleSyncNow">立即同步</button>
+  </view>
+</view> 

@@ -1,0 +1,175 @@
+/* 个人资料页面样式 */
+.profile-container {
+  padding: 20rpx;
+  background: #f8f8f8;
+  min-height: 100vh;
+}
+
+.user-card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  position: relative;
+  margin-right: 20rpx;
+}
+
+.avatar.iconfont {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  font-size: 60rpx;
+  background-color: #f5f5f5;
+  color: #cccccc;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.nickname {
+  font-size: 34rpx;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.user-id {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.edit-profile {
+  display: flex;
+  align-items: center;
+  border: 1px solid #eee;
+  padding: 8rpx 16rpx;
+  border-radius: 30rpx;
+}
+
+.edit-text {
+  font-size: 24rpx;
+  color: #666;
+  margin-right: 6rpx;
+}
+
+.edit-profile .iconfont {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.stats-card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.menu-list {
+  background: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.menu-group {
+  padding: 0 30rpx;
+}
+
+.menu-group:not(:last-child) {
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 0;
+  position: relative;
+}
+
+.menu-item:not(:last-child) {
+  border-bottom: 1px solid #f8f8f8;
+}
+
+.menu-icon {
+  width: 40rpx;
+  display: flex;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.menu-icon .iconfont {
+  font-size: 36rpx;
+  color: #333;
+}
+
+.menu-text {
+  flex: 1;
+  font-size: 28rpx;
+}
+
+.arrow.iconfont {
+  font-size: 24rpx;
+  color: #ccc;
+}
+
+.login-button {
+  margin: 40rpx 0;
+}
+
+.login-button button {
+  background: #007AFF;
+  color: #fff;
+  border-radius: 12rpx;
+}
+
+.version-info {
+  text-align: center;
+  padding: 30rpx 0;
+}
+
+.version-info text {
+  font-size: 24rpx;
+  color: #999;
+} 

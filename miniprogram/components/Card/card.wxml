@@ -1,0 +1,31 @@
+<view 
+  class="ds-card ds-card--{{variant}} ds-card--{{size}} {{clickable ? 'ds-card--clickable' : ''}} {{customClass}}" 
+  bindtap="onClick"
+>
+  <block wx:if="{{cover}}">
+    <view class="ds-card__cover">
+      <image src="{{cover}}" mode="aspectFill"></image>
+    </view>
+  </block>
+  
+  <view class="ds-card__content">
+    <block wx:if="{{title || subtitle}}">
+      <view class="ds-card__header">
+        <block wx:if="{{title}}">
+          <view class="ds-card__title">{{title}}</view>
+        </block>
+        <block wx:if="{{subtitle}}">
+          <view class="ds-card__subtitle">{{subtitle}}</view>
+        </block>
+      </view>
+    </block>
+    
+    <view class="ds-card__body">
+      <slot name="body"></slot>
+    </view>
+    
+    <view class="ds-card__actions">
+      <slot name="actions"></slot>
+    </view>
+  </view>
+</view> 

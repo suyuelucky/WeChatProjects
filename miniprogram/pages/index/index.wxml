@@ -1,0 +1,38 @@
+<!--index.wxml-->
+<navigation-bar title="绣花针" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="userinfo">
+      <block wx:if="{{canIUseOpenData}}">
+        <view class="userinfo-avatar">
+          <open-data type="userAvatarUrl"></open-data>
+        </view>
+        <open-data type="userNickName"></open-data>
+      </block>
+      <block wx:elif="{{!hasUserInfo}}">
+        <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile" class="chanel-btn"> 获取头像昵称 </button>
+        <button wx:elif="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo" class="chanel-btn"> 获取头像昵称 </button>
+        <view wx:else> 请使用1.4.4及以上版本基础库 </view>
+      </block>
+      <block wx:else>
+        <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+        <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+      </block>
+    </view>
+    
+    <view class="motto-container">
+      <text class="motto">{{motto}}</text>
+    </view>
+    
+    <view class="action-container">
+      <button class="chanel-btn diary-btn" bindtap="goToDiary">我的日记</button>
+      <button class="chanel-btn camera-btn" bindtap="takePicture">
+        <text class="camera-icon">📷</text> 拍照
+      </button>
+    </view>
+    
+    <view class="footer">
+      <text>绣花针 - 多用户日记系统</text>
+    </view>
+  </view>
+</scroll-view>

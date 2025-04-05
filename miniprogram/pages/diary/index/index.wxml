@@ -1,0 +1,26 @@
+<!--日记首页-->
+<view class="diary-container">
+  <view class="header">
+    <view class="title">我的日记</view>
+    <view class="add-btn" bindtap="navigateToEditor">
+      <text class="iconfont icon-add">+</text>
+    </view>
+  </view>
+  
+  <view class="diary-list" wx:if="{{diaries.length > 0}}">
+    <view class="diary-item" wx:for="{{diaries}}" wx:key="id" bindtap="viewDiary" data-id="{{item.id}}">
+      <view class="diary-date">{{item.date}}</view>
+      <view class="diary-title">{{item.title}}</view>
+      <view class="diary-preview">{{item.content}}</view>
+      <view class="diary-meta">
+        <text class="diary-location" wx:if="{{item.location}}">{{item.location}}</text>
+        <text class="diary-weather" wx:if="{{item.weather}}">{{item.weather}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <view class="empty-state" wx:else>
+    <image class="empty-image" src="/static/images/empty-diary.png" mode="aspectFit"></image>
+    <view class="empty-text">还没有日记，点击右上角开始记录今天的点滴</view>
+  </view>
+</view> 

@@ -1,0 +1,52 @@
+<!--日记编辑页面-->
+<view class="editor-container">
+  <view class="editor-header">
+    <view class="date-section">
+      <picker mode="date" value="{{date}}" bindchange="onDateChange">
+        <view class="date-picker">
+          <text class="date-text">{{dateFormatted}}</text>
+          <text class="iconfont icon-calendar"></text>
+        </view>
+      </picker>
+      <view class="weather-section" bindtap="chooseWeather">
+        <text class="weather-icon">{{weatherIcon}}</text>
+        <text class="weather-text">{{weather || '选择天气'}}</text>
+      </view>
+    </view>
+    
+    <view class="title-section">
+      <input class="title-input" value="{{title}}" bindinput="onTitleInput" placeholder="标题" maxlength="50" />
+    </view>
+  </view>
+  
+  <view class="editor-body">
+    <textarea class="content-textarea" value="{{content}}" bindinput="onContentInput" placeholder="记录今天的心情..." maxlength="5000" auto-height="{{true}}" show-confirm-bar="{{false}}" />
+  </view>
+  
+  <view class="media-section" wx:if="{{images.length > 0}}">
+    <view class="image-list">
+      <view class="image-item" wx:for="{{images}}" wx:key="index">
+        <image src="{{item}}" mode="aspectFill" bindtap="previewImage" data-index="{{index}}" />
+        <view class="delete-btn" bindtap="deleteImage" data-index="{{index}}">×</view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="editor-footer">
+    <view class="tool-bar">
+      <view class="tool-item" bindtap="addImage">
+        <text class="iconfont icon-image">🖼️</text>
+      </view>
+      <view class="tool-item" bindtap="addLocation">
+        <text class="iconfont icon-location">📍</text>
+      </view>
+      <view class="tool-item" bindtap="addVoice">
+        <text class="iconfont icon-voice">🎤</text>
+      </view>
+    </view>
+    <view class="action-bar">
+      <button class="cancel-btn" bindtap="cancelEdit">取消</button>
+      <button class="save-btn" bindtap="saveDiary">保存</button>
+    </view>
+  </view>
+</view> 

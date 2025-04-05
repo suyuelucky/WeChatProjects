@@ -1,0 +1,40 @@
+<!--发现页面-->
+<view class="discover-container">
+  <view class="search-bar">
+    <view class="search-input">
+      <text class="search-icon">🔍</text>
+      <input placeholder="搜索" disabled bindtap="onSearchTap" />
+    </view>
+  </view>
+  
+  <view class="banner-section">
+    <swiper autoplay interval="3000" circular>
+      <swiper-item>
+        <image src="/static/images/banner1.jpg" mode="aspectFill" class="banner-image" />
+      </swiper-item>
+      <swiper-item>
+        <image src="/static/images/banner2.jpg" mode="aspectFill" class="banner-image" />
+      </swiper-item>
+    </swiper>
+  </view>
+  
+  <view class="navigation-grid">
+    <view class="grid-item" wx:for="{{navItems}}" wx:key="id">
+      <view class="grid-icon">{{item.icon}}</view>
+      <text class="grid-text">{{item.name}}</text>
+    </view>
+  </view>
+  
+  <view class="content-section">
+    <view class="section-title">推荐内容</view>
+    <view class="content-cards">
+      <view class="content-card" wx:for="{{recommendedContent}}" wx:key="id">
+        <image src="{{item.image}}" mode="aspectFill" class="card-image" />
+        <view class="card-info">
+          <text class="card-title">{{item.title}}</text>
+          <text class="card-desc">{{item.description}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

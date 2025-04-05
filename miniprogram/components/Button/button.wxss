@@ -1,0 +1,151 @@
+/**
+ * 按钮组件样式，与Web端保持一致的视觉效果
+ * 使用CSS变量，适配小程序环境
+ */
+
+.ds-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  position: relative;
+  white-space: nowrap;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.ds-button__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 大小变体 */
+.ds-button--small {
+  font-size: var(--font-size-xs);
+  padding: calc(var(--spacing-xs) * 2) calc(var(--spacing-sm) * 2);
+  border-radius: calc(var(--border-radius-sm) * 2);
+  min-height: 64rpx;
+}
+
+.ds-button--medium {
+  font-size: var(--font-size-sm);
+  padding: calc(var(--spacing-sm) * 2) calc(var(--spacing-md) * 2);
+  border-radius: calc(var(--border-radius-md) * 2);
+  min-height: 80rpx;
+}
+
+.ds-button--large {
+  font-size: var(--font-size-md);
+  padding: calc(var(--spacing-md) * 2) calc(var(--spacing-lg) * 2);
+  border-radius: calc(var(--border-radius-md) * 2);
+  min-height: 96rpx;
+}
+
+/* 类型变体 */
+.ds-button--primary {
+  background-color: var(--color-brand-primary);
+  color: var(--color-brand-secondary);
+}
+
+.ds-button--primary:active:not(.ds-button--disabled) {
+  background-color: var(--color-neutral-gray900);
+}
+
+.ds-button--secondary {
+  background-color: var(--color-brand-accent);
+  color: var(--color-neutral-black);
+}
+
+.ds-button--secondary:active:not(.ds-button--disabled) {
+  background-color: var(--color-brand-highlight);
+}
+
+.ds-button--outline {
+  background-color: transparent;
+  color: var(--color-brand-primary);
+  border: 2rpx solid var(--color-brand-primary);
+}
+
+.ds-button--outline:active:not(.ds-button--disabled) {
+  background-color: var(--color-neutral-gray100);
+}
+
+.ds-button--ghost {
+  background-color: transparent;
+  color: var(--color-brand-primary);
+}
+
+.ds-button--ghost:active:not(.ds-button--disabled) {
+  background-color: var(--color-neutral-gray100);
+}
+
+.ds-button--link {
+  background-color: transparent;
+  color: var(--color-brand-primary);
+  padding: 0;
+  min-height: 0;
+  display: inline;
+  text-decoration: underline;
+}
+
+.ds-button--link:active:not(.ds-button--disabled) {
+  color: var(--color-neutral-gray800);
+}
+
+/* 块级按钮 */
+.ds-button--block {
+  display: flex;
+  width: 100%;
+}
+
+/* 禁用状态 */
+.ds-button--disabled {
+  opacity: 0.5;
+}
+
+/* 加载状态 */
+.ds-button--loading {
+  position: relative;
+}
+
+.ds-button__loading {
+  display: inline-block;
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: calc(var(--spacing-xs) * 2);
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--color-brand-secondary);
+  animation: button-loading-spin 0.8s infinite linear;
+}
+
+.ds-button--outline .ds-button__loading,
+.ds-button--ghost .ds-button__loading,
+.ds-button--link .ds-button__loading {
+  border: 4rpx solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--color-brand-primary);
+}
+
+@keyframes button-loading-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 图标 */
+.ds-button__icon {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: calc(var(--spacing-xs) * 2);
+}
+
+.ds-button__text {
+  display: inline-block;
+} 

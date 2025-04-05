@@ -1,0 +1,64 @@
+<!--个人资料页面-->
+<view class="profile-container">
+  <view class="user-card">
+    <view class="user-info">
+      <view class="avatar-wrapper">
+        <view wx:if="{{!userInfo.avatarUrl}}" class="avatar iconfont icon-user"></view>
+        <image wx:else class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+      </view>
+      <view class="user-details">
+        <text class="nickname">{{userInfo.nickName || '未登录'}}</text>
+        <text class="user-id" wx:if="{{userInfo.nickName}}">ID: {{userId}}</text>
+      </view>
+    </view>
+    <view class="edit-profile" bindtap="editProfile">
+      <text class="edit-text">编辑资料</text>
+      <text class="iconfont icon-edit"></text>
+    </view>
+  </view>
+  
+  <view class="stats-card">
+    <view class="stat-item">
+      <text class="stat-value">{{stats.diaries || 0}}</text>
+      <text class="stat-label">日记</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{stats.ledgers || 0}}</text>
+      <text class="stat-label">记账</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{stats.days || 0}}</text>
+      <text class="stat-label">连续天数</text>
+    </view>
+  </view>
+  
+  <view class="menu-list">
+    <view class="menu-group">
+      <view class="menu-item" wx:for="{{menuItems1}}" wx:key="id" bindtap="onMenuItemTap" data-id="{{item.id}}">
+        <view class="menu-icon">
+          <text class="iconfont {{item.iconClass}}"></text>
+        </view>
+        <text class="menu-text">{{item.name}}</text>
+        <text class="arrow iconfont icon-arrow-right"></text>
+      </view>
+    </view>
+    
+    <view class="menu-group">
+      <view class="menu-item" wx:for="{{menuItems2}}" wx:key="id" bindtap="onMenuItemTap" data-id="{{item.id}}">
+        <view class="menu-icon">
+          <text class="iconfont {{item.iconClass}}"></text>
+        </view>
+        <text class="menu-text">{{item.name}}</text>
+        <text class="arrow iconfont icon-arrow-right"></text>
+      </view>
+    </view>
+  </view>
+  
+  <view class="login-button" wx:if="{{!userInfo.nickName}}" bindtap="login">
+    <button>登录/注册</button>
+  </view>
+  
+  <view class="version-info">
+    <text>版本 1.0.0</text>
+  </view>
+</view> 
