@@ -1,0 +1,77 @@
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="title">照片列表</view>
+    <view class="subtitle" wx:if="{{projectName}}">
+      {{projectName}} {{locationName ? ' - ' + locationName : ''}}
+    </view>
+  </view>
+  
+  <!-- 加载中 -->
+  <block wx:if="{{loading}}">
+    <view class="loading-container">
+      <view class="loading-spinner"></view>
+      <text>加载照片中...</text>
+    </view>
+  </block>
+  
+  <!-- 照片列表 -->
+  <block wx:else>
+    <scroll-view scroll-y="true" class="photo-list">
+      <block wx:if="{{photos.length > 0}}">
+        <view class="photo-grid">
+          <view 
+            wx:for="{{photos}}" 
+            wx:key="id" 
+            class="photo-item"
+            bindtap="handlePhotoTap"
+            data-id="{{item.id}}">
+            <image 
+              class="photo-thumb" 
+              src="{{item.thumbPath || item.filePath}}" 
+              mode="aspectFill" 
+              lazy-load>
+            </image>
+            <view class="photo-info">
+              <text class="photo-time">{{item.createTime}}</text>
+              <view class="photo-status {{item.uploaded ? 'uploaded' : ''}}">
+                {{item.uploaded ? '已上传' : '未上传'}}
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="empty-list">
+          <view class="empty-icon">📷</view>
+          <view class="empty-text">暂无照片</view>
+          <view class="empty-tip">点击下方"拍照"按钮开始采集照片</view>
+        </view>
+      </block>
+    </scroll-view>
+    
+    <!-- 底部操作栏 -->
+    <view class="action-bar">
+      <view class="action-btn back-btn" bindtap="navigateBack">返回</view>
+      <view class="action-btn camera-btn" bindtap="goToCamera">拍照</view>
+    </view>
+  </block>
+  
+  <!-- 操作菜单 -->
+  <view class="action-sheet-mask" wx:if="{{showActionSheet}}" bindtap="closeActionSheet"></view>
+  <view class="action-sheet" wx:if="{{showActionSheet}}">
+    <view class="action-sheet-title">照片操作</view>
+    <view class="action-sheet-content">
+      <view 
+        wx:for="{{actions}}" 
+        wx:key="name" 
+        class="action-item"
+        style="color: {{item.color}}"
+        bindtap="handleActionSelect"
+        data-index="{{index}}">
+        {{item.name}}
+      </view>
+    </view>
+    <view class="action-cancel" bindtap="closeActionSheet">取消</view>
+  </view>
+</view> 

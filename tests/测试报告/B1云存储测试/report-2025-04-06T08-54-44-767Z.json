@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-04-06T08-54-44-767Z",
+  "totalTests": 1,
+  "successCount": 0,
+  "failCount": 1,
+  "results": [
+    {
+      "name": "photo-cloud-upload-test.js",
+      "description": "测试执行出错",
+      "startTime": 1743929684766,
+      "endTime": 1743929684766,
+      "success": false,
+      "results": [],
+      "errors": [
+        "The requested module '../../utils/test-utils.js' does not provide an export named 'default'"
+      ]
+    }
+  ]
+}

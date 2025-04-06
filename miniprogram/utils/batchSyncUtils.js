@@ -3,9 +3,9 @@
  * 提供高效的批量同步API，优化弱网环境下的数据同步
  */
 
-import { hasNetworkConnection, isWeakNetwork, getNetworkAdaptiveConfig } from './networkUtils';
-import { storage } from './storageUtils';
-import { resolveConflict, ConflictStrategy } from './syncConflictResolver';
+const { hasNetworkConnection, isWeakNetwork, getNetworkAdaptiveConfig } = require('./networkUtils');
+const { storage } = require('./storageUtils');
+const { resolveConflict, ConflictStrategy } = require('./syncConflictResolver');
 
 // 存储键
 const STORAGE_KEYS = {
@@ -15,7 +15,7 @@ const STORAGE_KEYS = {
 };
 
 // 同步操作类型
-export const SyncOperationType = {
+const SyncOperationType = {
   CREATE: 'create',
   UPDATE: 'update',
   DELETE: 'delete',
@@ -23,7 +23,7 @@ export const SyncOperationType = {
 };
 
 // 批量同步优先级
-export const SyncPriority = {
+const SyncPriority = {
   HIGH: 'high',
   NORMAL: 'normal',
   LOW: 'low'
@@ -33,7 +33,7 @@ export const SyncPriority = {
  * 批量同步管理器
  * 提供高效的批量数据同步功能
  */
-export default class BatchSyncManager {
+class BatchSyncManager {
   constructor(apiEndpoint = '/api/sync/batch') {
     this.apiEndpoint = apiEndpoint;
     this.syncQueue = [];
@@ -609,4 +609,34 @@ export default class BatchSyncManager {
     this.listeners = [];
     this.isProcessing = false;
   }
-} 
+}
+
+// 创建批量同步工具实例
+const batchSyncUtils = {
+  manager: new BatchSyncManager(),
+  SyncOperationType,
+  SyncPriority,
+  
+  addSyncTask(resourceType, operation, data, priority) {
+    return this.manager.addSyncTask(resourceType, operation, data, priority);
+  },
+  
+  getSyncStats() {
+    return this.manager.getSyncStats();
+  },
+  
+  forceSyncNow() {
+    return this.manager.forceSyncNow();
+  },
+  
+  addListener(listener) {
+    return this.manager.addListener(listener);
+  },
+  
+  clearTasks(status) {
+    return this.manager.clearTasksByStatus(status);
+  }
+};
+
+// 导出batchSyncUtils
+module.exports = batchSyncUtils; 

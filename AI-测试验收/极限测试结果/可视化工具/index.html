@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微信小程序云开发极限测试结果可视化</title>
+    <!-- 引入外部CSS库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css">
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #07c160;
+            margin-top: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* 组件样式 */
+        .panel {
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .panel-header {
+            background-color: #f8f8f8;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: bold;
+        }
+        .panel-body {
+            padding: 15px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        .stat-card {
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #07c160;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            color: #555;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* 图表容器 */
+        .chart-container {
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        /* 标签样式 */
+        .label {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .label-success {
+            background-color: #07c160;
+            color: white;
+        }
+        .label-warning {
+            background-color: #ffb822;
+            color: white;
+        }
+        .label-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #07c160;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #06a453;
+        }
+        
+        /* 响应式样式 */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 10px;
+            }
+            table {
+                font-size: 14px;
+            }
+            th, td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>微信小程序云开发极限测试结果可视化</h1>
+        
+        <!-- 测试总览 -->
+        <div class="panel">
+            <div class="panel-header">测试总览</div>
+            <div class="panel-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">测试总数</div>
+                        <div class="stat-value" id="total-tests">12</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">成功测试</div>
+                        <div class="stat-value" id="success-tests">9</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">失败测试</div>
+                        <div class="stat-value" id="failed-tests">3</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">成功率</div>
+                        <div class="stat-value" id="success-rate">75%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 批量操作测试结果 -->
+        <div class="panel">
+            <div class="panel-header">批量操作测试结果</div>
+            <div class="panel-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">云函数调用成功率</div>
+                        <div class="stat-value" id="cloud-function-success-rate">95%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">数据库查询成功率</div>
+                        <div class="stat-value" id="db-query-success-rate">100%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">文件上传成功率</div>
+                        <div class="stat-value" id="file-upload-success-rate">80%</div>
+                    </div>
+                </div>
+                
+                <h3>详细数据</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>操作类型</th>
+                            <th>总操作数</th>
+                            <th>成功数</th>
+                            <th>失败数</th>
+                            <th>平均耗时</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>云函数调用</td>
+                            <td id="cloud-function-total">20</td>
+                            <td id="cloud-function-success">19</td>
+                            <td id="cloud-function-failed">1</td>
+                            <td id="cloud-function-avg-time">150ms</td>
+                        </tr>
+                        <tr>
+                            <td>数据库查询</td>
+                            <td id="db-query-total">20</td>
+                            <td id="db-query-success">20</td>
+                            <td id="db-query-failed">0</td>
+                            <td id="db-query-avg-time">85ms</td>
+                        </tr>
+                        <tr>
+                            <td>文件上传</td>
+                            <td id="file-upload-total">20</td>
+                            <td id="file-upload-success">16</td>
+                            <td id="file-upload-failed">4</td>
+                            <td id="file-upload-avg-time">350ms</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- 响应时间对比图表 -->
+                <div class="chart-container" id="response-time-chart">
+                    <!-- 图表将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 数据完整性测试结果 -->
+        <div class="panel">
+            <div class="panel-header">数据完整性测试结果</div>
+            <div class="panel-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">超长字符串测试</div>
+                        <div class="stat-value" id="long-string-result">
+                            <span class="label label-success">通过</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">深度嵌套对象测试</div>
+                        <div class="stat-value" id="nested-object-result">
+                            <span class="label label-warning">部分通过</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">大量字段对象测试</div>
+                        <div class="stat-value" id="large-object-result">
+                            <span class="label label-success">通过</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">特殊字符测试</div>
+                        <div class="stat-value" id="special-char-result">
+                            <span class="label label-success">通过</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>详细数据</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>测试项目</th>
+                            <th>测试参数</th>
+                            <th>实际支持</th>
+                            <th>限制情况</th>
+                            <th>结果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>超长字符串</td>
+                            <td>5MB</td>
+                            <td id="long-string-actual">5MB</td>
+                            <td id="long-string-limit">无明显截断</td>
+                            <td><span class="label label-success">通过</span></td>
+                        </tr>
+                        <tr>
+                            <td>深度嵌套对象</td>
+                            <td>50层</td>
+                            <td id="nested-object-actual">32层</td>
+                            <td id="nested-object-limit">超过32层会自动截断</td>
+                            <td><span class="label label-warning">部分通过</span></td>
+                        </tr>
+                        <tr>
+                            <td>大量字段对象</td>
+                            <td>500个字段</td>
+                            <td id="large-object-actual">500个字段</td>
+                            <td id="large-object-limit">无明显限制</td>
+                            <td><span class="label label-success">通过</span></td>
+                        </tr>
+                        <tr>
+                            <td>特殊字符</td>
+                            <td>各类特殊字符</td>
+                            <td id="special-char-actual">完全支持</td>
+                            <td id="special-char-limit">无限制</td>
+                            <td><span class="label label-success">通过</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 错误处理测试结果 -->
+        <div class="panel">
+            <div class="panel-header">错误处理测试结果</div>
+            <div class="panel-body">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">无效输入处理</div>
+                        <div class="stat-value" id="invalid-input-result">
+                            <span class="label label-success">通过</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">边界条件测试</div>
+                        <div class="stat-value" id="edge-cases-result">
+                            <span class="label label-success">通过</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">并发错误测试</div>
+                        <div class="stat-value" id="concurrent-errors-result">
+                            <span class="label label-warning">部分通过</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">网络恢复测试</div>
+                        <div class="stat-value" id="network-recovery-result">
+                            <span class="label label-success">通过</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>详细数据</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>测试项目</th>
+                            <th>测试次数</th>
+                            <th>成功次数/比率</th>
+                            <th>关键指标</th>
+                            <th>结果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>无效输入处理</td>
+                            <td>10</td>
+                            <td id="invalid-input-success">10/10</td>
+                            <td id="invalid-input-key">正确拒绝率: 100%</td>
+                            <td><span class="label label-success">通过</span></td>
+                        </tr>
+                        <tr>
+                            <td>边界条件测试</td>
+                            <td>10</td>
+                            <td id="edge-cases-success">9/10</td>
+                            <td id="edge-cases-key">边界处理正确率: 90%</td>
+                            <td><span class="label label-success">通过</span></td>
+                        </tr>
+                        <tr>
+                            <td>并发错误测试</td>
+                            <td>10</td>
+                            <td id="concurrent-errors-success">7/10</td>
+                            <td id="concurrent-errors-key">冲突解决率: 70%</td>
+                            <td><span class="label label-warning">部分通过</span></td>
+                        </tr>
+                        <tr>
+                            <td>网络恢复测试</td>
+                            <td>10</td>
+                            <td id="network-recovery-success">9/10</td>
+                            <td id="network-recovery-key">恢复成功率: 90%</td>
+                            <td><span class="label label-success">通过</span></td>
+                        </tr>
+                        <tr>
+                            <td>权限错误测试</td>
+                            <td>5</td>
+                            <td id="permission-errors-success">5/5</td>
+                            <td id="permission-errors-key">全部正确拒绝并提示</td>
+                            <td><span class="label label-success">通过</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- 成功率对比图表 -->
+                <div class="chart-container" id="success-rate-chart">
+                    <!-- 图表将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 性能分析 -->
+        <div class="panel">
+            <div class="panel-header">性能分析</div>
+            <div class="panel-body">
+                <h3>资源使用情况</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">平均内存使用</div>
+                        <div class="stat-value" id="avg-memory-usage">45MB</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">峰值内存使用</div>
+                        <div class="stat-value" id="peak-memory-usage">68MB</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">平均响应时间</div>
+                        <div class="stat-value" id="avg-response-time">135ms</div>
+                    </div>
+                </div>
+                
+                <h3>资源消耗趋势</h3>
+                <div class="chart-container" id="memory-usage-chart">
+                    <!-- 图表将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 结论与建议 -->
+        <div class="panel">
+            <div class="panel-header">结论与建议</div>
+            <div class="panel-body">
+                <h3>主要发现</h3>
+                <ul>
+                    <li>批量操作测试中，文件上传成功率较低(80%)，需优化上传逻辑</li>
+                    <li>数据完整性测试中，深度嵌套对象有32层的限制，超过会自动截断</li>
+                    <li>并发错误处理能力需要提升，当前冲突解决率仅为70%</li>
+                </ul>
+                
+                <h3>优化建议</h3>
+                <ol>
+                    <li><strong>批量文件上传优化</strong>：实现断点续传和失败重试机制</li>
+                    <li><strong>数据结构设计</strong>：避免超过30层的深度嵌套，拍平数据结构</li>
+                    <li><strong>并发控制</strong>：增加乐观锁或悲观锁机制，提高并发冲突解决率</li>
+                    <li><strong>性能提升</strong>：实现数据分页加载和缓存机制，减少请求量</li>
+                    <li><strong>错误恢复</strong>：增强网络错误自动恢复机制，提高用户体验</li>
+                </ol>
+                
+                <h3>总体评估</h3>
+                <p>
+                    微信小程序云开发在极限条件下表现良好，大部分测试均能通过。主要问题集中在文件上传稳定性、
+                    数据嵌套深度限制以及并发错误处理三个方面。通过针对性优化，系统稳定性和性能可进一步提升。
+                </p>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <div style="text-align: center; margin-top: 30px; color: #999; font-size: 12px;">
+            微信小程序云开发极限测试结果 © 2025
+        </div>
+    </div>
+    
+    <!-- 引入JavaScript文件 -->
+    <script src="data.js"></script>
+    <script src="chart.js"></script>
+</body>
+</html> 

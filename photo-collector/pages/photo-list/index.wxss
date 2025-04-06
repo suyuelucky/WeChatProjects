@@ -1,0 +1,208 @@
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+/* 头部 */
+.header {
+  padding: 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 加载中显示 */
+.loading-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #07c160;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 照片列表 */
+.photo-list {
+  flex: 1;
+  padding: 10px;
+}
+
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.photo-item {
+  width: calc(50% - 10px);
+  margin: 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.photo-thumb {
+  width: 100%;
+  height: 160px;
+  background-color: #eee;
+}
+
+.photo-info {
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.photo-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.photo-status {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background-color: #f0f0f0;
+  color: #999;
+}
+
+.photo-status.uploaded {
+  background-color: #e6f7ee;
+  color: #07c160;
+}
+
+/* 空列表 */
+.empty-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.empty-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.empty-tip {
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+}
+
+/* 底部操作栏 */
+.action-bar {
+  height: 60px;
+  display: flex;
+  padding: 0 15px;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+}
+
+.action-btn {
+  flex: 1;
+  height: 40px;
+  line-height: 40px;
+  margin: 10px 5px;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.back-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.camera-btn {
+  background-color: #07c160;
+  color: #fff;
+}
+
+/* 操作菜单 */
+.action-sheet-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+}
+
+.action-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  z-index: 901;
+}
+
+.action-sheet-title {
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+  padding: 15px 0;
+}
+
+.action-sheet-content {
+  border-top: 1px solid #eee;
+}
+
+.action-item {
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.action-cancel {
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  font-size: 16px;
+  color: #333;
+  margin-top: 8px;
+  border-top: 1px solid #eee;
+} 

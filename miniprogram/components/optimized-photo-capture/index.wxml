@@ -1,0 +1,142 @@
+<!-- 优化的照片采集组件 -->
+<view class="optimized-photo-capture">
+  <!-- 相机区域 -->
+  <view class="camera-container {{showCamera ? 'active' : ''}}">
+    <camera 
+      wx:if="{{showCamera}}"
+      device-position="{{cameraPosition}}"
+      flash="{{flash}}"
+      class="camera"
+      binderror="onCameraError">
+      
+      <!-- 相机控制区 -->
+      <cover-view class="camera-controls">
+        <!-- 拍照按钮 -->
+        <cover-view class="shutter-button" bindtap="takePhoto" wx:if="{{status === 'idle'}}">
+          <cover-view class="shutter-inner"></cover-view>
+        </cover-view>
+        
+        <!-- 正在拍照提示 -->
+        <cover-view class="taking-hint" wx:if="{{status === 'taking'}}">
+          <cover-view class="loading-circle"></cover-view>
+          <cover-view class="hint-text">拍照中...</cover-view>
+        </cover-view>
+        
+        <!-- 处理中提示 -->
+        <cover-view class="processing-hint" wx:if="{{status === 'processing'}}">
+          <cover-view class="progress-bar">
+            <cover-view class="progress-inner" style="width: {{processingProgress}}%;"></cover-view>
+          </cover-view>
+          <cover-view class="hint-text">处理中...</cover-view>
+        </cover-view>
+        
+        <!-- 相机操作按钮 -->
+        <cover-view class="camera-action-buttons">
+          <!-- 切换前后摄像头 -->
+          <cover-view class="action-button switch-camera" bindtap="switchCamera">
+            <cover-image class="action-icon" src="/images/switch-camera.png"></cover-image>
+          </cover-view>
+          
+          <!-- 从相册选择 -->
+          <cover-view class="action-button choose-album" bindtap="chooseFromAlbum">
+            <cover-image class="action-icon" src="/images/album.png"></cover-image>
+          </cover-view>
+          
+          <!-- 关闭相机 -->
+          <cover-view class="action-button close-camera" bindtap="hideCamera">
+            <cover-image class="action-icon" src="/images/close.png"></cover-image>
+          </cover-view>
+        </cover-view>
+      </cover-view>
+      
+      <!-- 内存警告提示 -->
+      <cover-view class="memory-warning" wx:if="{{memoryWarningLevel >= 15}}">
+        <cover-image class="warning-icon" src="/images/warning.png"></cover-image>
+        <cover-view class="warning-text">内存不足，已自动释放资源</cover-view>
+      </cover-view>
+      
+      <!-- 网络状态提示 -->
+      <cover-view class="network-status" wx:if="{{showNetworkStatus && (networkType === 'none' || networkType === '2g')}}">
+        <cover-image class="network-icon" src="/images/network-weak.png"></cover-image>
+        <cover-view class="network-text">{{networkType === 'none' ? '无网络连接' : '网络信号弱'}}</cover-view>
+      </cover-view>
+      
+      <!-- 相机错误提示 -->
+      <cover-view class="camera-error" wx:if="{{cameraError}}">
+        <cover-image class="error-icon" src="/images/error.png"></cover-image>
+        <cover-view class="error-text">{{cameraError}}</cover-view>
+      </cover-view>
+    </camera>
+  </view>
+  
+  <!-- 照片预览区 -->
+  <view class="photo-preview-container" wx:if="{{photoList.length > 0}}">
+    <view class="preview-header">
+      <text class="preview-title">已拍摄照片 ({{photoList.length}}/{{maxPhotos}})</text>
+      <view class="preview-actions">
+        <view class="action-clear" bindtap="clearPhotos" wx:if="{{showDelete}}">清空</view>
+        <view class="action-upload" bindtap="uploadPhotos" wx:if="{{uploadUrl && status !== 'uploading'}}">上传</view>
+      </view>
+    </view>
+    
+    <!-- 上传进度条 -->
+    <view class="upload-progress" wx:if="{{status === 'uploading'}}">
+      <view class="progress-inner" style="width: {{uploadProgress}}%;"></view>
+      <text class="progress-text">上传中... {{uploadProgress}}%</text>
+    </view>
+    
+    <!-- 照片列表 -->
+    <scroll-view class="photo-list" scroll-x enable-flex>
+      <view 
+        class="photo-item {{item.uploadProgress && item.uploadProgress < 100 ? 'uploading' : ''}} {{item.uploaded ? 'uploaded' : ''}}"
+        wx:for="{{photoList}}" 
+        wx:key="timestamp"
+        data-index="{{index}}"
+        bindtap="{{previewMode === 'tap' ? 'previewPhoto' : ''}}"
+        bindlongpress="{{previewMode === 'longpress' ? 'previewPhoto' : ''}}"
+      >
+        <image class="photo-image" src="{{item.path}}" mode="aspectFill"></image>
+        
+        <!-- 删除按钮 -->
+        <view 
+          class="delete-button" 
+          wx:if="{{showDelete && !item.uploadProgress}}" 
+          catchlongpress="{{false}}"
+          catchtap="deletePhoto" 
+          data-index="{{index}}"
+        >
+          <image class="delete-icon" src="/images/delete.png"></image>
+        </view>
+        
+        <!-- 上传状态指示器 -->
+        <view class="upload-status" wx:if="{{item.uploadProgress && item.uploadProgress < 100}}">
+          <view class="upload-progress-circle">
+            <view class="progress-value">{{item.uploadProgress}}%</view>
+          </view>
+        </view>
+        
+        <!-- 上传成功指示器 -->
+        <view class="upload-success" wx:if="{{item.uploaded}}">
+          <image class="success-icon" src="/images/success.png"></image>
+        </view>
+        
+        <!-- 上传失败指示器 -->
+        <view class="upload-error" wx:if="{{item.uploadError}}">
+          <image class="error-icon" src="/images/error.png"></image>
+        </view>
+      </view>
+      
+      <!-- 添加按钮 -->
+      <view class="add-button" wx:if="{{showAdd && photoList.length < maxPhotos}}" bindtap="showCamera">
+        <image class="add-icon" src="/images/add-photo.png"></image>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!showCamera && photoList.length === 0}}">
+    <image class="empty-icon" src="/images/camera-large.png"></image>
+    <text class="empty-text">点击拍照按钮开始采集照片</text>
+    <view class="start-button" bindtap="showCamera">开始拍照</view>
+  </view>
+</view> 

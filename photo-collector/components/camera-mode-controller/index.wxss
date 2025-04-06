@@ -1,0 +1,202 @@
+/* 相机模式控制器样式 */
+.camera-mode-controller {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 模式选择器 */
+.mode-selector {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  padding: 10px 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.mode-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 15px;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.mode-item.active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.mode-item.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.mode-icon {
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 5px;
+}
+
+.mode-icon.camera {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAxNWMxLjY2IDAgMy0xLjM0IDMtM3MtMS4zNC0zLTMtMy0zIDEuMzQtMyAzIDEuMzQgMyAzIDN6bTktOWgtMy40NkwxNS40NSA0aC00LjlMOC4wNSA2SDR2MTJoMTZ2LTEyem0tOSAxMGMtMi43NiAwLTUtMi4yNC01LTVzMi4yNC01IDUtNSA1IDIuMjQgNSA1LTIuMjQgNS01IDV6Ii8+PC9zdmc+');
+}
+
+.mode-icon.continuous {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0yMCA0aC0zLjJMMTUgMmgtNkw3LjIgNEg0YTIgMiAwIDAgMC0yIDJ2MTJhMiAyIDAgMCAwIDIgMmgxNmEyIDIgMCAwIDAgMi0yVjZhMiAyIDAgMCAwLTItMnptLTgtM2MzLjg3IDAgNyAzLjEzIDcgN3MtMy4xMyA3LTcgNy03LTMuMTMtNy03IDMuMTMtNyA3LTd6bTAgMTJjLTIuNzYgMC01LTIuMjQtNS01czIuMjQtNSA1LTUgNSAyLjI0IDUgNS0yLjI0IDUtNSA1eiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTEiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMCIgY3k9IjEzIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQiIGN5PSIxMyIgcj0iMiIvPjwvc3ZnPg==');
+}
+
+.mode-icon.timer {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xNSAxYTEgMSAwIDAgMC0xIDF2MkgxMFYyYTEgMSAwIDEgMC0yIDB2MkgzYTEgMSAwIDAgMC0xIDF2NC41YTEgMSAwIDAgMCAxIDFoMThhMSAxIDAgMCAwIDEtMVY1YTEgMSAwIDAgMC0xLTFoLTVWMmExIDEgMCAwIDAtMS0xem02IDExLjVBOC41IDguNSAwIDEgMS0xIDEyYTguNSA4LjUgMCAwIDEgOC41LTguNXptMCAxNWMzLjU0IDAgNi43MS0xLjgyIDguNS00LjVhMTIgMTIgMCAwIDAtNC0xLjM4VjE4YTIgMiAwIDAgMS0yIDJoLTVhMiAyIDAgMCAxLTItMnYtMy44OEExMiAxMiAwIDAgMCAxMi41IDI3LjV6Ii8+PC9zdmc+');
+}
+
+.mode-name {
+  font-size: 12px;
+  color: #fff;
+}
+
+/* 模式设置面板 */
+.mode-settings {
+  width: 90%;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 15px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.mode-settings.show {
+  max-height: 200px;
+  opacity: 1;
+}
+
+.settings-panel {
+  width: 100%;
+}
+
+.setting-title {
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.setting-label {
+  width: 100px;
+  font-size: 12px;
+  color: #fff;
+}
+
+.setting-slider {
+  flex: 1;
+}
+
+.setting-unit {
+  width: 30px;
+  font-size: 12px;
+  color: #fff;
+  text-align: right;
+}
+
+/* 拍照按钮 */
+.capture-container {
+  margin-top: 15px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.capture-button {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 4px solid rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transition: all 0.2s;
+}
+
+.capture-button:active {
+  transform: scale(0.95);
+  background-color: #e0e0e0;
+}
+
+.capture-button.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 连拍指示器 */
+.continuous-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #ff5722;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* 定时器指示器 */
+.timer-indicator {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* 停止按钮 */
+.stop-button-container {
+  margin-top: 20px;
+}
+
+.stop-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f44336;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.stop-icon {
+  width: 16px;
+  height: 16px;
+  background-color: #fff;
+  border-radius: 2px;
+} 

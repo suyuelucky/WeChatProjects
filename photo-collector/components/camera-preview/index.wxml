@@ -1,0 +1,42 @@
+<view class="camera-container">
+  <!-- 相机正常加载时显示 -->
+  <block wx:if="{{cameraAvailable}}">
+    <camera 
+      class="camera" 
+      device-position="{{devicePosition}}" 
+      flash="{{flash}}"
+      binderror="handleCameraError">
+      
+      <!-- 相机控制按钮 -->
+      <cover-view class="controls">
+        <!-- 闪光灯按钮 -->
+        <cover-view class="control-btn flash-btn" bindtap="switchFlash">
+          <cover-image class="control-icon" src="/images/flash-{{flash}}.png"></cover-image>
+          <cover-view class="control-text">{{flash === 'auto' ? '自动' : (flash === 'on' ? '开启' : '关闭')}}</cover-view>
+        </cover-view>
+        
+        <!-- 切换相机按钮 -->
+        <cover-view class="control-btn switch-btn" bindtap="switchCamera">
+          <cover-image class="control-icon" src="/images/switch-camera.png"></cover-image>
+          <cover-view class="control-text">切换</cover-view>
+        </cover-view>
+      </cover-view>
+      
+      <!-- 拍照按钮区域 -->
+      <cover-view class="capture-area">
+        <cover-view class="capture-btn" bindtap="takePhoto">
+          <cover-view class="capture-btn-inner"></cover-view>
+        </cover-view>
+      </cover-view>
+    </camera>
+  </block>
+  
+  <!-- 相机不可用时显示 -->
+  <block wx:else>
+    <view class="error-container">
+      <view class="error-icon">!</view>
+      <view class="error-message">{{errorMsg || '相机不可用'}}</view>
+      <view class="error-tip">请检查相机权限是否开启</view>
+    </view>
+  </block>
+</view> 

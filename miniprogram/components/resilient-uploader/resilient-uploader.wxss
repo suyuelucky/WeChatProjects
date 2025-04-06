@@ -1,0 +1,484 @@
+/* 弹性上传组件样式 */
+.resilient-uploader {
+  padding: 16rpx;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+/* 网络提示样式 */
+.network-tip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.network-tip.show {
+  transform: translateY(0);
+}
+
+.network-tip-content {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 12rpx 24rpx;
+  border-radius: 0 0 10rpx 10rpx;
+  text-align: center;
+  margin: 0 24rpx;
+}
+
+.network-tip-text {
+  font-size: 28rpx;
+}
+
+/* 操作按钮 */
+.action-bar {
+  display: flex;
+  padding: 20rpx 0;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 20rpx;
+}
+
+.action-btn {
+  font-size: 28rpx;
+  margin: 10rpx;
+  flex: 1;
+  min-width: 180rpx;
+  text-align: center;
+}
+
+.action-btn.primary {
+  background-color: #007aff;
+  color: white;
+}
+
+.action-btn.secondary {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* 网络状态 */
+.status-bar {
+  display: flex;
+  background-color: #fff;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.network-status, .network-signal {
+  flex: 1;
+}
+
+.status-bar .label {
+  color: #666;
+  font-size: 26rpx;
+  margin-right: 8rpx;
+}
+
+.status-bar .value {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.status-bar .value.success {
+  color: #07c160;
+}
+
+.status-bar .value.warning {
+  color: #fa8c16;
+}
+
+.status-bar .value.error {
+  color: #f5222d;
+}
+
+/* 照片区域 */
+.photo-section {
+  background-color: #fff;
+  border-radius: 8rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.section-title {
+  padding: 16rpx 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-actions {
+  display: flex;
+}
+
+.section-btn {
+  font-size: 24rpx;
+  padding: 2rpx 16rpx;
+  line-height: 1.5;
+  background-color: #f0f0f0;
+  color: #333;
+  margin: 0;
+  min-height: 0;
+}
+
+.photo-list {
+  padding: 16rpx;
+}
+
+.photo-item {
+  display: flex;
+  margin-bottom: 24rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.photo-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* 照片预览 */
+.photo-preview {
+  width: 160rpx;
+  height: 160rpx;
+  margin-right: 20rpx;
+  position: relative;
+  border-radius: 8rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-status {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 22rpx;
+  padding: 4rpx 0;
+  text-align: center;
+}
+
+.photo-status.pending {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.photo-status.uploading {
+  background-color: rgba(0, 122, 255, 0.7);
+}
+
+.photo-status.failed {
+  background-color: rgba(245, 34, 45, 0.7);
+}
+
+.photo-status.completed {
+  background-color: rgba(7, 193, 96, 0.7);
+}
+
+/* 照片信息 */
+.photo-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.photo-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photo-size {
+  font-size: 24rpx;
+  color: #888;
+  margin-bottom: 8rpx;
+}
+
+.photo-progress {
+  margin: 10rpx 0;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #666;
+  margin-left: 4rpx;
+}
+
+.photo-error {
+  font-size: 24rpx;
+  color: #f5222d;
+  margin: 8rpx 0;
+  word-break: break-all;
+}
+
+.photo-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10rpx;
+}
+
+.photo-btn {
+  font-size: 24rpx;
+  padding: 2rpx 16rpx;
+  line-height: 1.5;
+  margin: 0;
+  min-height: 0;
+}
+
+.photo-btn.retry {
+  background-color: #1890ff;
+  color: white;
+  margin-left: 10rpx;
+}
+
+.photo-btn.cancel {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 100rpx 32rpx;
+  color: #999;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  margin-bottom: 16rpx;
+}
+
+.empty-subtext {
+  font-size: 26rpx;
+  color: #bbb;
+}
+
+/* 弱网络环境下的照片上传组件样式 */
+.resilient-uploader {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16rpx;
+}
+
+/* 网络状态提示 */
+.network-tip {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  background-color: #fff8e6;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1rpx solid #ffeac2;
+}
+
+.network-tip.show {
+  opacity: 1;
+  height: auto;
+  padding: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.network-tip-icon {
+  margin-right: 10rpx;
+  flex-shrink: 0;
+}
+
+.network-tip-text {
+  font-size: 24rpx;
+  color: #f86e21;
+  flex: 1;
+}
+
+/* 上传控制区 */
+.upload-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.control-btn {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #07c160;
+  color: #fff;
+  font-size: 28rpx;
+  border-radius: 8rpx;
+  margin: 0 10rpx;
+}
+
+.choose-btn {
+  background-color: #1989fa;
+}
+
+.upload-btn {
+  background-color: #07c160;
+}
+
+.control-btn.disabled {
+  background-color: #dcdcdc;
+  color: #999;
+}
+
+/* 照片列表通用样式 */
+.photo-list-title {
+  font-size: 28rpx;
+  color: #333;
+  margin: 20rpx 0 10rpx 0;
+  padding-bottom: 6rpx;
+  border-bottom: 1rpx solid #eee;
+  display: flex;
+  justify-content: space-between;
+}
+
+.retry-all, .clear-all {
+  font-size: 24rpx;
+  color: #1989fa;
+}
+
+.photo-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -8rpx;
+}
+
+.photo-item {
+  width: 220rpx;
+  height: 220rpx;
+  margin: 8rpx;
+  position: relative;
+  border-radius: 6rpx;
+  overflow: hidden;
+  background-color: #f8f8f8;
+}
+
+.photo-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-status {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 22rpx;
+  padding: 4rpx 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.photo-status progress {
+  width: 80%;
+  margin-bottom: 4rpx;
+}
+
+.photo-status.failed {
+  background-color: rgba(234, 43, 43, 0.7);
+}
+
+.photo-status.success {
+  background-color: rgba(7, 193, 96, 0.7);
+}
+
+.photo-cancel {
+  position: absolute;
+  top: 6rpx;
+  right: 6rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: rgba(0,0,0,0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-action {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0,0,0,0.7);
+  border-radius: 6rpx;
+  padding: 6rpx 16rpx;
+}
+
+.retry-btn {
+  color: #fff;
+  font-size: 24rpx;
+}
+
+/* 网络状态控制 */
+.network-controls {
+  margin-top: 30rpx;
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
+  text-align: center;
+}
+
+.network-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
+  font-size: 26rpx;
+}
+
+.network-status.offline {
+  color: #fa5151;
+}
+
+.network-status icon {
+  margin-right: 8rpx;
+}
+
+.network-action {
+  display: inline-block;
+  padding: 10rpx 30rpx;
+  background-color: #1989fa;
+  color: #fff;
+  border-radius: 6rpx;
+  font-size: 26rpx;
+} 

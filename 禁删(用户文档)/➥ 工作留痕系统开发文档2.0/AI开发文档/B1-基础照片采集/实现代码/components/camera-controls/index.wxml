@@ -1,0 +1,76 @@
+<view class="camera-controls">
+  <!-- 顶部控制栏 -->
+  <view class="control-top">
+    <view class="control-btn back-btn" bindtap="handleCancel">
+      <text class="btn-icon">×</text>
+    </view>
+    
+    <view class="control-options">
+      <view class="flash-option control-btn {{!isReady ? 'disabled' : ''}}" bindtap="handleSwitchFlash">
+        <view class="flash-icon flash-{{flash}}"></view>
+        <text class="option-text">{{flashModeNames[flash]}}</text>
+      </view>
+      
+      <view class="settings-btn control-btn" bindtap="toggleSettings">
+        <view class="settings-icon"></view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 中间区域为空，用于显示相机预览 -->
+  
+  <!-- 底部控制栏 -->
+  <view class="control-bottom">
+    <view class="side-btn"></view>
+    
+    <view class="shutter-btn {{(!isReady || isTaking) ? 'disabled' : ''}}" bindtap="handleTakePhoto">
+      <view class="shutter-btn-inner"></view>
+    </view>
+    
+    <view class="side-btn switch-camera-btn {{!isReady ? 'disabled' : ''}}" bindtap="handleSwitchCamera">
+      <view class="switch-camera-icon"></view>
+    </view>
+  </view>
+  
+  <!-- 设置面板 -->
+  <view class="settings-panel {{showSettings ? 'show' : ''}}" catchtap="preventBubble">
+    <view class="settings-title">相机设置</view>
+    
+    <view class="settings-section">
+      <view class="section-title">闪光灯</view>
+      <view class="settings-options">
+        <view class="option-item {{flash === 'auto' ? 'active' : ''}}" data-mode="auto" bindtap="setFlashMode">
+          <view class="option-icon flash-auto"></view>
+          <text>自动</text>
+        </view>
+        <view class="option-item {{flash === 'on' ? 'active' : ''}}" data-mode="on" bindtap="setFlashMode">
+          <view class="option-icon flash-on"></view>
+          <text>开启</text>
+        </view>
+        <view class="option-item {{flash === 'off' ? 'active' : ''}}" data-mode="off" bindtap="setFlashMode">
+          <view class="option-icon flash-off"></view>
+          <text>关闭</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="settings-section">
+      <view class="section-title">相机位置</view>
+      <view class="settings-options">
+        <view class="option-item {{devicePosition === 'back' ? 'active' : ''}}" data-position="back" bindtap="handleSwitchCamera">
+          <view class="option-icon camera-back"></view>
+          <text>后置</text>
+        </view>
+        <view class="option-item {{devicePosition === 'front' ? 'active' : ''}}" data-position="front" bindtap="handleSwitchCamera">
+          <view class="option-icon camera-front"></view>
+          <text>前置</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="close-settings" bindtap="toggleSettings">关闭</view>
+  </view>
+  
+  <!-- 半透明遮罩层，用于设置面板的背景 -->
+  <view class="mask {{showSettings ? 'show' : ''}}" bindtap="toggleSettings"></view>
+</view> 

@@ -16,7 +16,7 @@
  * @param {Number} options.threshold - 出现比例阈值
  * @returns {Function} 销毁观察者的函数
  */
-export function lazyLoadImages(options = {}) {
+function lazyLoadImages(options = {}) {
   const {
     selector = '.lazy-image',
     component,
@@ -72,7 +72,7 @@ export function lazyLoadImages(options = {}) {
  * @param {String} options.dataKey - 组件数据中标识是否加载的键名
  * @returns {Function} 销毁观察者的函数
  */
-export function lazyLoadComponent(options = {}) {
+function lazyLoadComponent(options = {}) {
   const {
     selector = '.lazy-component',
     component,
@@ -120,7 +120,7 @@ export function lazyLoadComponent(options = {}) {
  * @param {Array} sections - 需要懒加载的数据段配置
  * @returns {Function} 销毁所有观察者的函数
  */
-export function lazyLoadPageSections(page, sections = []) {
+function lazyLoadPageSections(page, sections = []) {
   if (!page) {
     console.warn('lazyLoadPageSections: page is required');
     return () => {};
@@ -168,4 +168,14 @@ export function lazyLoadPageSections(page, sections = []) {
       }
     });
   };
-} 
+}
+
+// 懒加载工具集合
+const lazyLoad = {
+  lazyLoadImages,
+  lazyLoadComponent,
+  lazyLoadPageSections
+};
+
+// 导出lazyLoad工具集
+module.exports = lazyLoad; 

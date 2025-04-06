@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "照片采集",
+  "navigationBarBackgroundColor": "#000000",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#000000",
+  "usingComponents": {
+    "camera-manager": "../../components/camera-manager/camera-manager"
+  }
+} 

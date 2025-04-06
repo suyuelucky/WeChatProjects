@@ -1,0 +1,65 @@
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">{{modeTitle || '照片采集'}}</text>
+    <view class="location-info" wx:if="{{locationName}}">
+      <text class="location-name">{{locationName}}</text>
+      <text class="photo-count">(已拍{{photoCounter}}张)</text>
+    </view>
+  </view>
+  
+  <!-- 相机模式下显示相机界面 -->
+  <block wx:if="{{!showPreview}}">
+    <view class="camera-wrapper">
+      <!-- 相机预览组件 -->
+      <camera-preview 
+        devicePosition="{{devicePosition}}"
+        flash="{{flash}}"
+        resolution="{{resolution}}"
+        isReady="{{isReady}}"
+        isTaking="{{isTaking}}"
+        hasError="{{hasError}}"
+        errorMsg="{{errorMsg}}"
+        bind:ready="handleCameraReady"
+        bind:error="handleCameraError">
+      </camera-preview>
+      
+      <!-- 相机控制组件 -->
+      <camera-controls
+        devicePosition="{{devicePosition}}"
+        flash="{{flash}}"
+        isTaking="{{isTaking}}"
+        isReady="{{isReady}}"
+        supportedFlash="{{supportedFlash}}"
+        bind:takePhoto="handleTakePhoto"
+        bind:switchCamera="handleSwitchCamera"
+        bind:switchFlash="handleSwitchFlash"
+        bind:cancel="handleBack">
+      </camera-controls>
+      
+      <!-- 照片列表入口按钮 -->
+      <view class="photo-list-btn" bindtap="viewPhotoList">
+        <text class="list-icon">{{photoCounter}}</text>
+      </view>
+    </view>
+  </block>
+  
+  <!-- 照片预览模式 -->
+  <block wx:if="{{showPreview}}">
+    <view class="preview-wrapper">
+      <image class="preview-image" src="{{tempImagePath}}" mode="aspectFit"></image>
+      
+      <view class="preview-actions">
+        <view class="action-btn discard-btn" bindtap="handleRetakePhoto">
+          <view class="btn-icon discard-icon"></view>
+          <text>重拍</text>
+        </view>
+        
+        <view class="action-btn save-btn" bindtap="handleSavePhoto">
+          <view class="btn-icon save-icon"></view>
+          <text>保存</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view> 

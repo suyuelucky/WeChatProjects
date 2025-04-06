@@ -1,0 +1,244 @@
+/* miniprogram/pages/trace/index/index.wxss */
+.container {
+  padding: 20rpx;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.refresh {
+  font-size: 28rpx;
+  color: #576b95;
+  padding: 10rpx 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin: 30rpx 0 20rpx;
+}
+
+/* 留痕类型 */
+.trace-types {
+  margin: 20rpx 0;
+}
+
+.type-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10rpx;
+}
+
+.type-item {
+  width: calc(50% - 20rpx);
+  margin: 10rpx;
+  background-color: #fff;
+  border-radius: 8rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.type-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 10rpx;
+  background-color: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #576b95;
+  font-size: 40rpx;
+}
+
+/* 图标类型 */
+.type-icon.document::before {
+  content: "📄";
+}
+.type-icon.flag::before {
+  content: "🚩";
+}
+.type-icon.clock::before {
+  content: "⏱️";
+}
+.type-icon.folder::before {
+  content: "📁";
+}
+
+.type-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.type-desc {
+  font-size: 24rpx;
+  color: #888;
+  line-height: 1.4;
+}
+
+/* 留痕记录列表 */
+.trace-list {
+  margin: 30rpx 0;
+}
+
+.loading, .error, .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 0;
+}
+
+.loading-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 20rpx;
+  border: 4rpx solid #eee;
+  border-top-color: #576b95;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text, .error-text, .empty-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.error-retry {
+  margin-top: 20rpx;
+  color: #576b95;
+  font-size: 28rpx;
+  padding: 10rpx 30rpx;
+  border: 1rpx solid #576b95;
+  border-radius: 30rpx;
+}
+
+.empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  background-color: #f5f5f5;
+  border-radius: 60rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 10rpx;
+}
+
+/* 记录项 */
+.trace-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  margin-bottom: 20rpx;
+  background-color: #fff;
+  border-radius: 8rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.trace-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.trace-icon.article {
+  background-color: #3498db;
+}
+.trace-icon.article::before {
+  content: "📄";
+}
+
+.trace-icon.story {
+  background-color: #e74c3c;
+}
+.trace-icon.story::before {
+  content: "🚩";
+}
+
+.trace-icon.daily {
+  background-color: #2ecc71;
+}
+.trace-icon.daily::before {
+  content: "⏱️";
+}
+
+.trace-icon.project {
+  background-color: #9b59b6;
+}
+.trace-icon.project::before {
+  content: "📁";
+}
+
+.trace-info {
+  flex: 1;
+}
+
+.trace-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.trace-type {
+  font-size: 24rpx;
+  color: #576b95;
+  background: rgba(87, 107, 149, 0.1);
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  margin-bottom: 10rpx;
+}
+
+.trace-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.trace-status {
+  width: 60rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.status-icon {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+}
+
+.status-icon.synced {
+  background-color: #07c160;
+}
+
+.status-icon.local {
+  background-color: #ff9800;
+} 

@@ -1,0 +1,71 @@
+<!-- 照片采集页面 -->
+<view class="container">
+  <!-- 照片拍摄区域 -->
+  <view class="camera-section {{isPreviewMode ? 'hidden' : ''}}">
+    <camera-manager 
+      id="cameraManager"
+      initial-mode="{{initialMode}}"
+      resolution="{{resolution}}"
+      show-controls="{{true}}"
+      timer-delay="{{timerDelay}}"
+      bind:photoTaken="onPhotoTaken"
+      bind:permissionDenied="onPermissionDenied"
+      bind:cameraError="onCameraError"
+    />
+  </view>
+
+  <!-- 照片预览区域 -->
+  <view class="preview-section {{!isPreviewMode ? 'hidden' : ''}}">
+    <view class="preview-header">
+      <view class="header-title">照片预览 ({{currentIndex + 1}}/{{photoList.length}})</view>
+      <view class="close-btn" bindtap="closePreview">×</view>
+    </view>
+
+    <swiper 
+      class="preview-swiper" 
+      current="{{currentIndex}}"
+      bindchange="onSwiperChange">
+      <swiper-item wx:for="{{photoList}}" wx:key="path">
+        <image 
+          src="{{item.path}}" 
+          mode="aspectFit" 
+          class="preview-image"
+          bindtap="toggleControls"
+        />
+      </swiper-item>
+    </swiper>
+
+    <view class="preview-controls {{showPreviewControls ? '' : 'hidden'}}">
+      <view class="preview-action delete" bindtap="deleteCurrentPhoto">
+        <text>删除</text>
+      </view>
+      <view class="preview-action save" bindtap="savePhoto">
+        <text>保存</text>
+      </view>
+      <view class="preview-action use" bindtap="usePhoto">
+        <text>使用</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar {{isPreviewMode ? 'hidden' : ''}}">
+    <view class="action-btn preview-btn" bindtap="openPreview">
+      <text>预览</text>
+      <text class="count">{{photoList.length}}</text>
+    </view>
+    
+    <view class="action-btn done-btn" bindtap="completeCapture">
+      <text>完成</text>
+    </view>
+  </view>
+
+  <!-- 加载指示器 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-mask"></view>
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <view class="loading-text">{{loadingText}}</view>
+    </view>
+  </view>
+</view> 

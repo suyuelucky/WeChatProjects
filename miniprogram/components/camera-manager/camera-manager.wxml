@@ -1,0 +1,84 @@
+<!-- 相机管理组件模板 -->
+<view class="camera-container">
+  <!-- 未获得相机权限时显示 -->
+  <view class="permission-denied" wx:if="{{!hasPermission}}">
+    <view class="permission-icon">
+      <text class="icon-camera"></text>
+    </view>
+    <view class="permission-text">无法访问相机</view>
+    <view class="permission-tips">请在设置中允许小程序使用相机</view>
+    <button class="permission-button" open-type="openSetting">前往设置</button>
+  </view>
+  
+  <!-- 相机视图 -->
+  <camera 
+    wx:else
+    class="camera-view"
+    device-position="{{devicePosition}}"
+    flash="{{flashMode}}"
+    binderror="handleCameraError">
+    
+    <!-- 倒计时显示 -->
+    <view class="countdown-container" wx:if="{{isCountingDown}}">
+      <view class="countdown-number">{{countdownNumber}}</view>
+    </view>
+    
+    <!-- 连拍计数器 -->
+    <view class="continuous-counter" wx:if="{{isContinuous}}">
+      <view class="counter-box">{{continuousCount}}</view>
+    </view>
+    
+    <!-- 上方控制区 -->
+    <view class="top-controls" wx:if="{{showControls}}">
+      <!-- 闪光灯切换 -->
+      <view class="control-button flash-button" bindtap="switchFlash">
+        <view class="icon-flash {{flashMode}}"></view>
+        <view class="button-text">{{
+          flashMode === 'auto' ? '自动' : 
+          flashMode === 'on' ? '开启' : '关闭'
+        }}</view>
+      </view>
+      
+      <!-- 模式切换区 -->
+      <view class="mode-selector">
+        <view 
+          class="mode-option {{currentMode === 'normal' ? 'active' : ''}}" 
+          data-mode="normal" 
+          bindtap="switchMode">
+          <view class="mode-icon icon-normal"></view>
+          <view class="mode-text">普通</view>
+        </view>
+        <view 
+          class="mode-option {{currentMode === 'continuous' ? 'active' : ''}}" 
+          data-mode="continuous" 
+          bindtap="switchMode">
+          <view class="mode-icon icon-continuous"></view>
+          <view class="mode-text">连拍</view>
+        </view>
+        <view 
+          class="mode-option {{currentMode === 'timer' ? 'active' : ''}}" 
+          data-mode="timer" 
+          bindtap="switchMode">
+          <view class="mode-icon icon-timer"></view>
+          <view class="mode-text">定时</view>
+        </view>
+      </view>
+      
+      <!-- 前后摄像头切换 -->
+      <view class="control-button camera-switch" bindtap="switchCamera">
+        <view class="icon-switch"></view>
+        <view class="button-text">切换</view>
+      </view>
+    </view>
+    
+    <!-- 底部控制区 -->
+    <view class="bottom-controls" wx:if="{{showControls}}">
+      <!-- 拍照按钮 -->
+      <view 
+        class="capture-button {{isCountingDown || isContinuous ? 'active' : ''}}" 
+        bindtap="handleCaptureClick">
+        <view class="capture-button-inner"></view>
+      </view>
+    </view>
+  </camera>
+</view> 

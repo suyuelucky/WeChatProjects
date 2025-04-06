@@ -1,0 +1,1099 @@
+/**
+ * 照片服务
+ * 负责管理照片的拍摄、编辑和存储
+ */
+const EventBus = require('../utils/eventBus.js');
+
+// 导入新的管理器
+const TaskManager = require('../utils/task-manager.js');
+const UploadManager = require('../utils/upload-manager.js');
+const ImageCacheManager = require('../utils/image-cache-manager.js');
+const NetworkMonitor = require('../utils/network-monitor.js');
+const EnhancedUploadManager = require('../utils/enhanced-upload-manager.js');
+const ResumableUploader = require('../utils/resumable-uploader.js');
+const photoBatchProcessor = require('../utils/photoBatchProcessor.js');
+const MemoryManager = require('../utils/memory-manager.js');
+
+var PhotoService = {
+  /**
+   * 初始化服务
+   * @return {object} 当前实例
+   */
+  init: function(container) {
+    this.container = container;
+    
+    // 初始化各个管理器
+    TaskManager.init();
+    UploadManager.init();
+    ImageCacheManager.init();
+    NetworkMonitor.init();
+    
+    // 初始化内存管理器
+    MemoryManager.init({
+      debugMode: true,
+      autoCleanup: true
+    });
+    
+    // 初始化增强版上传管理器
+    EnhancedUploadManager.init({
+      uploadUrl: this._getCloudAPIEndpoint('uploadPhoto')
+    });
+    
+    // 检查未完成上传任务
+    this._checkInterruptedTasks();
+    
+    // 初始化云环境
+    this._initCloudEnvironment();
+    
+    // 注册内存警告回调
+    this._registerMemoryWarningHandler();
+    
+    console.log('照片服务初始化完成');
+    return this;
+  },
+  
+  /**
+   * 注册内存警告处理程序
+   * @private
+   */
+  _registerMemoryWarningHandler: function() {
+    var self = this;
+    
+    // 监听内存警告
+    MemoryManager.onMemoryWarning(function(res) {
+      console.warn('[PhotoService] 收到内存警告，级别:', res.level);
+      
+      // 根据警告级别采取不同措施
+      switch(res.level) {
+        case 10: // iOS即将OOM
+        case 5:  // Android极端内存告警
+          // 紧急措施：清理所有非必要资源
+          self.cleanupCache({ force: true, maxItems: 0 });
+          break;
+          
+        default:
+          // 常规清理
+          self.cleanupCache();
+          break;
+      }
+    });
+  },
+
+  /**
+   * 初始化云环境
+   * @private
+   */
+  _initCloudEnvironment: function() {
+    // 检查是否已经初始化
+    if (typeof wx.cloud === 'undefined') {
+      console.error('云函数环境不可用');
+      return;
+    }
+    
+    // 获取当前环境ID
+    var envId = this._getCloudEnvId();
+    
+    try {
+      // 初始化云环境
+      if (!wx.cloud.inited) {
+        wx.cloud.init({
+          env: envId,
+          traceUser: true
+        });
+        console.log('云环境初始化成功: ' + envId);
+      }
+    } catch (err) {
+      console.error('云环境初始化失败:', err);
+    }
+  },
+  
+  /**
+   * 获取云环境ID
+   * @private
+   * @return {String} 云环境ID
+   */
+  _getCloudEnvId: function() {
+    // 可以从配置或其他地方获取环境ID
+    // 这里暂时使用默认环境
+    return 'prod-2gzdt';
+  },
+  
+  /**
+   * 获取云API端点
+   * @private
+   * @param {String} apiName API名称
+   * @return {String} API端点
+   */
+  _getCloudAPIEndpoint: function(apiName) {
+    var baseUrl = 'https://api.example.com/v1';
+    return baseUrl + '/' + apiName;
+  },
+
+  /**
+   * 检查未完成的上传任务
+   * @private
+   */
+  _checkInterruptedTasks: function() {
+    // 延迟执行，确保应用启动完成
+    setTimeout(function() {
+      TaskManager.checkInterruptedTasks();
+      // 恢复未完成的上传任务
+      ResumableUploader.resumeAllUploads();
+    }, 3000);
+  },
+
+  /**
+   * 拍摄照片
+   * @param {object} options 拍摄选项
+   * @return {Promise<object>} 拍摄结果
+   */
+  takePhoto: function(options) {
+    options = options || {};
+    var self = this;
+    
+    // 在拍照前检查内存状态
+    var memoryInfo = MemoryManager.getMemoryInfo();
+    if (memoryInfo.jsHeapSizeMB > 150) {
+      console.warn('[PhotoService] 内存使用率较高，尝试清理内存');
+      self.cleanupCache();
+    }
+    
+    return new Promise(function(resolve, reject) {
+      wx.chooseMedia({
+        count: options.count || 1,
+        mediaType: ['image'],
+        sourceType: ['camera'],
+        camera: options.camera || 'back',
+        success: function(res) {
+          var photos = res.tempFiles.map(function(file, index) {
+            return {
+              id: 'photo_' + Date.now() + '_' + index,
+              path: file.tempFilePath,
+              size: file.size,
+              type: 'image',
+              createdAt: new Date().toISOString(),
+              width: file.width || 0,
+              height: file.height || 0,
+              status: 'temp' // temp, local, cloud
+            };
+          });
+          
+          // 拍照成功后记录内存快照
+          MemoryManager.takeMemorySnapshot('after_photo_captured');
+          
+          // 保存照片到本地
+          self.savePhotos(photos)
+            .then(function(savedPhotos) {
+              // 触发事件
+              EventBus.emit('photo:captured', {
+                photos: savedPhotos
+              });
+              
+              // 添加到图片缓存
+              savedPhotos.forEach(function(photo) {
+                var imageInfo = {
+                  path: photo.path,
+                  size: photo.size
+                };
+                ImageCacheManager.addImage(photo.id, imageInfo, false);
+              });
+              
+              resolve(savedPhotos);
+            })
+            .catch(reject);
+        },
+        fail: function(err) {
+          console.error('拍照失败:', err);
+          reject(err);
+        }
+      });
+    });
+  },
+
+  /**
+   * 从相册选择照片
+   * @param {object} options 选择选项
+   * @return {Promise<Array>} 选择的照片
+   */
+  chooseFromAlbum: function(options = {}) {
+    return new Promise((resolve, reject) => {
+      wx.chooseMedia({
+        count: options.count || 9,
+        mediaType: ['image'],
+        sourceType: ['album'],
+        success: (res) => {
+          const photos = res.tempFiles.map((file, index) => {
+            return {
+              id: 'photo_' + Date.now() + '_' + index,
+              path: file.tempFilePath,
+              size: file.size,
+              type: 'image',
+              createdAt: new Date().toISOString(),
+              width: file.width || 0,
+              height: file.height || 0,
+              status: 'temp'
+            };
+          });
+          
+          // 保存照片到本地
+          this.savePhotos(photos)
+            .then((savedPhotos) => {
+              // 触发事件
+              EventBus.emit('photo:selected', {
+                photos: savedPhotos
+              });
+              
+              // 添加到图片缓存
+              savedPhotos.forEach(photo => {
+                const imageInfo = {
+                  path: photo.path,
+                  size: photo.size
+                };
+                ImageCacheManager.addImage(photo.id, imageInfo, false);
+              });
+              
+              resolve(savedPhotos);
+            })
+            .catch(reject);
+        },
+        fail: (err) => {
+          console.error('选择照片失败:', err);
+          reject(err);
+        }
+      });
+    });
+  },
+
+  /**
+   * 保存照片到本地
+   * @param {Array} photos 照片列表
+   * @return {Promise<Array>} 保存的照片
+   * @private
+   */
+  savePhotos: function(photos) {
+    if (!Array.isArray(photos) || photos.length === 0) {
+      return Promise.resolve([]);
+    }
+    
+    // 获取存储服务
+    const storageService = this.container.get('storageService');
+    
+    // 批量保存
+    return Promise.all(photos.map(photo => {
+      // 复制临时文件到本地缓存
+      return this.savePhotoToLocal(photo.path, photo.id)
+        .then(savedPath => {
+          // 更新路径
+          photo.path = savedPath;
+          photo.status = 'local';
+          
+          // 保存元数据
+          return storageService.saveItem('photos', photo.id, photo);
+        })
+        .then(() => {
+          // 尝试生成缩略图
+          return this.generateThumbnail(photo.path, photo.id)
+            .then(thumbnailPath => {
+              if (thumbnailPath) {
+                photo.thumbnailPath = thumbnailPath;
+                // 更新照片信息
+                return storageService.saveItem('photos', photo.id, photo);
+              }
+              return photo;
+            })
+            .catch(err => {
+              console.error('生成缩略图失败:', err);
+              return photo;
+            });
+        })
+        .then(() => photo);
+    }));
+  },
+
+  /**
+   * 保存照片文件到本地
+   * @param {string} tempPath 临时路径
+   * @param {string} photoId 照片ID
+   * @return {Promise<string>} 本地路径
+   * @private
+   */
+  savePhotoToLocal: function(tempPath, photoId) {
+    return new Promise((resolve, reject) => {
+      const localPath = `${wx.env.USER_DATA_PATH}/photos/${photoId}.jpg`;
+      
+      // 确保目录存在
+      this.ensureDirectoryExists(wx.env.USER_DATA_PATH + '/photos')
+        .then(() => {
+          // 复制文件
+          return new Promise((res, rej) => {
+            wx.copyFile({
+              srcPath: tempPath,
+              destPath: localPath,
+              success: () => res(localPath),
+              fail: (err) => {
+                console.error('复制照片失败:', err);
+                rej(err);
+              }
+            });
+          });
+        })
+        .then(resolve)
+        .catch(reject);
+    });
+  },
+
+  /**
+   * 生成缩略图
+   * @param {string} originalPath 原图路径
+   * @param {string} photoId 照片ID
+   * @return {Promise<string>} 缩略图路径
+   * @private
+   */
+  generateThumbnail: function(originalPath, photoId) {
+    return new Promise((resolve, reject) => {
+      const thumbnailPath = `${wx.env.USER_DATA_PATH}/photos/thumb_${photoId}.jpg`;
+      
+      // 使用微信API压缩图片作为缩略图
+      wx.compressImage({
+        src: originalPath,
+        quality: 30, // 低质量以减小体积
+        success: (res) => {
+          // 将压缩后的图片保存为缩略图
+          wx.copyFile({
+            srcPath: res.tempFilePath,
+            destPath: thumbnailPath,
+            success: () => {
+              // 添加到缓存管理器
+              const imageInfo = {
+                path: thumbnailPath,
+                size: 0  // 无法直接获取，由缓存管理器估算
+              };
+              ImageCacheManager.addImage(`thumb_${photoId}`, imageInfo, true);
+              resolve(thumbnailPath);
+            },
+            fail: (err) => {
+              console.error('保存缩略图失败:', err);
+              reject(err);
+            }
+          });
+        },
+        fail: (err) => {
+          console.error('压缩图片失败:', err);
+          reject(err);
+        }
+      });
+    });
+  },
+
+  /**
+   * 确保目录存在
+   * @param {string} dirPath 目录路径
+   * @return {Promise<boolean>} 是否成功
+   * @private
+   */
+  ensureDirectoryExists: function(dirPath) {
+    return new Promise((resolve) => {
+      // 检查目录是否存在
+      wx.access({
+        path: dirPath,
+        success: () => {
+          // 目录存在
+          resolve(true);
+        },
+        fail: () => {
+          // 目录不存在，创建目录
+          wx.mkdir({
+            dirPath: dirPath,
+            recursive: true,
+            success: () => resolve(true),
+            fail: (err) => {
+              console.error('创建目录失败:', err);
+              resolve(false);
+            }
+          });
+        }
+      });
+    });
+  },
+
+  /**
+   * 获取照片列表
+   * @param {object} options 查询选项
+   * @return {Promise<Array>} 照片列表
+   */
+  getPhotos: function(options = {}) {
+    const storageService = this.container.get('storageService');
+    
+    return storageService.getCollection('photos')
+      .then(photos => {
+        // 应用筛选条件
+        if (options.ids && Array.isArray(options.ids)) {
+          photos = photos.filter(photo => options.ids.includes(photo.id));
+        }
+        
+        if (options.status) {
+          photos = photos.filter(photo => photo.status === options.status);
+        }
+        
+        // 应用排序
+        if (options.sort === 'time') {
+          photos.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        
+        return photos;
+      });
+  },
+
+  /**
+   * 删除照片
+   * @param {string|Array} photoIds 照片ID或ID数组
+   * @return {Promise<boolean>} 是否成功
+   */
+  deletePhotos: function(photoIds) {
+    if (!photoIds) {
+      return Promise.resolve(false);
+    }
+    
+    const ids = Array.isArray(photoIds) ? photoIds : [photoIds];
+    const storageService = this.container.get('storageService');
+    
+    // 批量删除
+    return Promise.all(ids.map(id => {
+      return storageService.getItem('photos', id)
+        .then(photo => {
+          if (!photo) {
+            return true;
+          }
+          
+          // 删除本地文件
+          try {
+            wx.removeSavedFile({
+              filePath: photo.path,
+              fail: (err) => console.log('删除照片文件失败:', err)
+            });
+            
+            // 删除缩略图
+            if (photo.thumbnailPath) {
+              wx.removeSavedFile({
+                filePath: photo.thumbnailPath,
+                fail: (err) => console.log('删除缩略图文件失败:', err)
+              });
+            }
+            
+            // 从缓存中移除
+            ImageCacheManager.removeImage(photo.id, false);
+            ImageCacheManager.removeImage(`thumb_${photo.id}`, true);
+          } catch (e) {
+            console.error('删除文件异常:', e);
+          }
+          
+          // 删除元数据
+          return storageService.removeItem('photos', id);
+        });
+    }))
+    .then(() => {
+      // 触发事件
+      EventBus.emit('photo:deleted', {
+        photoIds: ids
+      });
+      
+      return true;
+    });
+  },
+
+  /**
+   * 上传照片到服务器
+   * @param {string|Array} photoIds 照片ID或ID数组
+   * @param {Object} options 上传选项
+   * @return {Promise<Array>} 上传结果
+   */
+  uploadPhotos: function(photoIds, options = {}) {
+    if (!photoIds) {
+      return Promise.resolve([]);
+    }
+    
+    var self = this;
+    var ids = Array.isArray(photoIds) ? photoIds : [photoIds];
+    var storageService = this.container.get('storageService');
+    
+    // 获取照片信息
+    return Promise.all(ids.map(function(id) {
+      return storageService.getItem('photos', id);
+    }))
+    .then(function(photos) {
+      // 过滤无效照片
+      var validPhotos = photos.filter(function(photo) {
+        return photo && photo.path;
+      });
+      
+      // 检查云环境是否已初始化
+      if (typeof wx.cloud === 'undefined' || !wx.cloud.inited) {
+        console.warn('云环境未初始化，尝试初始化');
+        self._initCloudEnvironment();
+      }
+      
+      // 检查网络状态
+      var networkState = NetworkMonitor.getNetworkState();
+      if (!networkState.connected) {
+        console.log('网络未连接，将任务加入队列');
+        // 将任务加入队列，等待网络恢复后上传
+        return self._queuePhotosForUpload(validPhotos, options);
+      }
+      
+      // 批量上传
+      var uploadPromises = validPhotos.map(function(photo) {
+        return self._uploadSinglePhoto(photo, options);
+      });
+      
+      return Promise.all(uploadPromises);
+    })
+    .then(function(results) {
+      // 触发事件
+      EventBus.emit('photo:upload:started', {
+        count: results.length
+      });
+      
+      return results;
+    });
+  },
+  
+  /**
+   * 将照片加入上传队列
+   * @private
+   * @param {Array} photos 照片数组
+   * @param {Object} options 上传选项
+   * @return {Promise<Array>} 加入队列结果
+   */
+  _queuePhotosForUpload: function(photos, options) {
+    var self = this;
+    var storageService = this.container.get('storageService');
+    
+    return Promise.all(photos.map(function(photo) {
+      // 准备上传任务参数
+      var fileInfo = {
+        tempFilePath: photo.path,
+        thumbnailPath: photo.thumbnailPath,
+        size: photo.size,
+        name: 'photo_' + photo.id + '.jpg',
+        photoId: photo.id,
+        createTime: new Date(photo.createdAt).getTime()
+      };
+      
+      // 设置优先级
+      var priority = options.priority || 5;
+      
+      // 添加到增强版上传管理器
+      return EnhancedUploadManager.uploadPhoto(fileInfo, {
+        priority: priority,
+        metadata: {
+          photoId: photo.id,
+          type: 'photo'
+        },
+        retry: true,
+        maxRetries: 3
+      })
+      .then(function(result) {
+        // 更新照片状态
+        photo.status = 'uploading';
+        photo.uploadTaskId = result.taskId;
+        
+        // 保存更新
+        return storageService.saveItem('photos', photo.id, photo)
+          .then(function() {
+            return result;
+          });
+      });
+    }));
+  },
+  
+  /**
+   * 上传单张照片到云存储
+   * @private
+   * @param {Object} photo 照片信息
+   * @param {Object} options 上传选项
+   * @return {Promise<Object>} 上传结果
+   */
+  _uploadSinglePhoto: function(photo, options) {
+    var self = this;
+    var storageService = this.container.get('storageService');
+    
+    // 更新照片状态为上传中
+    photo.status = 'uploading';
+    photo.lastUpdateTime = Date.now();
+    
+    // 保存状态更新
+    return storageService.saveItem('photos', photo.id, photo)
+      .then(function() {
+        // 准备云存储路径
+        var cloudPath = 'photos/' + photo.id + '_' + Date.now() + '.jpg';
+        
+        // 使用云存储API上传
+        return new Promise(function(resolve, reject) {
+          wx.cloud.uploadFile({
+            cloudPath: cloudPath,
+            filePath: photo.path,
+            success: function(res) {
+              resolve({
+                photoId: photo.id,
+                fileID: res.fileID,
+                statusCode: res.statusCode,
+                success: true
+              });
+            },
+            fail: function(err) {
+              console.error('云存储上传失败:', err);
+              reject({
+                photoId: photo.id,
+                error: err,
+                success: false
+              });
+            }
+          });
+        });
+      })
+      .then(function(uploadResult) {
+        // 上传成功，更新照片信息
+        photo.status = 'cloud';
+        photo.cloudPath = uploadResult.fileID;
+        photo.uploadTime = Date.now();
+        
+        // 创建任务记录
+        var taskId = 'cloud_' + Date.now() + '_' + photo.id;
+        var task = {
+          id: taskId,
+          type: 'upload',
+          status: 'completed',
+          photoId: photo.id,
+          result: uploadResult,
+          createTime: Date.now(),
+          completeTime: Date.now()
+        };
+        
+        // 保存任务记录
+        TaskManager.addTask(taskId, task);
+        
+        // 保存更新后的照片信息
+        return storageService.saveItem('photos', photo.id, photo)
+          .then(function() {
+            return {
+              taskId: taskId,
+              photoId: photo.id,
+              status: 'completed',
+              result: uploadResult
+            };
+          });
+      })
+      .catch(function(err) {
+        console.error('照片上传过程出错:', err);
+        
+        // 创建失败任务记录
+        var taskId = 'cloud_' + Date.now() + '_' + photo.id;
+        var task = {
+          id: taskId,
+          type: 'upload',
+          status: 'error',
+          photoId: photo.id,
+          error: err,
+          createTime: Date.now(),
+          errorTime: Date.now()
+        };
+        
+        // 保存任务记录
+        TaskManager.addTask(taskId, task);
+        
+        // 将照片状态设为错误
+        photo.status = 'error';
+        photo.lastError = {
+          time: Date.now(),
+          message: err.errMsg || '上传失败'
+        };
+        
+        // 保存照片状态
+        return storageService.saveItem('photos', photo.id, photo)
+          .then(function() {
+            return {
+              taskId: taskId,
+              photoId: photo.id,
+              status: 'error',
+              error: err
+            };
+          });
+      });
+  },
+
+  /**
+   * 获取上传任务状态
+   * @param {string|Array} taskIds 任务ID或ID数组
+   * @return {Promise<Array>} 任务状态列表
+   */
+  getUploadStatus: function(taskIds) {
+    if (!taskIds) {
+      return Promise.resolve([]);
+    }
+    
+    const ids = Array.isArray(taskIds) ? taskIds : [taskIds];
+    
+    // 获取任务状态
+    return Promise.resolve(ids.map(id => TaskManager.getTask(id) || null));
+  },
+
+  /**
+   * 暂停上传任务
+   * @param {string|Array} taskIds 任务ID或ID数组
+   * @return {Promise<boolean>} 是否成功
+   */
+  pauseUpload: function(taskIds) {
+    if (!taskIds) {
+      return Promise.resolve(false);
+    }
+    
+    const ids = Array.isArray(taskIds) ? taskIds : [taskIds];
+    
+    // 暂停任务
+    ids.forEach(id => {
+      UploadManager.pauseTask(id);
+    });
+    
+    return Promise.resolve(true);
+  },
+
+  /**
+   * 恢复上传任务
+   * @param {string|Array} taskIds 任务ID或ID数组
+   * @return {Promise<boolean>} 是否成功
+   */
+  resumeUpload: function(taskIds) {
+    if (!taskIds) {
+      return Promise.resolve(false);
+    }
+    
+    const ids = Array.isArray(taskIds) ? taskIds : [taskIds];
+    
+    // 恢复任务
+    ids.forEach(id => {
+      UploadManager.resumeTask(id);
+    });
+    
+    return Promise.resolve(true);
+  },
+
+  /**
+   * 获取内存使用统计信息
+   * @returns {Object} 内存统计信息
+   */
+  getMemoryStats: function() {
+    const memoryInfo = MemoryManager.getMemoryInfo() || {};
+    const cacheStats = ImageCacheManager.getStats() || {};
+    
+    return {
+      jsHeapSizeMB: memoryInfo.jsHeapSizeMB || 0,
+      totalMemoryMB: memoryInfo.totalMemoryMB || 0,
+      limit: memoryInfo.limit || '1000MB',
+      totalPhotoCacheMB: cacheStats.memoryUsageMB || 0,
+      thumbnailCount: cacheStats.thumbnailCount || 0,
+      originalCount: cacheStats.originalCount || 0,
+      lastCleanupTime: ImageCacheManager.getLastCleanupTime() ? 
+        new Date(ImageCacheManager.getLastCleanupTime()).toLocaleString() : 
+        '尚未清理',
+      cleared: true // 标记清理状态
+    };
+  },
+
+  /**
+   * 清理缓存
+   * @param {Object} options 清理选项
+   */
+  cleanupCache: function(options) {
+    options = options || {};
+    
+    console.log('[PhotoService] 开始清理缓存:', options);
+    
+    // 清理图片缓存
+    if (options.force) {
+      ImageCacheManager.clearCache();
+    } else {
+      ImageCacheManager.cleanup();
+    }
+    
+    // 触发清理事件
+    EventBus.emit('photo:cacheCleaned', {
+      timestamp: Date.now(),
+      force: !!options.force
+    });
+    
+    return true;
+  },
+
+  /**
+   * 根据质量级别获取照片
+   * @param {String} photoId 照片ID
+   * @param {String} quality 质量级别(thumbnail/medium/original)
+   * @param {Boolean} isPreload 是否预加载
+   * @returns {Promise<String>} 照片路径
+   */
+  getPhotoByQuality: function(photoId, quality, isPreload = false) {
+    // 获取storageService
+    const storageService = this.container.get('storageService');
+    if (!storageService) {
+      return Promise.reject(new Error('存储服务不可用'));
+    }
+    
+    return storageService.getItem('photos', photoId)
+      .then(photo => {
+        if (!photo) {
+          return Promise.reject(new Error('照片不存在'));
+        }
+        
+        // 根据质量级别返回对应路径
+        switch(quality) {
+          case 'thumbnail':
+            // 有缩略图则返回缩略图，否则返回原图
+            if (photo.thumbnailPath) {
+              return photo.thumbnailPath;
+            }
+            // 没有缩略图则尝试生成
+            return this.generateThumbnail(photo.path, photo.id)
+              .then(thumbnailPath => {
+                // 更新照片信息
+                if (thumbnailPath) {
+                  photo.thumbnailPath = thumbnailPath;
+                  return storageService.saveItem('photos', photo.id, photo)
+                    .then(() => thumbnailPath);
+                }
+                return photo.path;
+              })
+              .catch(() => photo.path);
+            
+          case 'medium':
+            // 有中等分辨率图则返回，否则返回原图
+            if (photo.mediumPath) {
+              return photo.mediumPath;
+            }
+            // 没有中等分辨率图则尝试生成
+            return this.generateMediumImage(photo.path, photo.id)
+              .then(mediumPath => {
+                // 更新照片信息
+                if (mediumPath) {
+                  photo.mediumPath = mediumPath;
+                  return storageService.saveItem('photos', photo.id, photo)
+                    .then(() => mediumPath);
+                }
+                return photo.path;
+              })
+              .catch(() => photo.path);
+            
+          case 'original':
+          default:
+            return photo.path;
+        }
+      });
+  },
+  
+  /**
+   * 生成中等分辨率图片
+   * @param {String} originalPath 原图路径
+   * @param {String} photoId 照片ID
+   * @returns {Promise<String>} 中等分辨率图片路径
+   */
+  generateMediumImage: function(originalPath, photoId) {
+    return new Promise((resolve, reject) => {
+      const mediumPath = `${wx.env.USER_DATA_PATH}/photos/medium_${photoId}.jpg`;
+      
+      // 使用微信API压缩图片
+      wx.compressImage({
+        src: originalPath,
+        quality: 70, // 中等质量
+        success: (res) => {
+          // 将压缩后的图片保存为中等分辨率图片
+          wx.copyFile({
+            srcPath: res.tempFilePath,
+            destPath: mediumPath,
+            success: () => resolve(mediumPath),
+            fail: (err) => {
+              console.error('保存中等分辨率图片失败:', err);
+              reject(err);
+            }
+          });
+        },
+        fail: (err) => {
+          console.error('生成中等分辨率图片失败:', err);
+          reject(err);
+        }
+      });
+    });
+  },
+
+  /**
+   * 从云存储获取照片
+   * @param {String} cloudPath 云存储路径
+   * @param {Object} options 选项
+   * @return {Promise<String>} 临时文件路径
+   */
+  getPhotoFromCloud: function(cloudPath, options) {
+    options = options || {};
+    
+    if (!cloudPath) {
+      return Promise.reject(new Error('云存储路径不能为空'));
+    }
+    
+    // 检查云环境
+    if (typeof wx.cloud === 'undefined' || !wx.cloud.inited) {
+      this._initCloudEnvironment();
+    }
+    
+    return new Promise(function(resolve, reject) {
+      wx.cloud.downloadFile({
+        fileID: cloudPath,
+        success: function(res) {
+          resolve(res.tempFilePath);
+        },
+        fail: function(err) {
+          console.error('从云存储下载文件失败:', err);
+          reject(err);
+        }
+      });
+    });
+  },
+  
+  /**
+   * 同步照片状态
+   * 用于检查和同步本地与云端的照片状态
+   * @param {String|Array} photoIds 照片ID或ID数组
+   * @return {Promise<Object>} 同步结果
+   */
+  syncPhotoStatus: function(photoIds) {
+    var self = this;
+    var ids = Array.isArray(photoIds) ? photoIds : [photoIds];
+    var storageService = this.container.get('storageService');
+    
+    if (ids.length === 0) {
+      return Promise.resolve({ synced: 0, total: 0 });
+    }
+    
+    // 获取照片信息
+    return Promise.all(ids.map(function(id) {
+      return storageService.getItem('photos', id);
+    }))
+    .then(function(photos) {
+      // 过滤有效照片
+      var validPhotos = photos.filter(function(photo) {
+        return photo !== null;
+      });
+      
+      // 检查每张照片的状态
+      var checkPromises = validPhotos.map(function(photo) {
+        // 如果已经是云端状态且有cloudPath，检查文件是否存在
+        if (photo.status === 'cloud' && photo.cloudPath) {
+          return self._checkCloudFileExists(photo.cloudPath)
+            .then(function(exists) {
+              return {
+                photo: photo,
+                exists: exists,
+                needsSync: !exists && photo.status === 'cloud'
+              };
+            });
+        } else if (photo.status === 'uploading') {
+          // 检查上传任务状态
+          if (photo.uploadTaskId) {
+            return self.getUploadStatus(photo.uploadTaskId)
+              .then(function(taskStatus) {
+                var needsSync = false;
+                
+                // 如果任务不存在或已完成但照片状态未更新
+                if (!taskStatus || 
+                    (taskStatus.status === 'completed' && photo.status !== 'cloud')) {
+                  needsSync = true;
+                }
+                
+                // 如果任务出错
+                if (taskStatus && taskStatus.status === 'error') {
+                  needsSync = true;
+                }
+                
+                return {
+                  photo: photo,
+                  exists: taskStatus && taskStatus.status === 'completed',
+                  needsSync: needsSync
+                };
+              });
+          } else {
+            // 没有任务ID，需要同步
+            return Promise.resolve({
+              photo: photo,
+              exists: false,
+              needsSync: true
+            });
+          }
+        } else {
+          // 本地照片，不需要同步云状态
+          return Promise.resolve({
+            photo: photo,
+            exists: null,
+            needsSync: false
+          });
+        }
+      });
+      
+      return Promise.all(checkPromises);
+    })
+    .then(function(results) {
+      var needSyncPhotos = results.filter(function(result) {
+        return result.needsSync;
+      }).map(function(result) {
+        return result.photo;
+      });
+      
+      // 如果有需要同步的照片，重新上传
+      if (needSyncPhotos.length > 0) {
+        return self.uploadPhotos(needSyncPhotos.map(function(photo) {
+          return photo.id;
+        }))
+        .then(function() {
+          return {
+            synced: needSyncPhotos.length,
+            total: results.length
+          };
+        });
+      }
+      
+      return {
+        synced: 0,
+        total: results.length
+      };
+    });
+  },
+  
+  /**
+   * 检查云存储文件是否存在
+   * @private
+   * @param {String} fileID 文件ID
+   * @return {Promise<Boolean>} 文件是否存在
+   */
+  _checkCloudFileExists: function(fileID) {
+    // 检查云环境
+    if (typeof wx.cloud === 'undefined' || !wx.cloud.inited) {
+      this._initCloudEnvironment();
+    }
+    
+    return new Promise(function(resolve) {
+      wx.cloud.getTempFileURL({
+        fileList: [fileID],
+        success: function(res) {
+          if (res.fileList && res.fileList.length > 0) {
+            var file = res.fileList[0];
+            // 如果有错误码或状态不为成功，表示文件不存在
+            resolve(!file.errCode && file.status === 0);
+          } else {
+            resolve(false);
+          }
+        },
+        fail: function() {
+          resolve(false);
+        }
+      });
+    });
+  }
+};
+
+// 导出PhotoService模块
+module.exports = PhotoService; 

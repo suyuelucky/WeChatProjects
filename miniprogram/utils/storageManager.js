@@ -1,12 +1,38 @@
 /**
  * 存储空间管理工具
  * 提供本地存储空间监控和自动清理策略
+ * 遵循ES5标准，确保在微信小程序环境兼容
  */
 
-import { storage } from './storageUtils';
+// 避免循环依赖 - 延迟加载方式
+var _storageUtils = null;
+var _storage = null;
+var _eventBus = null;
+
+// 内部获取依赖函数
+function getStorageUtils() {
+  if (!_storageUtils) {
+    _storageUtils = require('./storageUtils');
+  }
+  return _storageUtils;
+}
+
+function getStorage() {
+  if (!_storage) {
+    _storage = getStorageUtils().storage;
+  }
+  return _storage;
+}
+
+function getEventBus() {
+  if (!_eventBus) {
+    _eventBus = require('./eventBus');
+  }
+  return _eventBus;
+}
 
 // 默认配置
-const DEFAULT_CONFIG = {
+var DEFAULT_CONFIG = {
   maxStorageSize: 50 * 1024 * 1024, // 默认最大存储空间50MB
   warningThreshold: 0.8, // 存储空间使用警告阈值（80%）
   criticalThreshold: 0.9, // 存储空间临界阈值（90%）
@@ -28,17 +54,10 @@ const DEFAULT_CONFIG = {
 };
 
 // 存储项类型
-export const StorageItemType = {
-  CACHE: 'cache',    // 缓存数据，可随时清理
-  TEMP: 'temp',      // 临时数据，优先清理
-  USER_DATA: 'user', // 用户数据，非必要不清理
-  SYNC: 'sync',      // 同步相关数据，非必要不清理
-  SYSTEM: 'system',  // 系统数据，不应清理
-  OTHER: 'other'     // 其他数据
-};
+var StorageItemType = null;
 
 // 存储空间状态
-export const StorageStatus = {
+var StorageStatus = {
   NORMAL: 'normal',
   WARNING: 'warning',
   CRITICAL: 'critical'
@@ -46,501 +65,482 @@ export const StorageStatus = {
 
 /**
  * 存储空间管理器
+ * @param {Object} config - 配置参数
  */
-export default class StorageManager {
-  constructor(config = {}) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
-    this.listeners = [];
-    this.cleanupTimer = null;
-    this.storageInfo = null;
-    
-    // 初始化
-    this.init();
-  }
+function StorageManager(config) {
+  this.config = {};
   
-  /**
-   * 初始化存储管理器
-   */
-  async init() {
-    // 获取初始存储信息
-    await this.refreshStorageInfo();
-    
-    // 启动定时清理检查
-    if (this.config.autoClearEnabled) {
-      this.startCleanupTimer();
+  // 合并配置
+  for (var key in DEFAULT_CONFIG) {
+    if (DEFAULT_CONFIG.hasOwnProperty(key)) {
+      this.config[key] = DEFAULT_CONFIG[key];
     }
   }
   
-  /**
-   * 启动清理定时器
-   */
-  startCleanupTimer() {
-    if (this.cleanupTimer) {
-      clearInterval(this.cleanupTimer);
+  if (config) {
+    for (var key in config) {
+      if (config.hasOwnProperty(key)) {
+        this.config[key] = config[key];
+      }
+    }
+  }
+  
+  this.listeners = [];
+  this.cleanupTimer = null;
+  this.storageInfo = null;
+  
+  // 初始化
+  this.init();
+}
+
+/**
+ * 初始化存储管理器
+ */
+StorageManager.prototype.init = function() {
+  var self = this;
+  
+  // 确保延迟加载完成
+  StorageItemType = getStorageUtils().StorageItemType;
+  
+  // 获取初始存储信息
+  this.getStorageInfo().then(function(info) {
+    self.storageInfo = info;
+    
+    // 如果启用了自动清理，开始定时任务
+    if (self.config.autoClearEnabled) {
+      self.startCleanupTimer();
     }
     
-    this.cleanupTimer = setInterval(() => {
-      this.checkAndCleanup();
-    }, this.config.cleanUpInterval);
-  }
-  
-  /**
-   * 停止清理定时器
-   */
-  stopCleanupTimer() {
-    if (this.cleanupTimer) {
-      clearInterval(this.cleanupTimer);
-      this.cleanupTimer = null;
+    // 如果空间使用超过警告阈值，触发警告
+    if (info.status === StorageStatus.WARNING || info.status === StorageStatus.CRITICAL) {
+      var eventBus = getEventBus();
+      if (eventBus) {
+        eventBus.emit('storage:spaceWarning', info);
+      }
     }
-  }
+  });
   
-  /**
-   * 刷新存储信息
-   * @returns {Promise<Object>} 存储信息
-   */
-  async refreshStorageInfo() {
-    try {
-      this.storageInfo = await this.getStorageInfo();
+  // 监听存储变化事件
+  var eventBus = getEventBus();
+  if (eventBus) {
+    eventBus.on('storage:dataChanged', function(data) {
+      // 更新存储信息
+      self.updateStorageInfo();
+    });
+  }
+};
+
+/**
+ * 获取存储信息
+ * @returns {Promise<Object>} 存储信息
+ */
+StorageManager.prototype.getStorageInfo = function() {
+  var self = this;
+  
+  return new Promise(function(resolve) {
+    getStorage().info().then(function(info) {
+      // 计算使用比例和状态
+      var usedSize = info.currentSize || 0;
+      var limitSize = info.limitSize || self.config.maxStorageSize;
+      var usedRatio = usedSize / limitSize;
       
-      // 计算使用率和状态
-      const usageRatio = this.storageInfo.currentSize / this.storageInfo.limitSize;
-      let status = StorageStatus.NORMAL;
-      
-      if (usageRatio >= this.config.criticalThreshold) {
+      var status = StorageStatus.NORMAL;
+      if (usedRatio >= self.config.criticalThreshold) {
         status = StorageStatus.CRITICAL;
-      } else if (usageRatio >= this.config.warningThreshold) {
+      } else if (usedRatio >= self.config.warningThreshold) {
         status = StorageStatus.WARNING;
       }
       
-      this.storageInfo.usageRatio = usageRatio;
-      this.storageInfo.status = status;
+      var result = {
+        usedSize: usedSize,
+        limitSize: limitSize,
+        freeSize: limitSize - usedSize,
+        percentUsed: Math.round(usedRatio * 100),
+        keysCount: info.keys.length,
+        keys: info.keys,
+        status: status,
+        timestamp: Date.now()
+      };
       
-      // 通知监听器
-      this.notifyListeners('storageInfoUpdated', this.storageInfo);
-      
-      return this.storageInfo;
-    } catch (error) {
-      console.error('刷新存储信息失败:', error);
-      return null;
-    }
+      self.storageInfo = result;
+      resolve(result);
+    }).catch(function(error) {
+      console.error('获取存储信息失败:', error);
+      resolve({
+        usedSize: 0,
+        limitSize: self.config.maxStorageSize,
+        freeSize: self.config.maxStorageSize,
+        percentUsed: 0,
+        keysCount: 0,
+        keys: [],
+        status: StorageStatus.NORMAL,
+        timestamp: Date.now(),
+        error: error
+      });
+    });
+  });
+};
+
+/**
+ * 获取存储详细摘要
+ * @returns {Promise<Object>} 存储摘要
+ */
+StorageManager.prototype.getStorageSummary = function() {
+  var self = this;
+  
+  return new Promise(function(resolve) {
+    self.getStorageInfo().then(function(storageInfo) {
+      getStorage().keys().then(function(keys) {
+        // 按类型分组统计
+        var typeStats = {};
+        var loadPromises = [];
+        
+        // 确保获取存储类型
+        StorageItemType = getStorageUtils().StorageItemType;
+        
+        // 初始化类型统计
+        for (var type in StorageItemType) {
+          if (StorageItemType.hasOwnProperty(type)) {
+            typeStats[StorageItemType[type]] = {
+              count: 0,
+              keys: []
+            };
+          }
+        }
+        
+        // 遍历所有键，提取类型信息
+        keys.forEach(function(key) {
+          var itemType = self.getItemType(key);
+          if (!typeStats[itemType]) {
+            typeStats[itemType] = {
+              count: 0,
+              keys: []
+            };
+          }
+          
+          typeStats[itemType].count++;
+          typeStats[itemType].keys.push(key);
+        });
+        
+        // 复制存储信息并添加类型统计
+        var summary = {
+          info: storageInfo,
+          typeStats: typeStats,
+          timestamp: Date.now()
+        };
+        
+        resolve(summary);
+      }).catch(function(error) {
+        console.error('获取存储键失败:', error);
+        resolve({
+          info: storageInfo,
+          typeStats: {},
+          timestamp: Date.now(),
+          error: error
+        });
+      });
+    });
+  });
+};
+
+/**
+ * 开始清理定时器
+ */
+StorageManager.prototype.startCleanupTimer = function() {
+  var self = this;
+  
+  // 清除现有定时器
+  if (this.cleanupTimer) {
+    clearInterval(this.cleanupTimer);
   }
   
-  /**
-   * 获取存储信息
-   * @returns {Promise<Object>} 存储信息
-   */
-  getStorageInfo() {
-    return new Promise((resolve, reject) => {
-      wx.getStorageInfo({
-        success: (res) => {
-          resolve({
-            keys: res.keys,
-            currentSize: res.currentSize,
-            limitSize: res.limitSize,
-            keysCount: res.keys.length,
-            timestamp: Date.now()
-          });
-        },
-        fail: (err) => reject(err)
+  // 设置新定时器
+  this.cleanupTimer = setInterval(function() {
+    self.checkAndCleanup();
+  }, this.config.cleanUpInterval);
+  
+  // 立即检查一次
+  this.checkAndCleanup();
+};
+
+/**
+ * 停止清理定时器
+ */
+StorageManager.prototype.stopCleanupTimer = function() {
+  if (this.cleanupTimer) {
+    clearInterval(this.cleanupTimer);
+    this.cleanupTimer = null;
+  }
+};
+
+/**
+ * 检查并执行清理
+ */
+StorageManager.prototype.checkAndCleanup = function() {
+  var self = this;
+  
+  this.getStorageInfo().then(function(info) {
+    // 如果使用率超过自动清理阈值，执行清理
+    if (info.percentUsed >= self.config.autoClearThreshold * 100) {
+      self.cleanupStorage().then(function(freedSpace) {
+        if (freedSpace > 0) {
+          // 更新存储信息
+          self.updateStorageInfo();
+          
+          // 触发清理完成事件
+          var eventBus = getEventBus();
+          if (eventBus) {
+            eventBus.emit('storage:storageCleanup', {
+              freedSpace: freedSpace,
+              timestamp: Date.now()
+            });
+          }
+        }
       });
+    }
+  });
+};
+
+/**
+ * 更新存储信息
+ */
+StorageManager.prototype.updateStorageInfo = function() {
+  var self = this;
+  
+  this.getStorageInfo().then(function(info) {
+    self.storageInfo = info;
+    
+    // 触发存储信息更新事件
+    var eventBus = getEventBus();
+    if (eventBus) {
+      eventBus.emit('storage:infoUpdated', info);
+      
+      // 如果状态为警告或严重，触发相应事件
+      if (info.status === StorageStatus.WARNING) {
+        eventBus.emit('storage:spaceWarning', info);
+      } else if (info.status === StorageStatus.CRITICAL) {
+        eventBus.emit('storage:spaceCritical', info);
+      }
+    }
+  });
+};
+
+/**
+ * 执行存储空间清理
+ * @returns {Promise<number>} 释放的空间大小
+ */
+StorageManager.prototype.cleanupStorage = function() {
+  var self = this;
+  
+  return new Promise(function(resolve) {
+    // 按优先级获取可清理的键
+    self.getCleanableItems().then(function(cleanableItems) {
+      if (!cleanableItems || cleanableItems.length === 0) {
+        resolve(0);
+        return;
+      }
+      
+      // 执行清理
+      var cleanPromises = [];
+      var cleanedItems = [];
+      
+      cleanableItems.forEach(function(item) {
+        cleanPromises.push(
+          getStorage().remove(item.key).then(function() {
+            cleanedItems.push(item);
+            return item.size;
+          }).catch(function() {
+            return 0;
+          })
+        );
+      });
+      
+      Promise.all(cleanPromises).then(function(results) {
+        // 计算释放的总空间
+        var totalFreed = results.reduce(function(sum, size) {
+          return sum + size;
+        }, 0);
+        
+        // 记录清理日志
+        self.logCleanupAction(cleanedItems, totalFreed).then(function() {
+          resolve(totalFreed);
+        });
+      }).catch(function(error) {
+        console.error('清理存储空间失败:', error);
+        resolve(0);
+      });
+    });
+  });
+};
+
+/**
+ * 获取可清理的存储项
+ * @returns {Promise<Array>} 可清理的存储项
+ */
+StorageManager.prototype.getCleanableItems = function() {
+  var self = this;
+  
+  return new Promise(function(resolve) {
+    // 获取所有存储项
+    getStorage().keys().then(function(keys) {
+      var loadPromises = [];
+      var storageItems = [];
+      
+      // 加载每个键的数据
+      keys.forEach(function(key) {
+        // 跳过必须保留的键
+        if (self.isPreservedKey(key)) {
+          return;
+        }
+        
+        loadPromises.push(
+          getStorage().get(key).then(function(data) {
+            return {
+              key: key,
+              data: data,
+              type: self.getItemType(key),
+              size: JSON.stringify(data).length
+            };
+          }).catch(function() {
+            return null;
+          })
+        );
+      });
+      
+      Promise.all(loadPromises).then(function(items) {
+        // 过滤无效项
+        var validItems = items.filter(function(item) {
+          return item !== null;
+        });
+        
+        // 按清理优先级排序
+        validItems.sort(function(a, b) {
+          var typeA = a.type;
+          var typeB = b.type;
+          
+          // 首先按照类型优先级排序
+          if (typeA === StorageItemType.TEMP && typeB !== StorageItemType.TEMP) {
+            return -1;
+          }
+          if (typeA === StorageItemType.CACHE && typeB !== StorageItemType.TEMP && typeB !== StorageItemType.CACHE) {
+            return -1;
+          }
+          if (typeA !== typeB) {
+            return 0;
+          }
+          
+          // 同类型按大小降序排序
+          return b.size - a.size;
+        });
+        
+        resolve(validItems);
+      }).catch(function(error) {
+        console.error('获取可清理项失败:', error);
+        resolve([]);
+      });
+    }).catch(function(error) {
+      console.error('获取存储键失败:', error);
+      resolve([]);
+    });
+  });
+};
+
+/**
+ * 确定存储项的类型
+ * @param {string} key 存储键
+ * @returns {string} 存储项类型
+ */
+StorageManager.prototype.getItemType = function(key) {
+  // 确保StorageItemType已加载
+  StorageItemType = getStorageUtils().StorageItemType;
+  
+  if (key.indexOf('temp_') === 0 || key.indexOf('tmp_') === 0) {
+    return StorageItemType.TEMP;
+  }
+  
+  if (key.indexOf('cache_') === 0 || key.indexOf('_cache') !== -1) {
+    return StorageItemType.CACHE;
+  }
+  
+  if (key.indexOf('user_') === 0 || key.indexOf('profile_') === 0) {
+    return StorageItemType.USER_DATA;
+  }
+  
+  if (key.indexOf('sync_') === 0 || key.indexOf('_sync') !== -1 || key.indexOf('_queue') !== -1) {
+    return StorageItemType.SYNC;
+  }
+  
+  if (key.indexOf('sys_') === 0 || this.isPreservedKey(key)) {
+    return StorageItemType.SYSTEM;
+  }
+  
+  return StorageItemType.OTHER;
+};
+
+/**
+ * 检查是否是保留键
+ * @param {string} key 存储键
+ * @returns {boolean} 是否保留
+ */
+StorageManager.prototype.isPreservedKey = function(key) {
+  for (var i = 0; i < this.config.preserveKeys.length; i++) {
+    var preserveKey = this.config.preserveKeys[i];
+    if (key === preserveKey || key.indexOf(preserveKey + '_') === 0) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * 记录清理日志
+ * @param {Array} cleanedItems 被清理的项目
+ * @param {number} freedSpace 释放的空间
+ */
+StorageManager.prototype.logCleanupAction = function(cleanedItems, freedSpace) {
+  var timestamp = Date.now();
+  var logKey = 'log_storage_cleanup_' + timestamp;
+  
+  var logItems = [];
+  for (var i = 0; i < cleanedItems.length; i++) {
+    var item = cleanedItems[i];
+    logItems.push({
+      key: item.key,
+      size: item.size,
+      type: item.type
     });
   }
   
-  /**
-   * 获取指定键的存储数据大小
-   * @param {string} key 存储键
-   * @returns {Promise<number>} 数据大小（字节）
-   */
-  async getItemSize(key) {
-    try {
-      const item = await storage.get(key);
-      if (!item) return 0;
-      
-      // 计算近似大小
-      const itemString = JSON.stringify(item);
-      return itemString.length * 2;  // 粗略估计（UTF-16编码）
-    } catch (error) {
-      console.error(`获取存储项 ${key} 大小失败:`, error);
-      return 0;
-    }
-  }
+  var log = {
+    timestamp: timestamp,
+    freedSpace: freedSpace,
+    itemsCount: cleanedItems.length,
+    items: logItems
+  };
   
-  /**
-   * 检查并执行自动清理
-   * @returns {Promise<boolean>} 是否执行了清理
-   */
-  async checkAndCleanup() {
-    try {
-      // 刷新存储信息
-      await this.refreshStorageInfo();
-      
-      // 检查是否需要清理
-      if (!this.config.autoClearEnabled) {
-        return false;
-      }
-      
-      if (this.storageInfo.usageRatio < this.config.autoClearThreshold) {
-        return false; // 存储空间充足，无需清理
-      }
-      
-      // 执行自动清理
-      const cleanedSize = await this.cleanupStorage();
-      
-      // 通知清理结果
-      this.notifyListeners('storageAutoCleanup', {
-        cleanedSize,
-        timestamp: Date.now()
-      });
-      
-      // 刷新存储信息
-      await this.refreshStorageInfo();
-      
-      return cleanedSize > 0;
-    } catch (error) {
-      console.error('检查并清理存储失败:', error);
-      return false;
-    }
+  return getStorage().set(logKey, log);
+};
+
+// 单例实例
+var storageManagerInstance = null;
+
+/**
+ * 获取StorageManager实例(单例模式)
+ * @param {Object} config 配置
+ * @returns {StorageManager} 实例
+ */
+function getStorageManagerInstance(config) {
+  if (!storageManagerInstance) {
+    storageManagerInstance = new StorageManager(config);
+  } else if (config) {
+    console.warn('StorageManager已初始化，无法更改配置');
   }
-  
-  /**
-   * 清理存储空间
-   * @param {boolean} forceClean 是否强制清理
-   * @returns {Promise<number>} 清理的空间大小（字节）
-   */
-  async cleanupStorage(forceClean = false) {
-    try {
-      // 获取所有存储键
-      const storageInfo = await this.getStorageInfo();
-      const keys = storageInfo.keys;
-      
-      // 获取所有键的相关信息
-      const keyInfos = await Promise.all(
-        keys.map(async (key) => {
-          const size = await this.getItemSize(key);
-          const type = this.getItemType(key);
-          const priority = this.getCleanupPriority(key, type);
-          
-          return { key, size, type, priority };
-        })
-      );
-      
-      // 按清理优先级排序
-      keyInfos.sort((a, b) => b.priority - a.priority);
-      
-      // 计算需要清理的空间
-      const totalSize = storageInfo.currentSize;
-      const targetSize = this.config.autoClearThreshold * storageInfo.limitSize;
-      let spaceToFree = totalSize - targetSize;
-      
-      // 如果强制清理，至少释放10%空间
-      if (forceClean && spaceToFree <= 0) {
-        spaceToFree = 0.1 * totalSize;
-      }
-      
-      if (spaceToFree <= 0 && !forceClean) {
-        return 0; // 无需清理
-      }
-      
-      // 开始清理
-      let freedSpace = 0;
-      const cleanedItems = [];
-      
-      for (const item of keyInfos) {
-        // 跳过保留项
-        if (this.isPreservedKey(item.key)) {
-          continue;
-        }
-        
-        try {
-          await storage.remove(item.key);
-          freedSpace += item.size;
-          cleanedItems.push(item);
-          
-          // 如果已经释放足够空间，停止清理
-          if (freedSpace >= spaceToFree && !forceClean) {
-            break;
-          }
-        } catch (error) {
-          console.error(`清理存储项 ${item.key} 失败:`, error);
-        }
-      }
-      
-      // 记录清理日志
-      await this.logCleanupAction(cleanedItems, freedSpace);
-      
-      return freedSpace;
-    } catch (error) {
-      console.error('清理存储空间失败:', error);
-      return 0;
-    }
-  }
-  
-  /**
-   * 确定存储项的类型
-   * @param {string} key 存储键
-   * @returns {StorageItemType} 存储项类型
-   */
-  getItemType(key) {
-    if (key.startsWith('temp_') || key.startsWith('tmp_')) {
-      return StorageItemType.TEMP;
-    }
-    
-    if (key.startsWith('cache_') || key.includes('_cache')) {
-      return StorageItemType.CACHE;
-    }
-    
-    if (key.startsWith('user_') || key.startsWith('profile_')) {
-      return StorageItemType.USER_DATA;
-    }
-    
-    if (key.startsWith('sync_') || key.includes('_sync') || key.includes('_queue')) {
-      return StorageItemType.SYNC;
-    }
-    
-    if (key.startsWith('sys_') || this.config.preserveKeys.includes(key)) {
-      return StorageItemType.SYSTEM;
-    }
-    
-    return StorageItemType.OTHER;
-  }
-  
-  /**
-   * 获取清理优先级
-   * @param {string} key 存储键
-   * @param {StorageItemType} type 存储项类型
-   * @returns {number} 优先级评分（越高优先级越高）
-   */
-  getCleanupPriority(key, type) {
-    // 基础优先级
-    let priority = 0;
-    
-    // 根据类型设置基础优先级
-    switch (type) {
-      case StorageItemType.TEMP:
-        priority = 100;
-        break;
-      case StorageItemType.CACHE:
-        priority = 80;
-        break;
-      case StorageItemType.OTHER:
-        priority = 50;
-        break;
-      case StorageItemType.USER_DATA:
-        priority = 20;
-        break;
-      case StorageItemType.SYNC:
-        priority = 10;
-        break;
-      case StorageItemType.SYSTEM:
-        priority = 0;
-        break;
-      default:
-        priority = 30;
-    }
-    
-    // 检查优先清理列表
-    for (let i = 0; i < this.config.priorityCleanupKeys.length; i++) {
-      const prefix = this.config.priorityCleanupKeys[i];
-      if (key.startsWith(prefix)) {
-        // 加上位置权重
-        priority += 100 - i * 10;
-        break;
-      }
-    }
-    
-    // 检查时间戳（如果键包含时间戳，优先清理旧数据）
-    const timestamp = this.extractTimestamp(key);
-    if (timestamp && timestamp > 0) {
-      const ageInDays = (Date.now() - timestamp) / (24 * 60 * 60 * 1000);
-      // 根据年龄增加优先级，越老优先级越高
-      priority += Math.min(ageInDays * 2, 50);
-    }
-    
-    return priority;
-  }
-  
-  /**
-   * 从键名提取时间戳
-   * @param {string} key 存储键
-   * @returns {number|null} 时间戳
-   */
-  extractTimestamp(key) {
-    // 尝试从键名中提取时间戳
-    const matches = key.match(/_(\d{13})$/);
-    if (matches && matches[1]) {
-      return parseInt(matches[1], 10);
-    }
-    return null;
-  }
-  
-  /**
-   * 检查是否是保留键
-   * @param {string} key 存储键
-   * @returns {boolean} 是否保留
-   */
-  isPreservedKey(key) {
-    return this.config.preserveKeys.some(
-      preserveKey => key === preserveKey || key.startsWith(`${preserveKey}_`)
-    );
-  }
-  
-  /**
-   * 记录清理日志
-   * @param {Array} cleanedItems 被清理的项目
-   * @param {number} freedSpace 释放的空间
-   */
-  async logCleanupAction(cleanedItems, freedSpace) {
-    try {
-      const timestamp = Date.now();
-      const logKey = `log_storage_cleanup_${timestamp}`;
-      
-      const log = {
-        timestamp,
-        freedSpace,
-        itemsCount: cleanedItems.length,
-        items: cleanedItems.map(item => ({
-          key: item.key,
-          size: item.size,
-          type: item.type
-        }))
-      };
-      
-      await storage.set(logKey, log);
-      
-      // 清理旧日志（只保留最近10条）
-      const storageInfo = await this.getStorageInfo();
-      const logKeys = storageInfo.keys.filter(key => key.startsWith('log_storage_cleanup_'))
-        .sort().reverse().slice(10);
-      
-      for (const oldLogKey of logKeys) {
-        await storage.remove(oldLogKey);
-      }
-    } catch (error) {
-      console.error('记录清理日志失败:', error);
-    }
-  }
-  
-  /**
-   * 获取清理日志
-   * @param {number} limit 日志数量限制
-   * @returns {Promise<Array>} 清理日志列表
-   */
-  async getCleanupLogs(limit = 10) {
-    try {
-      const storageInfo = await this.getStorageInfo();
-      const logKeys = storageInfo.keys.filter(key => key.startsWith('log_storage_cleanup_'))
-        .sort().reverse().slice(0, limit);
-      
-      const logs = [];
-      for (const logKey of logKeys) {
-        const log = await storage.get(logKey);
-        if (log) {
-          logs.push(log);
-        }
-      }
-      
-      return logs;
-    } catch (error) {
-      console.error('获取清理日志失败:', error);
-      return [];
-    }
-  }
-  
-  /**
-   * 添加存储状态监听器
-   * @param {Function} listener 监听器函数
-   * @returns {Function} 取消监听的函数
-   */
-  addListener(listener) {
-    if (typeof listener !== 'function') {
-      return () => {};
-    }
-    
-    this.listeners.push(listener);
-    
-    return () => {
-      const index = this.listeners.indexOf(listener);
-      if (index > -1) {
-        this.listeners.splice(index, 1);
-      }
-    };
-  }
-  
-  /**
-   * 通知所有监听器
-   * @param {string} event 事件名称
-   * @param {any} data 事件数据
-   */
-  notifyListeners(event, data) {
-    for (const listener of this.listeners) {
-      try {
-        listener(event, data);
-      } catch (error) {
-        console.error('存储监听器错误:', error);
-      }
-    }
-  }
-  
-  /**
-   * 获取存储状态摘要
-   * @returns {Promise<Object>} 存储状态摘要
-   */
-  async getStorageSummary() {
-    try {
-      // 刷新存储信息
-      const info = await this.refreshStorageInfo();
-      
-      // 按类型统计存储项
-      const storageInfo = await this.getStorageInfo();
-      const keys = storageInfo.keys;
-      
-      const typeCounts = {};
-      let analyzedSize = 0;
-      
-      // 获取按类型分组的信息
-      for (const key of keys) {
-        const size = await this.getItemSize(key);
-        const type = this.getItemType(key);
-        
-        if (!typeCounts[type]) {
-          typeCounts[type] = {
-            count: 0,
-            totalSize: 0,
-            keys: []
-          };
-        }
-        
-        typeCounts[type].count++;
-        typeCounts[type].totalSize += size;
-        if (typeCounts[type].keys.length < 10) { // 只存储前10个键作为示例
-          typeCounts[type].keys.push(key);
-        }
-        
-        analyzedSize += size;
-      }
-      
-      // 计算百分比
-      const percentAnalyzed = info.currentSize > 0 
-        ? (analyzedSize / info.currentSize * 100).toFixed(2) 
-        : 0;
-      
-      return {
-        ...info,
-        percentUsed: (info.usageRatio * 100).toFixed(2),
-        typeBreakdown: typeCounts,
-        percentAnalyzed
-      };
-    } catch (error) {
-      console.error('获取存储摘要失败:', error);
-      return null;
-    }
-  }
-  
-  /**
-   * 销毁管理器
-   */
-  destroy() {
-    this.stopCleanupTimer();
-    this.listeners = [];
-  }
-} 
+  return storageManagerInstance;
+}
+
+// 导出
+module.exports = {
+  StorageManager: StorageManager,
+  StorageStatus: StorageStatus,
+  getStorageManagerInstance: getStorageManagerInstance
+}; 

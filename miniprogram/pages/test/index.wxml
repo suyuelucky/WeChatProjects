@@ -1,0 +1,199 @@
+<!-- miniprogram/pages/test/index.wxml -->
+<view class="container">
+  <view class="header">
+    <view class="title">系统测试套件</view>
+    <view class="subtitle">检测系统模块运行情况</view>
+  </view>
+  
+  <view class="test-controls">
+    <view class="section-title">测试控制</view>
+    <view class="controls">
+      <button class="btn primary" bindtap="runAllTests" disabled="{{isTestRunning}}">运行所有测试</button>
+      <view class="btn-group">
+        <button class="btn secondary" bindtap="runModuleTest" data-module="imageProcessor" disabled="{{isTestRunning}}">测试图像处理器</button>
+        <button class="btn secondary" bindtap="runModuleTest" data-module="photoBatchProcessor" disabled="{{isTestRunning}}">测试批处理器</button>
+        <button class="btn secondary" bindtap="runModuleTest" data-module="traceSystem" disabled="{{isTestRunning}}">测试留痕系统</button>
+      </view>
+      <button class="btn warning" bindtap="runExtremeTest" disabled="{{isTestRunning}}">运行极端测试</button>
+      <button class="btn danger" bindtap="clearResults" disabled="{{isTestRunning}}">清空结果</button>
+    </view>
+  </view>
+  
+  <view class="test-status">
+    <view class="status-badge {{summaries.failed > 0 ? 'error' : summaries.passed > 0 ? 'success' : ''}}">
+      {{testStatus}}
+    </view>
+    
+    <view class="status-details" wx:if="{{summaries.total}}">
+      <view class="status-item passed">通过: {{summaries.passed || 0}}</view>
+      <view class="status-item failed">失败: {{summaries.failed || 0}}</view>
+      <view class="status-item total">总计: {{summaries.total || 0}}</view>
+      <view class="status-item duration" wx:if="{{summaries.duration}}">
+        耗时: {{summaries.duration}}ms
+      </view>
+    </view>
+  </view>
+  
+  <!-- 极端测试结果 -->
+  <view class="extreme-results" wx:if="{{extremeTestResults}}">
+    <view class="section-title">极端测试结果</view>
+    
+    <view class="result-section">
+      <view class="section-header" bindtap="toggleSection" data-section="extremeMemory">
+        <view class="section-name">内存压力测试</view>
+        <view class="section-status {{(extremeTestResults.memoryTest.errors.length > 0) ? 'error' : 'success'}}">
+          {{extremeTestResults.memoryTest.errors.length === 0 ? '通过' : '失败'}}
+        </view>
+        <view class="section-arrow {{expandedSection === 'extremeMemory' ? 'expanded' : ''}}">▼</view>
+      </view>
+      
+      <view class="section-content" wx:if="{{expandedSection === 'extremeMemory'}}">
+        <view class="result-item">
+          <view class="test-detail">创建对象数: {{extremeTestResults.memoryTest.objectsCreated}}</view>
+          <view class="test-detail">对象大小: {{extremeTestResults.memoryTest.objectSizeKB}}KB</view>
+          <view class="test-detail">耗时: {{extremeTestResults.memoryTest.duration}}ms</view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="result-section">
+      <view class="section-header" bindtap="toggleSection" data-section="extremeImageProcessor">
+        <view class="section-name">图像处理极端测试</view>
+        <view class="section-status {{(extremeTestResults.imageProcessorTest.failed > 0) ? 'error' : 'success'}}">
+          {{extremeTestResults.imageProcessorTest.passed}}/{{extremeTestResults.imageProcessorTest.passed + extremeTestResults.imageProcessorTest.failed}}
+        </view>
+        <view class="section-arrow {{expandedSection === 'extremeImageProcessor' ? 'expanded' : ''}}">▼</view>
+      </view>
+      
+      <view class="section-content" wx:if="{{expandedSection === 'extremeImageProcessor'}}">
+        <view class="result-item">
+          <view class="test-detail">通过数: {{extremeTestResults.imageProcessorTest.passed}}</view>
+          <view class="test-detail">失败数: {{extremeTestResults.imageProcessorTest.failed}}</view>
+        </view>
+        <view class="error-list" wx:if="{{extremeTestResults.imageProcessorTest.errors.length > 0}}">
+          <view class="error-title">错误详情:</view>
+          <view class="error-item" wx:for="{{extremeTestResults.imageProcessorTest.errors}}" wx:key="method">
+            <view class="error-method">方法: {{item.method}}</view>
+            <view class="error-case">测试: {{item.testCase}}</view>
+            <view class="error-message">错误: {{item.error}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="result-section">
+      <view class="section-header" bindtap="toggleSection" data-section="extremePhotoBatch">
+        <view class="section-name">照片批处理极端测试</view>
+        <view class="section-status {{(extremeTestResults.photoBatchProcessorTest.failed > 0) ? 'error' : 'success'}}">
+          {{extremeTestResults.photoBatchProcessorTest.passed}}/{{extremeTestResults.photoBatchProcessorTest.passed + extremeTestResults.photoBatchProcessorTest.failed}}
+        </view>
+        <view class="section-arrow {{expandedSection === 'extremePhotoBatch' ? 'expanded' : ''}}">▼</view>
+      </view>
+      
+      <view class="section-content" wx:if="{{expandedSection === 'extremePhotoBatch'}}">
+        <view class="result-item">
+          <view class="test-detail">通过数: {{extremeTestResults.photoBatchProcessorTest.passed}}</view>
+          <view class="test-detail">失败数: {{extremeTestResults.photoBatchProcessorTest.failed}}</view>
+        </view>
+        <view class="error-list" wx:if="{{extremeTestResults.photoBatchProcessorTest.errors.length > 0}}">
+          <view class="error-title">错误详情:</view>
+          <view class="error-item" wx:for="{{extremeTestResults.photoBatchProcessorTest.errors}}" wx:key="method">
+            <view class="error-method">方法: {{item.method}}</view>
+            <view class="error-case">测试: {{item.testCase}}</view>
+            <view class="error-message">错误: {{item.error}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="test-results" wx:if="{{summaries.results}}">
+    <view class="section-title">模块测试结果</view>
+    
+    <view class="result-section">
+      <view class="section-header" bindtap="toggleSection" data-section="imageProcessor">
+        <view class="section-name">图像处理模块</view>
+        <view class="section-status {{(summaries.results.imageProcessor.failed > 0) ? 'error' : 'success'}}">
+          {{summaries.results.imageProcessor.passed || 0}}/{{summaries.results.imageProcessor.total || 0}}
+        </view>
+        <view class="section-arrow {{expandedSection === 'imageProcessor' ? 'expanded' : ''}}">▼</view>
+      </view>
+      
+      <view class="section-content" wx:if="{{expandedSection === 'imageProcessor'}}">
+        <view class="result-item" wx:if="{{summaries.results.imageProcessor.error}}">
+          <view class="error-message">{{summaries.results.imageProcessor.error}}</view>
+        </view>
+        <view class="result-summary">
+          <view class="summary-item">通过: {{summaries.results.imageProcessor.passed || 0}}</view>
+          <view class="summary-item">失败: {{summaries.results.imageProcessor.failed || 0}}</view>
+          <view class="summary-item">总计: {{summaries.results.imageProcessor.total || 0}}</view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="result-section">
+      <view class="section-header" bindtap="toggleSection" data-section="photoBatchProcessor">
+        <view class="section-name">照片批处理模块</view>
+        <view class="section-status {{(summaries.results.photoBatchProcessor.failed > 0) ? 'error' : 'success'}}">
+          {{summaries.results.photoBatchProcessor.passed || 0}}/{{summaries.results.photoBatchProcessor.total || 0}}
+        </view>
+        <view class="section-arrow {{expandedSection === 'photoBatchProcessor' ? 'expanded' : ''}}">▼</view>
+      </view>
+      
+      <view class="section-content" wx:if="{{expandedSection === 'photoBatchProcessor'}}">
+        <view class="result-item" wx:if="{{summaries.results.photoBatchProcessor.error}}">
+          <view class="error-message">{{summaries.results.photoBatchProcessor.error}}</view>
+        </view>
+        <view class="result-summary">
+          <view class="summary-item">通过: {{summaries.results.photoBatchProcessor.passed || 0}}</view>
+          <view class="summary-item">失败: {{summaries.results.photoBatchProcessor.failed || 0}}</view>
+          <view class="summary-item">总计: {{summaries.results.photoBatchProcessor.total || 0}}</view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="result-section">
+      <view class="section-header" bindtap="toggleSection" data-section="traceSystem">
+        <view class="section-name">工作留痕系统</view>
+        <view class="section-status {{(summaries.results.traceSystem.failed > 0) ? 'error' : 'success'}}">
+          {{summaries.results.traceSystem.passed || 0}}/{{summaries.results.traceSystem.total || 0}}
+        </view>
+        <view class="section-arrow {{expandedSection === 'traceSystem' ? 'expanded' : ''}}">▼</view>
+      </view>
+      
+      <view class="section-content" wx:if="{{expandedSection === 'traceSystem'}}">
+        <view class="result-item" wx:if="{{summaries.results.traceSystem.error}}">
+          <view class="error-message">{{summaries.results.traceSystem.error}}</view>
+        </view>
+        <view class="result-summary">
+          <view class="summary-item">通过: {{summaries.results.traceSystem.passed || 0}}</view>
+          <view class="summary-item">失败: {{summaries.results.traceSystem.failed || 0}}</view>
+          <view class="summary-item">总计: {{summaries.results.traceSystem.total || 0}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="test-logs" wx:if="{{logs.length > 0}}">
+    <view class="section-title">测试日志</view>
+    <view class="logs-header">
+      <view class="logs-count">共 {{logs.length}} 条日志</view>
+      <view class="logs-action" bindtap="copyLogs">复制日志</view>
+    </view>
+    
+    <scroll-view scroll-y class="logs-container">
+      <view 
+        class="log-item {{item.passed ? 'success' : 'error'}}" 
+        wx:for="{{logs}}" 
+        wx:key="name"
+      >
+        <view class="log-status">{{item.passed ? '✓' : '✗'}}</view>
+        <view class="log-content">
+          <view class="log-name">{{item.name}}</view>
+          <view class="log-message">{{item.message}}</view>
+          <view class="log-time">{{item.timestamp}}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view> 

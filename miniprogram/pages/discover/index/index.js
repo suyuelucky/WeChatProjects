@@ -61,6 +61,44 @@ Page({
       icon: 'none'
     });
   },
+  
+  /**
+   * 导航至照片采集页面
+   */
+  navigateToPhotoCapture: function() {
+    wx.navigateTo({
+      url: '/pages/photo-capture/index',
+      success: function() {
+        console.log('成功导航到照片采集页面');
+      },
+      fail: function(err) {
+        console.error('导航到照片采集页面失败:', err);
+        wx.showToast({
+          title: '无法打开相机',
+          icon: 'none'
+        });
+      }
+    });
+  },
+  
+  /**
+   * 导航至极限测试页面
+   */
+  navigateToExtremeTest: function() {
+    wx.navigateTo({
+      url: '/pages/cloud-test/extreme-tests/index',
+      success: function() {
+        console.log('成功导航到极限测试页面');
+      },
+      fail: function(err) {
+        console.error('导航到极限测试页面失败:', err);
+        wx.showToast({
+          title: '无法打开测试页面',
+          icon: 'none'
+        });
+      }
+    });
+  },
 
   /**
    * 用户点击右上角分享

@@ -52,6 +52,14 @@
         <text class="arrow iconfont icon-arrow-right"></text>
       </view>
     </view>
+    
+    <view class="menu-group">
+      <view class="menu-item" bindtap="navigateTo" data-url="/pages/test/index">
+        <view class="menu-icon">🔍</view>
+        <view class="menu-text">系统测试</view>
+        <view class="menu-arrow">></view>
+      </view>
+    </view>
   </view>
   
   <view class="login-button" wx:if="{{!userInfo.nickName}}" bindtap="login">

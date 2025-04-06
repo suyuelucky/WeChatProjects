@@ -1,0 +1,131 @@
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  overflow: hidden;
+}
+
+/* 页面标题样式 */
+.page-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 10px 20px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.location-info {
+  margin-top: 5px;
+  font-size: 14px;
+  display: flex;
+}
+
+.location-name {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photo-count {
+  margin-left: 5px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 相机部分容器 */
+.camera-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* 照片列表入口按钮 */
+.photo-list-btn {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 40;
+  overflow: hidden;
+}
+
+.list-icon {
+  font-size: 16px;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 预览模式样式 */
+.preview-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #000;
+}
+
+.preview-image {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+}
+
+.preview-actions {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 30px;
+  color: #fff;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 5px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.discard-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+}
+
+.save-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z'%3E%3C/path%3E%3Cpolyline points='17 21 17 13 7 13 7 21'%3E%3C/polyline%3E%3Cpolyline points='7 3 7 8 15 8'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+/* 禁用组件样式 */
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+} 

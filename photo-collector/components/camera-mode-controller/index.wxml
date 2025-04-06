@@ -1,0 +1,92 @@
+<view class="camera-mode-controller">
+  <!-- 模式选择器 -->
+  <view class="mode-selector">
+    <view 
+      wx:for="{{modes}}" 
+      wx:key="id" 
+      class="mode-item {{mode === item.id ? 'active' : ''}} {{disabled || hasActiveTimer ? 'disabled' : ''}}"
+      data-mode="{{item.id}}"
+      bindtap="switchMode">
+      <view class="mode-icon {{item.icon}}"></view>
+      <text class="mode-name">{{item.name}}</text>
+    </view>
+  </view>
+  
+  <!-- 模式设置面板 -->
+  <view class="mode-settings {{showSettings ? 'show' : 'hide'}}">
+    <!-- 连拍模式设置 -->
+    <view class="settings-panel" hidden="{{mode !== 'continuous'}}">
+      <view class="setting-title">连拍设置</view>
+      <view class="setting-item">
+        <text class="setting-label">连拍数量:</text>
+        <slider 
+          class="setting-slider" 
+          min="1" 
+          max="10" 
+          step="1" 
+          value="{{continuousSettings.count}}" 
+          show-value
+          disabled="{{disabled || hasActiveTimer}}"
+          data-field="count"
+          bindchange="updateContinuousSettings"></slider>
+      </view>
+      <view class="setting-item">
+        <text class="setting-label">间隔时间:</text>
+        <slider 
+          class="setting-slider" 
+          min="0.5" 
+          max="5" 
+          step="0.5" 
+          value="{{continuousSettings.interval/1000}}" 
+          show-value
+          disabled="{{disabled || hasActiveTimer}}"
+          data-field="interval"
+          bindchange="updateContinuousSettings"></slider>
+        <text class="setting-unit">秒</text>
+      </view>
+    </view>
+    
+    <!-- 定时模式设置 -->
+    <view class="settings-panel" hidden="{{mode !== 'timer'}}">
+      <view class="setting-title">定时设置</view>
+      <view class="setting-item">
+        <text class="setting-label">延迟时间:</text>
+        <slider 
+          class="setting-slider" 
+          min="1" 
+          max="10" 
+          step="1" 
+          value="{{timerSettings.delay}}" 
+          show-value
+          disabled="{{disabled || hasActiveTimer}}"
+          data-field="delay"
+          bindchange="updateTimerSettings"></slider>
+        <text class="setting-unit">秒</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 拍照按钮 -->
+  <view class="capture-container">
+    <view 
+      class="capture-button {{disabled ? 'disabled' : ''}}"
+      bindtap="startCapture">
+      <!-- 正在连拍的提示 -->
+      <view class="continuous-indicator" wx:if="{{continuousSettings.isRunning}}">
+        <text class="remaining-count">{{continuousSettings.remainingCount}}</text>
+      </view>
+      
+      <!-- 定时倒计时提示 -->
+      <view class="timer-indicator" wx:elif="{{timerSettings.isRunning}}">
+        <text class="remaining-time">{{timerSettings.remainingTime}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 正在执行拍照时的停止按钮 -->
+  <view class="stop-button-container" wx:if="{{hasActiveTimer}}">
+    <view class="stop-button" bindtap="stopCapture">
+      <view class="stop-icon"></view>
+    </view>
+  </view>
+</view> 

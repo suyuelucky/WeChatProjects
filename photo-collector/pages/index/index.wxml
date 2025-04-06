@@ -1,0 +1,141 @@
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="title">照片采集工具</view>
+    <view class="subtitle">请选择项目和拍摄位置</view>
+  </view>
+  
+  <!-- 加载中 -->
+  <block wx:if="{{loading}}">
+    <view class="loading-container">
+      <view class="loading-spinner"></view>
+      <text>数据加载中...</text>
+    </view>
+  </block>
+  
+  <!-- 内容区域 -->
+  <block wx:else>
+    <view class="selection-area">
+      <!-- 项目选择 -->
+      <view class="section">
+        <view class="section-header">
+          <view class="section-title">选择项目</view>
+          <view class="add-btn" bindtap="showAddProject">
+            <text class="add-icon">+</text>
+            <text>新建项目</text>
+          </view>
+        </view>
+        <view class="section-content">
+          <scroll-view scroll-x="true" class="project-list">
+            <block wx:if="{{projects.length > 0}}">
+              <view 
+                wx:for="{{projects}}" 
+                wx:key="id" 
+                class="project-item {{selectedProject.id === item.id ? 'selected' : ''}}"
+                bindtap="selectProject"
+                data-id="{{item.id}}">
+                <view class="project-name">{{item.name}}</view>
+                <view class="project-info">{{item.createTime}}</view>
+              </view>
+            </block>
+            <block wx:else>
+              <view class="empty-project">暂无项目，点击右上角"+"创建</view>
+            </block>
+          </scroll-view>
+        </view>
+      </view>
+      
+      <!-- 位置选择 -->
+      <view class="section">
+        <view class="section-header">
+          <view class="section-title">选择位置</view>
+          <view class="add-btn" bindtap="showAddLocation">
+            <text class="add-icon">+</text>
+            <text>新建位置</text>
+          </view>
+        </view>
+        <view class="section-content">
+          <scroll-view scroll-y="true" class="location-list">
+            <block wx:if="{{selectedProject && locations.length > 0}}">
+              <view 
+                wx:for="{{locations}}" 
+                wx:key="id" 
+                class="location-item {{selectedLocation.id === item.id ? 'selected' : ''}}"
+                bindtap="selectLocation"
+                data-id="{{item.id}}">
+                <view class="location-name">{{item.name}}</view>
+                <view class="check-icon" wx:if="{{selectedLocation.id === item.id}}"></view>
+              </view>
+            </block>
+            <block wx:elif="{{selectedProject && locations.length === 0}}">
+              <view class="empty-location">该项目下暂无位置，点击右上角"+"创建</view>
+            </block>
+            <block wx:else>
+              <view class="empty-location">请先选择项目</view>
+            </block>
+          </scroll-view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="action-area">
+      <button 
+        class="action-button capture-button" 
+        disabled="{{!selectedProject || !selectedLocation}}"
+        bindtap="goToCapture">
+        开始拍照
+      </button>
+      <button 
+        class="action-button view-button" 
+        bindtap="goToPhotoList">
+        查看照片列表
+      </button>
+    </view>
+  </block>
+  
+  <!-- 页脚 -->
+  <view class="footer">
+    照片采集工具 v{{version}}
+  </view>
+  
+  <!-- 新建项目对话框 -->
+  <view class="dialog-mask" wx:if="{{showProjectDialog}}" bindtap="hideAddProject"></view>
+  <view class="dialog" wx:if="{{showProjectDialog}}">
+    <view class="dialog-header">
+      <text class="dialog-title">新建项目</text>
+    </view>
+    <view class="dialog-content">
+      <input 
+        class="dialog-input" 
+        placeholder="请输入项目名称"
+        value="{{newProjectName}}"
+        bindinput="inputProjectName" />
+      <view class="error-message" wx:if="{{projectNameError}}">{{projectNameError}}</view>
+    </view>
+    <view class="dialog-footer">
+      <button class="dialog-btn cancel-btn" bindtap="hideAddProject">取消</button>
+      <button class="dialog-btn confirm-btn" bindtap="createProject">确定</button>
+    </view>
+  </view>
+  
+  <!-- 新建位置对话框 -->
+  <view class="dialog-mask" wx:if="{{showLocationDialog}}" bindtap="hideAddLocation"></view>
+  <view class="dialog" wx:if="{{showLocationDialog}}">
+    <view class="dialog-header">
+      <text class="dialog-title">新建位置</text>
+    </view>
+    <view class="dialog-content">
+      <input 
+        class="dialog-input" 
+        placeholder="请输入位置名称"
+        value="{{newLocationName}}"
+        bindinput="inputLocationName" />
+      <view class="error-message" wx:if="{{locationNameError}}">{{locationNameError}}</view>
+    </view>
+    <view class="dialog-footer">
+      <button class="dialog-btn cancel-btn" bindtap="hideAddLocation">取消</button>
+      <button class="dialog-btn confirm-btn" bindtap="createLocation">确定</button>
+    </view>
+  </view>
+</view> 

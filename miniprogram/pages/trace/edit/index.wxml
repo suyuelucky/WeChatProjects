@@ -1,0 +1,96 @@
+<!-- miniprogram/pages/trace/edit/index.wxml -->
+<view class="container">
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-icon"></view>
+    <view class="loading-text">加载中...</view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error" wx:if="{{error}}">
+    <view class="error-text">{{error}}</view>
+    <view class="error-retry" bindtap="handleRefresh">重试</view>
+  </view>
+  
+  <block wx:if="{{!loading && !error}}">
+    <!-- 顶部工具栏 -->
+    <view class="toolbar">
+      <view class="toolbar-left" bindtap="handleComplete">
+        <text class="icon-back">←</text>
+        <text>返回</text>
+      </view>
+      <view class="toolbar-title">编辑留痕</view>
+      <view class="toolbar-right {{saving ? 'disabled' : ''}}" bindtap="handleSave">
+        <text>保存</text>
+      </view>
+    </view>
+    
+    <!-- 自动保存提示 -->
+    <view class="auto-save-tip" wx:if="{{lastSaved}}">
+      <text>上次保存: {{lastSaved}}</text>
+    </view>
+    
+    <!-- 标题输入 -->
+    <view class="title-input">
+      <input 
+        placeholder="请输入标题"
+        value="{{title}}"
+        bindinput="handleTitleInput"
+        maxlength="100"
+      />
+    </view>
+    
+    <!-- 内容输入 -->
+    <view class="content-input">
+      <textarea 
+        placeholder="请输入内容..."
+        value="{{content}}"
+        bindinput="handleContentInput"
+        maxlength="5000"
+        auto-height
+      />
+    </view>
+    
+    <!-- 照片列表 -->
+    <view class="photo-section">
+      <view class="section-title">照片</view>
+      <view class="photo-list">
+        <block wx:for="{{photos}}" wx:key="id">
+          <view class="photo-item">
+            <image 
+              class="photo" 
+              src="{{item.path}}" 
+              mode="aspectFill" 
+              data-index="{{index}}" 
+              bindtap="handlePreviewPhoto"
+            />
+            <view 
+              class="photo-delete" 
+              data-index="{{index}}" 
+              bindtap="handleDeletePhoto"
+            >×</view>
+          </view>
+        </block>
+        
+        <!-- 添加照片按钮 -->
+        <view class="photo-add" wx:if="{{photos.length < 9}}">
+          <view class="add-menu">
+            <view class="add-item" bindtap="handleTakePhoto">
+              <view class="add-icon">📷</view>
+              <view class="add-text">拍照</view>
+            </view>
+            <view class="add-item" bindtap="handleChooseFromAlbum">
+              <view class="add-icon">🖼️</view>
+              <view class="add-text">相册</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 底部区域 -->
+    <view class="footer">
+      <view class="btn btn-primary" bindtap="handleComplete">完成</view>
+    </view>
+  </block>
+</view> 

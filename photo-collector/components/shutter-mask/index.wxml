@@ -1,0 +1,2 @@
+<!-- 快门遮罩效果 -->
+<view class="shutter-mask" animation="{{animationData}}"></view> 

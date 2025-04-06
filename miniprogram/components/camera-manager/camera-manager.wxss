@@ -1,0 +1,267 @@
+/* 相机管理组件样式 */
+
+/* 容器样式 */
+.camera-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #000;
+}
+
+/* 相机视图 */
+.camera-view {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+}
+
+/* 未获得权限时的提示样式 */
+.permission-denied {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f8f8;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.permission-icon {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background-color: #f1f1f1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30rpx;
+  font-size: 60rpx;
+  color: #999;
+}
+
+.permission-text {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.permission-tips {
+  font-size: 28rpx;
+  color: #666;
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.permission-button {
+  width: 300rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  background-color: #07c160;
+  color: #fff;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+}
+
+/* 倒计时样式 */
+.countdown-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.countdown-number {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 100rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 120rpx;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 连拍计数器样式 */
+.continuous-counter {
+  position: absolute;
+  top: 50rpx;
+  right: 50rpx;
+  z-index: 10;
+}
+
+.counter-box {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 40rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 上方控制区样式 */
+.top-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 180rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent);
+}
+
+/* 控制按钮通用样式 */
+.control-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100rpx;
+  height: 120rpx;
+}
+
+.button-text {
+  font-size: 24rpx;
+  color: #fff;
+  margin-top: 8rpx;
+}
+
+/* 图标样式 */
+.icon-flash, .icon-switch, .mode-icon {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 36rpx;
+  position: relative;
+}
+
+/* 闪光灯模式样式 */
+.icon-flash.auto:after {
+  content: 'A';
+  position: absolute;
+  bottom: -10rpx;
+  right: -10rpx;
+  font-size: 20rpx;
+  background-color: #fff;
+  color: #000;
+  border-radius: 50%;
+  width: 24rpx;
+  height: 24rpx;
+  line-height: 24rpx;
+  text-align: center;
+}
+
+/* 模式选择器样式 */
+.mode-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120rpx;
+}
+
+.mode-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 20rpx;
+  width: 100rpx;
+  height: 100%;
+  opacity: 0.6;
+  transition: all 0.3s;
+}
+
+.mode-option.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.mode-text {
+  font-size: 24rpx;
+  color: #fff;
+  margin-top: 8rpx;
+}
+
+/* 底部控制区样式 */
+.bottom-controls {
+  position: absolute;
+  bottom: 60rpx;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 拍照按钮样式 */
+.capture-button {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 70rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 6rpx solid rgba(255, 255, 255, 0.8);
+  transition: all 0.3s;
+}
+
+.capture-button.active {
+  background-color: rgba(255, 0, 0, 0.3);
+  border-color: rgba(255, 0, 0, 0.8);
+}
+
+.capture-button-inner {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50rpx;
+  background-color: #fff;
+  transition: all 0.3s;
+}
+
+.capture-button.active .capture-button-inner {
+  background-color: #ff4d4f;
+}
+
+/* 图标字体 (可选：实际项目中可能使用图片或其他图标库) */
+.icon-camera:before {
+  content: "📷";
+}
+.icon-flash:before {
+  content: "⚡";
+}
+.icon-switch:before {
+  content: "🔄";
+}
+.icon-normal:before {
+  content: "📸";
+}
+.icon-continuous:before {
+  content: "🔄";
+}
+.icon-timer:before {
+  content: "⏱";
+} 

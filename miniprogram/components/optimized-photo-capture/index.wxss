@@ -1,0 +1,470 @@
+/* 优化的照片采集组件样式 */
+
+/* 组件容器 */
+.optimized-photo-capture {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: #f8f8f8;
+}
+
+/* 相机容器 */
+.camera-container {
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+  position: relative;
+}
+
+.camera-container.active {
+  height: 80vh;
+}
+
+/* 相机 */
+.camera {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: #000;
+}
+
+/* 相机控制区 */
+.camera-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 180rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 30rpx;
+}
+
+/* 拍照按钮 */
+.shutter-button {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.shutter-inner {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 正在拍照提示 */
+.taking-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 60rpx;
+  width: 100%;
+}
+
+.loading-circle {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  border: 6rpx solid #fff;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.hint-text {
+  color: #fff;
+  font-size: 28rpx;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* 处理中提示 */
+.processing-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 60rpx;
+  width: 100%;
+  padding: 0 40rpx;
+  box-sizing: border-box;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8rpx;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-bottom: 10rpx;
+}
+
+.progress-inner {
+  height: 100%;
+  background-color: #07c160;
+  transition: width 0.2s ease;
+}
+
+/* 相机操作按钮 */
+.camera-action-buttons {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.action-button {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.action-icon {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+/* 内存警告提示 */
+.memory-warning {
+  position: absolute;
+  top: 30rpx;
+  left: 30rpx;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 59, 48, 0.8);
+  border-radius: 30rpx;
+  padding: 10rpx 20rpx;
+}
+
+.warning-icon {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 10rpx;
+}
+
+.warning-text {
+  color: #fff;
+  font-size: 24rpx;
+}
+
+/* 网络状态提示 */
+.network-status {
+  position: absolute;
+  top: 90rpx;
+  left: 30rpx;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 204, 0, 0.8);
+  border-radius: 30rpx;
+  padding: 10rpx 20rpx;
+}
+
+.network-icon {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 10rpx;
+}
+
+.network-text {
+  color: #fff;
+  font-size: 24rpx;
+}
+
+/* 相机错误提示 */
+.camera-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 16rpx;
+  padding: 30rpx;
+  max-width: 80%;
+}
+
+.error-icon {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.error-text {
+  color: #fff;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+/* 照片预览区 */
+.photo-preview-container {
+  width: 100%;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.preview-title {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.preview-actions {
+  display: flex;
+  align-items: center;
+}
+
+.action-clear, .action-upload {
+  font-size: 28rpx;
+  color: #576b95;
+  margin-left: 30rpx;
+}
+
+/* 上传进度条 */
+.upload-progress {
+  width: 100%;
+  height: 6rpx;
+  background-color: #eee;
+  border-radius: 3rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.upload-progress .progress-inner {
+  height: 100%;
+  background-color: #07c160;
+  transition: width 0.3s ease;
+}
+
+.upload-progress .progress-text {
+  position: absolute;
+  top: 10rpx;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 24rpx;
+  color: #888;
+}
+
+/* 照片列表 */
+.photo-list {
+  width: 100%;
+  white-space: nowrap;
+  padding: 10rpx 0;
+}
+
+.photo-item {
+  display: inline-block;
+  width: 160rpx;
+  height: 160rpx;
+  margin-right: 20rpx;
+  position: relative;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 删除按钮 */
+.delete-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0 0 0 8rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.delete-icon {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+/* 上传状态指示器 */
+.upload-status {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-progress-circle {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.progress-value {
+  color: #fff;
+  font-size: 24rpx;
+}
+
+/* 上传成功指示器 */
+.upload-success {
+  position: absolute;
+  bottom: 10rpx;
+  right: 10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: #07c160;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.success-icon {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+/* 上传失败指示器 */
+.upload-error {
+  position: absolute;
+  bottom: 10rpx;
+  right: 10rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background-color: #fa5151;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.photo-item.uploading {
+  opacity: 0.7;
+}
+
+.photo-item.uploaded {
+  border: 2rpx solid #07c160;
+}
+
+/* 添加按钮 */
+.add-button {
+  display: inline-flex;
+  width: 160rpx;
+  height: 160rpx;
+  background-color: #f2f2f2;
+  border-radius: 8rpx;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-icon {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx;
+}
+
+.empty-icon {
+  width: 180rpx;
+  height: 180rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #888;
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.start-button {
+  padding: 20rpx 60rpx;
+  background-color: #07c160;
+  color: #fff;
+  font-size: 30rpx;
+  border-radius: 40rpx;
+}
+
+/* 响应式布局 */
+@media screen and (min-height: 700px) {
+  .camera-container.active {
+    height: 85vh;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .camera-container.active {
+    height: 70vh;
+  }
+}
+
+/* 确保在小屏幕设备上可见 */
+@media screen and (max-width: 375px) {
+  .photo-item {
+    width: 140rpx;
+    height: 140rpx;
+  }
+  
+  .add-button {
+    width: 140rpx;
+    height: 140rpx;
+  }
+} 

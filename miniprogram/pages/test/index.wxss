@@ -1,0 +1,325 @@
+/* miniprogram/pages/test/index.wxss */
+.container {
+  padding: 30rpx;
+}
+
+.header {
+  margin-bottom: 40rpx;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin: 30rpx 0 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+/* 测试控制 */
+.test-controls {
+  margin-bottom: 30rpx;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.btn {
+  padding: 20rpx;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 28rpx;
+  flex: 1;
+}
+
+.btn.primary {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn.secondary {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.btn.warning {
+  background-color: #f39c12;
+  color: white;
+}
+
+.btn.danger {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+}
+
+/* 测试状态 */
+.test-status {
+  background-color: #f9f9f9;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  margin-bottom: 30rpx;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 10rpx 30rpx;
+  border-radius: 30rpx;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.status-badge.success {
+  background-color: #27ae60;
+  color: white;
+}
+
+.status-badge.error {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.status-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.status-item {
+  font-size: 24rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+  background-color: #f0f0f0;
+}
+
+.status-item.passed {
+  background-color: rgba(39, 174, 96, 0.2);
+  color: #27ae60;
+}
+
+.status-item.failed {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+}
+
+/* 测试结果和极端测试结果 */
+.test-results, .extreme-results {
+  margin-bottom: 30rpx;
+}
+
+.result-section {
+  background-color: white;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+  border: 1rpx solid #eee;
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-bottom: 1rpx solid #eee;
+}
+
+.section-name {
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.section-status {
+  font-size: 24rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  background-color: #f0f0f0;
+}
+
+.section-status.success {
+  background-color: rgba(39, 174, 96, 0.2);
+  color: #27ae60;
+}
+
+.section-status.error {
+  background-color: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+}
+
+.section-arrow {
+  font-size: 24rpx;
+  color: #999;
+  transform: rotate(-90deg);
+  transition: transform 0.3s;
+}
+
+.section-arrow.expanded {
+  transform: rotate(0);
+}
+
+.section-content {
+  padding: 20rpx;
+  background-color: white;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 26rpx;
+  padding: 10rpx;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 6rpx;
+  margin-bottom: 15rpx;
+}
+
+.result-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+}
+
+.summary-item {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 极端测试详情 */
+.test-detail {
+  font-size: 26rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.error-list {
+  margin-top: 15rpx;
+  background-color: #fff8f8;
+  padding: 10rpx;
+  border-radius: 6rpx;
+}
+
+.error-title {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #e74c3c;
+  margin-bottom: 10rpx;
+}
+
+.error-item {
+  padding: 10rpx;
+  border-left: 3rpx solid #e74c3c;
+  margin-bottom: 10rpx;
+}
+
+.error-method, .error-case, .error-message {
+  font-size: 24rpx;
+  margin-bottom: 4rpx;
+}
+
+.error-method {
+  font-weight: bold;
+}
+
+.error-message {
+  color: #e74c3c;
+}
+
+/* 测试日志 */
+.test-logs {
+  margin-bottom: 30rpx;
+}
+
+.logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.logs-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.logs-action {
+  font-size: 24rpx;
+  color: #3498db;
+}
+
+.logs-container {
+  max-height: 500rpx;
+  background-color: #f9f9f9;
+  border-radius: 8rpx;
+  padding: 15rpx;
+}
+
+.log-item {
+  display: flex;
+  padding: 15rpx;
+  border-bottom: 1rpx solid #eee;
+  background-color: white;
+  margin-bottom: 10rpx;
+  border-radius: 6rpx;
+}
+
+.log-status {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.log-item.success .log-status {
+  color: #27ae60;
+}
+
+.log-item.error .log-status {
+  color: #e74c3c;
+}
+
+.log-content {
+  flex: 1;
+}
+
+.log-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  margin-bottom: 6rpx;
+}
+
+.log-message {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 6rpx;
+}
+
+.log-time {
+  font-size: 22rpx;
+  color: #999;
+} 

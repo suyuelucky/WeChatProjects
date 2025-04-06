@@ -1,0 +1,162 @@
+/* pages/cloud-test/index.wxss */
+.container {
+  padding: 30rpx;
+  box-sizing: border-box;
+  background-color: #f6f6f6;
+  min-height: 100vh;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30rpx;
+  color: #333;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 24rpx;
+  background: #f0f5ff;
+  color: #1e88e5;
+  border-bottom: 1rpx solid #e0e0e0;
+}
+
+.card-content {
+  padding: 24rpx;
+}
+
+.label {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  border-bottom: 1rpx solid #eee;
+  padding-bottom: 10rpx;
+}
+
+.function-btn {
+  margin: 20rpx 0;
+  background-color: #1aad19;
+  color: #fff;
+  font-size: 30rpx;
+}
+
+.function-btn:active {
+  background: #1565c0;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.btn-group .function-btn {
+  flex: 1;
+  min-width: 200rpx;
+  margin: 10rpx;
+  font-size: 28rpx;
+}
+
+.result-area {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 8rpx;
+}
+
+.result {
+  word-break: break-all;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.full-result, .file-info {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx dashed #ddd;
+}
+
+.json-result {
+  word-break: break-all;
+  font-size: 24rpx;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  max-height: 300rpx;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-family: monospace;
+}
+
+.tips {
+  font-size: 26rpx;
+  color: #999;
+  text-align: center;
+  margin: 20rpx 0;
+  line-height: 1.6;
+}
+
+.tips-small {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 16rpx;
+  line-height: 1.5;
+}
+
+.bottom-tips {
+  margin-top: 40rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #eee;
+}
+
+.user-info {
+  margin-top: 10rpx;
+}
+
+.user-detail {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.user-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 20rpx;
+}
+
+.user-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.user-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 极端测试按钮 */
+.extreme-test-btn {
+  background-color: #ff9800;
+  width: 100%;
+}
+
+navigator {
+  width: 100%;
+} 

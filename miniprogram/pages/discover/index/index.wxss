@@ -1,58 +1,56 @@
 /* 发现页面样式 */
 .discover-container {
-  padding: 20rpx;
-  background-color: #f8f8f8;
+  padding-bottom: 40rpx;
+  position: relative;
+  min-height: 100vh;
 }
 
 .search-bar {
-  margin-bottom: 20rpx;
+  padding: 20rpx 30rpx;
 }
 
 .search-input {
+  background: #f0f0f0;
+  border-radius: 30rpx;
+  padding: 15rpx 30rpx;
   display: flex;
   align-items: center;
-  background-color: #fff;
-  padding: 10rpx 20rpx;
-  border-radius: 30rpx;
 }
 
 .search-icon {
-  margin-right: 10rpx;
-  font-size: 32rpx;
-  color: #999;
+  margin-right: 15rpx;
 }
 
 .banner-section {
-  margin-bottom: 30rpx;
   height: 300rpx;
-  border-radius: 12rpx;
-  overflow: hidden;
+  margin-bottom: 30rpx;
 }
 
 .banner-image {
   width: 100%;
-  height: 100%;
+  height: 300rpx;
+  border-radius: 10rpx;
+}
+
+swiper {
+  height: 300rpx;
 }
 
 .navigation-grid {
   display: flex;
   flex-wrap: wrap;
-  background-color: #fff;
-  padding: 20rpx;
-  margin-bottom: 30rpx;
-  border-radius: 12rpx;
+  padding: 0 20rpx;
+  margin-bottom: 40rpx;
 }
 
 .grid-item {
   width: 20%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20rpx;
+  text-align: center;
+  margin-bottom: 30rpx;
 }
 
 .grid-icon {
-  font-size: 48rpx;
+  font-size: 60rpx;
   margin-bottom: 10rpx;
 }
 
@@ -62,9 +60,7 @@
 }
 
 .content-section {
-  background-color: #fff;
-  padding: 20rpx;
-  border-radius: 12rpx;
+  padding: 0 30rpx;
 }
 
 .section-title {
@@ -79,36 +75,91 @@
 }
 
 .content-card {
-  display: flex;
-  margin-bottom: 20rpx;
-  padding-bottom: 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  background: #fff;
+  border-radius: 15rpx;
+  overflow: hidden;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
 .card-image {
-  width: 200rpx;
-  height: 150rpx;
-  border-radius: 8rpx;
-  margin-right: 20rpx;
+  width: 100%;
+  height: 300rpx;
 }
 
 .card-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 20rpx;
 }
 
 .card-title {
   font-size: 30rpx;
   font-weight: bold;
   margin-bottom: 10rpx;
+  display: block;
 }
 
 .card-desc {
   font-size: 26rpx;
   color: #666;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: block;
+}
+
+/* 浮动拍照按钮样式 */
+.floating-camera-btn {
+  position: fixed;
+  right: 30rpx;
+  bottom: 120rpx;
+  width: 110rpx;
+  height: 110rpx;
+  background: #1aad19;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.camera-icon {
+  font-size: 50rpx;
+  color: #fff;
+}
+
+/* 测试中心入口样式 */
+.test-center-entry {
+  margin: 20rpx;
+  padding: 30rpx;
+  background: linear-gradient(to right, #4a90e2, #63bff0);
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  box-shadow: 0 4rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.test-center-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+}
+
+.test-center-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.test-center-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 6rpx;
+}
+
+.test-center-desc {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+.test-center-arrow {
+  font-size: 36rpx;
+  font-weight: bold;
 } 

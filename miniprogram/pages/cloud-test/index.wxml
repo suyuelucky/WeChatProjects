@@ -1,0 +1,98 @@
+<!--pages/cloud-test/index.wxml-->
+<view class="container">
+  <view class="title">云开发测试</view>
+  
+  <!-- 提示信息 -->
+  <view class="tips">
+    请确保在 app.js 中完成云开发初始化
+  </view>
+  
+  <!-- 获取OpenID区域 -->
+  <view class="card">
+    <view class="label">OpenID</view>
+    <view class="result">{{openId ? openId : '未获取'}}</view>
+    <button class="function-btn" bindtap="getOpenId">获取OpenID</button>
+  </view>
+  
+  <!-- 云数据库操作区域 -->
+  <view class="card">
+    <view class="label">云数据库操作</view>
+    <view class="btn-group">
+      <button class="function-btn" bindtap="initDatabase">初始化数据库</button>
+      <button class="function-btn" bindtap="updateUser">创建/更新用户</button>
+      <button class="function-btn" bindtap="queryUser">查询用户信息</button>
+    </view>
+    
+    <view class="result-area" wx:if="{{initDatabaseResult !== null}}">
+      <view class="label">初始化结果</view>
+      <view class="json-result">{{initDatabaseResult}}</view>
+    </view>
+    
+    <view class="result-area" wx:if="{{userInfo !== null}}">
+      <view class="label">用户信息</view>
+      <view class="user-info" wx:if="{{userInfo}}">
+        <view class="user-detail">
+          <view class="user-avatar" wx:if="{{userInfo.avatarUrl}}">
+            <image src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+          </view>
+          <view class="user-name">{{userInfo.nickName || '未知用户'}}</view>
+        </view>
+        <view class="json-result">{{userInfo}}</view>
+      </view>
+    </view>
+    
+    <view class="result-area" wx:if="{{dbQueryResult !== null}}">
+      <view class="label">查询结果</view>
+      <view class="json-result">{{dbQueryResult}}</view>
+    </view>
+  </view>
+  
+  <!-- 云存储操作区域 -->
+  <view class="card">
+    <view class="label">云存储操作</view>
+    <view class="btn-group">
+      <button class="function-btn" bindtap="uploadFile">上传文件</button>
+      <button class="function-btn" bindtap="downloadFile">下载文件</button>
+      <button class="function-btn" bindtap="getFileList">获取文件列表</button>
+    </view>
+    
+    <view class="result-area" wx:if="{{uploadResult !== null}}">
+      <view class="label">上传结果</view>
+      <view class="json-result">{{uploadResult}}</view>
+    </view>
+    
+    <view class="result-area" wx:if="{{downloadResult !== null}}">
+      <view class="label">下载结果</view>
+      <view class="json-result">{{downloadResult}}</view>
+    </view>
+    
+    <view class="result-area" wx:if="{{fileListResult !== null}}">
+      <view class="label">文件列表</view>
+      <view class="json-result">{{fileListResult}}</view>
+    </view>
+  </view>
+  
+  <!-- 云函数结果区域 -->
+  <view class="card" wx:if="{{cloudFunctionResult !== null}}">
+    <view class="label">云函数调用结果</view>
+    <view class="json-result">{{cloudFunctionResult}}</view>
+  </view>
+  
+  <!-- 极端测试入口 -->
+  <view class="card">
+    <view class="label">极端测试</view>
+    <view class="btn-group">
+      <navigator url="./extreme-tests/index" open-type="navigate">
+        <button class="function-btn extreme-test-btn">进入极端测试</button>
+      </navigator>
+    </view>
+    <view class="tips-small">
+      极端测试包含批量操作、数据完整性和错误处理测试，可验证云开发在高负载和异常情况下的表现
+    </view>
+  </view>
+  
+  <!-- 底部提示 -->
+  <view class="tips bottom-tips">
+    本页面仅用于测试云开发功能，生产环境请自行实现对应业务逻辑
+  </view>
+</view> 

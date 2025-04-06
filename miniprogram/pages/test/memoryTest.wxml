@@ -1,0 +1,83 @@
+<view class="container">
+  <view class="header">
+    <view class="title">内存管理优化测试</view>
+    <view class="status {{testSuccess ? 'success' : testCompleted ? 'fail' : ''}}">{{testStatus}}</view>
+  </view>
+  
+  <view class="section memory-stats">
+    <view class="section-title">内存使用统计</view>
+    <view class="stats-row">
+      <view class="stats-item">
+        <view class="stats-label">JS堆大小</view>
+        <view class="stats-value">{{memoryStats.jsHeapSize}}</view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-label">内存使用率</view>
+        <view class="stats-value">{{memoryStats.usedPercentage}}</view>
+      </view>
+    </view>
+    <view class="stats-row">
+      <view class="stats-item">
+        <view class="stats-label">图片数量</view>
+        <view class="stats-value">{{memoryStats.imageCount}}</view>
+      </view>
+      <view class="stats-item">
+        <view class="stats-label">缓存大小</view>
+        <view class="stats-value">{{memoryStats.totalCacheSize}}</view>
+      </view>
+    </view>
+    <view class="stats-row">
+      <view class="stats-item">
+        <view class="stats-label">低内存模式</view>
+        <view class="stats-value">{{memoryStats.isLowMemoryMode}}</view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="buttons">
+    <button class="btn" bindtap="runMemoryTest" disabled="{{testStarted && !testCompleted}}">执行内存测试</button>
+    <button class="btn" bindtap="cleanupMemory">清理内存</button>
+    <button class="btn" bindtap="createTestPhotos">创建测试照片</button>
+  </view>
+  
+  <view class="section test-results" wx:if="{{testStarted}}">
+    <view class="section-title">
+      测试结果
+      <text class="details-toggle" bindtap="toggleDetails">{{showDetails ? '隐藏详情' : '显示详情'}}</text>
+    </view>
+    
+    <view class="result-summary" wx:if="{{testCompleted}}">
+      <view class="summary-item">
+        <view class="summary-label">测试状态</view>
+        <view class="summary-value {{testSuccess ? 'success' : 'fail'}}">
+          {{testSuccess ? '通过' : '失败'}}
+        </view>
+      </view>
+      <view class="summary-item">
+        <view class="summary-label">测试ID</view>
+        <view class="summary-value">{{testId}}</view>
+      </view>
+      <view class="summary-item">
+        <view class="summary-label">执行时间</view>
+        <view class="summary-value">{{testDuration}}秒</view>
+      </view>
+    </view>
+    
+    <view class="result-steps" wx:if="{{showDetails && testResults.length > 0}}">
+      <view class="step-item" wx:for="{{testResults}}" wx:key="step">
+        <view class="step-header">
+          <text class="step-status-icon {{item.status}}">
+            {{item.status === 'success' ? '✓' : item.status === 'partial' ? '!' : '✗'}}
+          </text>
+          <text class="step-title">{{item.step}}</text>
+        </view>
+        <view class="step-details" wx:if="{{item.details}}">{{item.details}}</view>
+      </view>
+    </view>
+    
+    <view class="error-list" wx:if="{{testErrors && testErrors.length > 0}}">
+      <view class="error-title">错误信息</view>
+      <view class="error-item" wx:for="{{testErrors}}" wx:key="*this">{{item}}</view>
+    </view>
+  </view>
+</view> 

@@ -1,0 +1,130 @@
+<view class="resilient-uploader">
+  <!-- 网络状态提示 -->
+  <view class="network-tip {{showNetworkTip ? 'show' : ''}}" wx:if="{{showNetworkTip}}">
+    <view class="network-tip-icon">
+      <icon type="{{networkState.connected ? 'info' : 'warn'}}" size="16"></icon>
+    </view>
+    <view class="network-tip-text">{{networkTip}}</view>
+  </view>
+  
+  <!-- 操作按钮 -->
+  <view class="action-bar">
+    <button class="action-btn primary" bindtap="choosePhoto">选择照片</button>
+    <button class="action-btn" bindtap="startUpload" disabled="{{pendingPhotos.length === 0}}">开始上传</button>
+    <button class="action-btn secondary" bindtap="pauseAllUploads" wx:if="{{isUploading}}">暂停上传</button>
+    <button class="action-btn secondary" bindtap="resumeAllUploads" wx:else>恢复上传</button>
+  </view>
+  
+  <!-- 网络状态 -->
+  <view class="status-bar">
+    <view class="network-status">
+      <text class="label">网络状态:</text>
+      <text class="value {{!networkState.connected ? 'error' : networkState.networkType === 'wifi' ? 'success' : ''}}">
+        {{networkState.connected ? networkState.networkType : '已断开'}}
+      </text>
+    </view>
+    <view class="network-signal">
+      <text class="label">信号强度:</text>
+      <text class="value {{networkState.signalStrength === 'weak' ? 'warning' : networkState.signalStrength === 'strong' ? 'success' : ''}}">
+        {{networkState.signalStrength === 'strong' ? '强' : networkState.signalStrength === 'weak' ? '弱' : '中等'}}
+      </text>
+    </view>
+  </view>
+  
+  <!-- 待上传照片列表 -->
+  <view class="photo-section" wx:if="{{pendingPhotos.length > 0}}">
+    <view class="section-title">
+      <text>待上传 ({{pendingPhotos.length}})</text>
+    </view>
+    <view class="photo-list">
+      <view class="photo-item" wx:for="{{pendingPhotos}}" wx:key="id">
+        <view class="photo-preview">
+          <image class="photo-image" src="{{item.path}}" mode="aspectFill"></image>
+          <view class="photo-status pending">等待上传</view>
+        </view>
+        <view class="photo-info">
+          <view class="photo-name">{{item.name}}</view>
+          <view class="photo-size">{{(item.size / 1024).toFixed(1)}} KB</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 上传中照片列表 -->
+  <view class="photo-section" wx:if="{{uploadingPhotos.length > 0}}">
+    <view class="section-title">
+      <text>上传中 ({{uploadingPhotos.length}})</text>
+    </view>
+    <view class="photo-list">
+      <view class="photo-item" wx:for="{{uploadingPhotos}}" wx:key="id">
+        <view class="photo-preview">
+          <image class="photo-image" src="{{item.path}}" mode="aspectFill"></image>
+          <view class="photo-status uploading">上传中</view>
+        </view>
+        <view class="photo-info">
+          <view class="photo-name">{{item.name}}</view>
+          <view class="photo-progress">
+            <progress percent="{{item.progress}}" stroke-width="3" activeColor="#007aff"></progress>
+            <text class="progress-text">{{item.progress}}%</text>
+          </view>
+          <view class="photo-actions">
+            <button class="photo-btn cancel" data-task-id="{{item.taskId}}" bindtap="cancelUpload">取消</button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 上传失败照片列表 -->
+  <view class="photo-section" wx:if="{{failedPhotos.length > 0}}">
+    <view class="section-title">
+      <text>上传失败 ({{failedPhotos.length}})</text>
+    </view>
+    <view class="photo-list">
+      <view class="photo-item" wx:for="{{failedPhotos}}" wx:key="id">
+        <view class="photo-preview">
+          <image class="photo-image" src="{{item.path}}" mode="aspectFill"></image>
+          <view class="photo-status failed">上传失败</view>
+        </view>
+        <view class="photo-info">
+          <view class="photo-name">{{item.name}}</view>
+          <view class="photo-error" wx:if="{{item.error}}">
+            {{item.error.errMsg || item.error.message || '上传出错'}}
+          </view>
+          <view class="photo-actions">
+            <button class="photo-btn retry" data-photo-id="{{item.id}}" bindtap="retryUpload">重试</button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 已上传照片列表 -->
+  <view class="photo-section" wx:if="{{uploadedPhotos.length > 0}}">
+    <view class="section-title">
+      <text>已上传 ({{uploadedPhotos.length}})</text>
+      <view class="section-actions">
+        <button class="section-btn" bindtap="clearUploadedPhotos">清除</button>
+      </view>
+    </view>
+    <view class="photo-list">
+      <view class="photo-item" wx:for="{{uploadedPhotos}}" wx:key="id">
+        <view class="photo-preview">
+          <image class="photo-image" src="{{item.path}}" mode="aspectFill"></image>
+          <view class="photo-status completed">上传完成</view>
+        </view>
+        <view class="photo-info">
+          <view class="photo-name">{{item.name}}</view>
+          <view class="photo-size">{{(item.size / 1024).toFixed(1)}} KB</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 空状态提示 -->
+  <view class="empty-state" wx:if="{{pendingPhotos.length === 0 && uploadingPhotos.length === 0 && failedPhotos.length === 0 && uploadedPhotos.length === 0}}">
+    <view class="empty-icon">📷</view>
+    <view class="empty-text">点击"选择照片"按钮开始上传</view>
+    <view class="empty-subtext">支持断点续传，弱网环境也能稳定上传</view>
+  </view>
+</view> 

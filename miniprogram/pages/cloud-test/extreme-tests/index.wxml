@@ -1,0 +1,228 @@
+<view class="container">
+  <view class="title">云开发极端测试套件</view>
+  
+  <!-- 测试统计 -->
+  <view class="card stats-card {{testStats.running ? 'running' : ''}}">
+    <view class="card-title">测试状态</view>
+    <view class="stats-container">
+      <view class="stat-item">
+        <text class="stat-label">总测试：</text>
+        <text class="stat-value">{{testStats.total}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">成功：</text>
+        <text class="stat-value success">{{testStats.success}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">失败：</text>
+        <text class="stat-value failed">{{testStats.failed}}</text>
+      </view>
+      <view class="stat-item" wx:if="{{testStats.duration !== null}}">
+        <text class="stat-label">耗时：</text>
+        <text class="stat-value">{{testStats.duration}}秒</text>
+      </view>
+      <view class="stat-item status-item" wx:if="{{testStats.running}}">
+        <text class="running-status">测试运行中...</text>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="btn-group">
+      <button class="function-btn" bindtap="runAllTests" disabled="{{testing}}">运行所有测试</button>
+      <button class="function-btn clear-btn" bindtap="cleanupAllTestData" disabled="{{testing}}">清理测试数据</button>
+      <button class="function-btn reset-btn" bindtap="resetTestResults" disabled="{{testing}}">重置结果</button>
+    </view>
+  </view>
+  
+  <!-- 全局配置 -->
+  <view class="card">
+    <view class="card-title">全局配置</view>
+    <view class="config-item">
+      <text class="config-label">并行运行测试：</text>
+      <switch checked="{{config.runParallel}}" bindchange="updateConfig" data-field="runParallel"></switch>
+    </view>
+    <view class="config-item">
+      <text class="config-label">每次测试后清理数据：</text>
+      <switch checked="{{config.runCleanupAfterEach}}" bindchange="updateConfig" data-field="runCleanupAfterEach"></switch>
+    </view>
+  </view>
+  
+  <!-- 批量操作测试 -->
+  <view class="card test-card {{currentTest === 'batch' ? 'active' : ''}}">
+    <view class="card-header">
+      <view class="card-title">批量操作测试</view>
+      <switch checked="{{config.batchOperations.enabled}}" bindchange="toggleTestModule" data-module="batchOperations"></switch>
+    </view>
+    
+    <view class="card-content" wx:if="{{config.batchOperations.enabled}}">
+      <view class="config-section">
+        <view class="config-item">
+          <text class="config-label">批量大小：</text>
+          <slider min="5" max="50" value="{{config.batchOperations.batchSize}}" show-value 
+            bindchange="updateConfig" data-category="batchOperations" data-field="batchSize"></slider>
+        </view>
+        <view class="config-item">
+          <text class="config-label">并发限制：</text>
+          <slider min="1" max="10" value="{{config.batchOperations.concurrentLimit}}" show-value 
+            bindchange="updateConfig" data-category="batchOperations" data-field="concurrentLimit"></slider>
+        </view>
+        <view class="config-item">
+          <text class="config-label">文件大小(KB)：</text>
+          <slider min="50" max="500" value="{{config.batchOperations.fileSize}}" show-value 
+            bindchange="updateConfig" data-category="batchOperations" data-field="fileSize"></slider>
+        </view>
+      </view>
+      
+      <view class="btn-group">
+        <button class="function-btn" bindtap="runBatchTests" disabled="{{testing}}">运行批量测试</button>
+        <button class="function-btn details-btn" bindtap="viewTestDetails" data-type="batch" 
+          disabled="{{!batchResults}}">查看详情</button>
+      </view>
+      
+      <view class="result-summary" wx:if="{{batchResults}}">
+        <view class="result-item">
+          <text class="result-label">测试状态：</text>
+          <text class="result-value {{batchResults.success ? 'success' : 'failed'}}">
+            {{batchResults.success ? '成功' : '失败'}}
+          </text>
+        </view>
+        <view class="result-item" wx:if="{{batchResults.fileUploadStats}}">
+          <text class="result-label">文件上传：</text>
+          <text class="result-value">{{batchResults.fileUploadStats.successCount}}/{{batchResults.fileUploadStats.totalCount}}</text>
+        </view>
+        <view class="result-item" wx:if="{{batchResults.dbQueryStats}}">
+          <text class="result-label">数据查询：</text>
+          <text class="result-value">{{batchResults.dbQueryStats.successCount}}/{{batchResults.dbQueryStats.totalCount}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 数据完整性测试 -->
+  <view class="card test-card {{currentTest === 'dataIntegrity' ? 'active' : ''}}">
+    <view class="card-header">
+      <view class="card-title">数据完整性测试</view>
+      <switch checked="{{config.dataIntegrity.enabled}}" bindchange="toggleTestModule" data-module="dataIntegrity"></switch>
+    </view>
+    
+    <view class="card-content" wx:if="{{config.dataIntegrity.enabled}}">
+      <view class="config-section">
+        <view class="config-item">
+          <text class="config-label">超长字符串(MB)：</text>
+          <slider min="0.1" max="5" step="0.1" value="{{config.dataIntegrity.longStringLength}}" show-value 
+            bindchange="updateConfig" data-category="dataIntegrity" data-field="longStringLength"></slider>
+        </view>
+        <view class="config-item">
+          <text class="config-label">对象嵌套深度：</text>
+          <slider min="10" max="50" value="{{config.dataIntegrity.objectNestingDepth}}" show-value 
+            bindchange="updateConfig" data-category="dataIntegrity" data-field="objectNestingDepth"></slider>
+        </view>
+        <view class="config-item">
+          <text class="config-label">大量字段数：</text>
+          <slider min="50" max="500" value="{{config.dataIntegrity.largeObjectFieldCount}}" show-value 
+            bindchange="updateConfig" data-category="dataIntegrity" data-field="largeObjectFieldCount"></slider>
+        </view>
+      </view>
+      
+      <view class="btn-group">
+        <button class="function-btn" bindtap="runDataIntegrityTests" disabled="{{testing}}">运行完整性测试</button>
+        <button class="function-btn details-btn" bindtap="viewTestDetails" data-type="dataIntegrity" 
+          disabled="{{!dataIntegrityResults}}">查看详情</button>
+      </view>
+      
+      <view class="result-summary" wx:if="{{dataIntegrityResults}}">
+        <view class="result-item">
+          <text class="result-label">测试状态：</text>
+          <text class="result-value {{dataIntegrityResults.success ? 'success' : 'failed'}}">
+            {{dataIntegrityResults.success ? '成功' : '失败'}}
+          </text>
+        </view>
+        <view class="result-item" wx:if="{{dataIntegrityResults.summary}}">
+          <text class="result-label">特殊字符处理：</text>
+          <text class="result-value {{dataIntegrityResults.summary.specialChar.success ? 'success' : 'failed'}}">
+            {{dataIntegrityResults.summary.specialChar.success ? '通过' : '失败'}}
+          </text>
+        </view>
+        <view class="result-item" wx:if="{{dataIntegrityResults.summary}}">
+          <text class="result-label">大量字段测试：</text>
+          <text class="result-value {{dataIntegrityResults.summary.largeObject.success ? 'success' : 'failed'}}">
+            {{dataIntegrityResults.summary.largeObject.success ? '通过' : '失败'}}
+          </text>
+        </view>
+        <view class="result-item" wx:if="{{dataIntegrityResults.summary}}">
+          <text class="result-label">嵌套对象测试：</text>
+          <text class="result-value {{dataIntegrityResults.summary.nestedObject.success ? 'success' : 'failed'}}">
+            {{dataIntegrityResults.summary.nestedObject.success ? '通过' : '失败'}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 错误处理测试 -->
+  <view class="card test-card {{currentTest === 'errorHandling' ? 'active' : ''}}">
+    <view class="card-header">
+      <view class="card-title">错误处理测试</view>
+      <switch checked="{{config.errorHandling.enabled}}" bindchange="toggleTestModule" data-module="errorHandling"></switch>
+    </view>
+    
+    <view class="card-content" wx:if="{{config.errorHandling.enabled}}">
+      <view class="config-section">
+        <view class="config-item">
+          <text class="config-label">测试运行次数：</text>
+          <slider min="2" max="10" value="{{config.errorHandling.testRuns}}" show-value 
+            bindchange="updateConfig" data-category="errorHandling" data-field="testRuns"></slider>
+        </view>
+        <view class="config-item">
+          <text class="config-label">错误概率：</text>
+          <slider min="0.1" max="0.9" step="0.1" value="{{config.errorHandling.networkErrorProbability}}" show-value 
+            bindchange="updateConfig" data-category="errorHandling" data-field="networkErrorProbability"></slider>
+        </view>
+        <view class="config-item">
+          <text class="config-label">并发操作数：</text>
+          <slider min="2" max="8" value="{{config.errorHandling.concurrentOperations}}" show-value 
+            bindchange="updateConfig" data-category="errorHandling" data-field="concurrentOperations"></slider>
+        </view>
+      </view>
+      
+      <view class="btn-group">
+        <button class="function-btn" bindtap="runErrorHandlingTests" disabled="{{testing}}">运行错误处理测试</button>
+        <button class="function-btn details-btn" bindtap="viewTestDetails" data-type="errorHandling" 
+          disabled="{{!errorHandlingResults}}">查看详情</button>
+      </view>
+      
+      <view class="result-summary" wx:if="{{errorHandlingResults}}">
+        <view class="result-item">
+          <text class="result-label">测试状态：</text>
+          <text class="result-value {{errorHandlingResults.success ? 'success' : 'failed'}}">
+            {{errorHandlingResults.success ? '成功' : '失败'}}
+          </text>
+        </view>
+        <view class="result-item" wx:if="{{errorHandlingResults.summary}}">
+          <text class="result-label">无效输入处理：</text>
+          <text class="result-value">{{errorHandlingResults.summary.invalidInput.errorsProperlyHandled}}/{{errorHandlingResults.summary.invalidInput.testCases}}</text>
+        </view>
+        <view class="result-item" wx:if="{{errorHandlingResults.summary}}">
+          <text class="result-label">边界条件处理：</text>
+          <text class="result-value">{{errorHandlingResults.summary.edgeCases.successes}}/{{errorHandlingResults.summary.edgeCases.testCases}}</text>
+        </view>
+        <view class="result-item" wx:if="{{errorHandlingResults.summary}}">
+          <text class="result-label">网络恢复成功率：</text>
+          <text class="result-value">{{errorHandlingResults.summary.networkRecovery.successRate.toFixed(1)}}%</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 提示信息 -->
+  <view class="card tips-card">
+    <view class="tips-title">使用提示</view>
+    <view class="tips-content">
+      <text>1. 运行测试前请确保云开发环境已初始化</text>
+      <text>2. 测试过程可能会产生大量数据，请注意云开发用量</text>
+      <text>3. 测试完成后建议清理测试数据以释放资源</text>
+      <text>4. 详细测试结果可在控制台查看</text>
+      <text>5. 如测试运行时间过长，可适当降低测试参数</text>
+    </view>
+  </view>
+</view> 

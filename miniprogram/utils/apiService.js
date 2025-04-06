@@ -1,5 +1,10 @@
-import { hasNetworkConnection } from './networkUtils';
-import { syncQueue } from './storageUtils';
+/**
+ * API服务模块
+ * 提供网络请求、离线操作和同步队列管理功能
+ */
+
+const { hasNetworkConnection } = require('./networkUtils');
+const { syncQueue } = require('./storageUtils');
 
 // API基础配置
 const API_CONFIG = {
@@ -205,4 +210,5 @@ const apiService = {
   }
 };
 
-export default apiService; 
+// 导出apiService实例
+module.exports = apiService; 

@@ -1,0 +1,142 @@
+{
+  "timestamp": "2025-04-05T17:27:13.014Z",
+  "summary": {
+    "total": {
+      "passed": 17,
+      "failed": 3,
+      "passRate": 85
+    },
+    "categories": {
+      "circular": {
+        "passed": 4,
+        "failed": 0,
+        "passRate": 100
+      },
+      "es6": {
+        "passed": 5,
+        "failed": 0,
+        "passRate": 100
+      },
+      "eventBus": {
+        "passed": 5,
+        "failed": 2,
+        "passRate": 71.42857142857143
+      },
+      "storage": {
+        "passed": 3,
+        "failed": 1,
+        "passRate": 75
+      }
+    }
+  },
+  "details": {
+    "circular": [
+      {
+        "name": "连续多次加载测试",
+        "passed": true,
+        "message": "成功: 500, 失败: 0, 内存泄漏: false"
+      },
+      {
+        "name": "立即调用测试",
+        "passed": true,
+        "message": "初始化时间: 0ms, 成功: true"
+      },
+      {
+        "name": "性能测试",
+        "passed": true,
+        "message": "启动时间: 0ms (改进100.0%), 内存: 32MB (改进28.9%), CPU: 24% (改进25.0%)"
+      },
+      {
+        "name": "模块关系复杂度测试",
+        "passed": true,
+        "message": "加载模块: 20/20, 循环依赖: false"
+      }
+    ],
+    "es6": [
+      {
+        "name": "箭头函数替换验证",
+        "passed": true,
+        "message": "扫描文件: 3, 发现箭头函数: 0"
+      },
+      {
+        "name": "解构赋值兼容性测试",
+        "passed": true,
+        "message": "扫描文件: 3, 发现解构赋值: 0"
+      },
+      {
+        "name": "模板字符串检测",
+        "passed": true,
+        "message": "扫描文件: 3, 发现模板字符串: 0"
+      },
+      {
+        "name": "let/const语句检测",
+        "passed": true,
+        "message": "扫描文件: 3, 发现let/const语句: 0"
+      },
+      {
+        "name": "Promise兼容性测试",
+        "passed": true,
+        "message": "扫描文件: 3, 发现Promise: 0, 使用统一Promise包装: true"
+      }
+    ],
+    "eventBus": [
+      {
+        "name": "事件响应速度测试",
+        "passed": true,
+        "message": "平均响应时间: 20.89ms, 最大: 34.827950869197075ms, 最小: 6.017277108983928ms, 超时: 0/100"
+      },
+      {
+        "name": "事件并发处理测试",
+        "passed": false,
+        "message": "已处理: 500/100, 乱序事件: 51, 平均延迟: 4.01ms, 完成时间: 2004ms"
+      },
+      {
+        "name": "事件内存泄漏测试",
+        "passed": true,
+        "message": "内存使用: 初始39.00MB, 测试后42.00MB, 清理后37.00MB, 泄漏: false"
+      },
+      {
+        "name": "事件并发处理测试",
+        "passed": false,
+        "message": "已处理: 500/100, 乱序事件: 52, 平均延迟: 4.01ms, 完成时间: 2003ms"
+      },
+      {
+        "name": "事件内存泄漏测试",
+        "passed": true,
+        "message": "内存使用: 初始34.00MB, 测试后35.00MB, 清理后34.00MB, 泄漏: false"
+      },
+      {
+        "name": "事件可靠性测试",
+        "passed": true,
+        "message": "成功: 1000/1000 (100.0%), 批次: 120, 网络错误: 18"
+      },
+      {
+        "name": "事件可靠性测试",
+        "passed": true,
+        "message": "成功: 1000/1000 (100.0%), 批次: 124, 网络错误: 24"
+      }
+    ],
+    "storage": [
+      {
+        "name": "存储边界测试",
+        "passed": true,
+        "message": "最大容量: 通过, 大对象: 通过, 长键名: 通过"
+      },
+      {
+        "name": "存储冲突测试",
+        "passed": false,
+        "message": "并行写入: 失败, 覆盖保护: 通过, 数据一致性: 通过"
+      },
+      {
+        "name": "存储性能测试",
+        "passed": true,
+        "message": "写入速度: Infinity/秒, 读取速度: Infinity/秒, 批量操作: 2000000/秒"
+      },
+      {
+        "name": "数据完整性测试",
+        "passed": true,
+        "message": "基本类型: 通过, 复杂对象: 通过, 大型数组: 通过, 特殊字符: 通过"
+      }
+    ]
+  }
+}

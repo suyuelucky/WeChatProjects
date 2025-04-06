@@ -1,0 +1,282 @@
+.container {
+  padding: 20rpx;
+  box-sizing: border-box;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #eaeaea;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.network-status {
+  font-size: 28rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.online {
+  background-color: #e6f7e6;
+  color: #28a745;
+}
+
+.offline {
+  background-color: #f8d7da;
+  color: #dc3545;
+}
+
+.tabs {
+  display: flex;
+  background-color: #fff;
+  margin: 20rpx 0;
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+}
+
+.tab.active {
+  color: #1e88e5;
+  font-weight: bold;
+}
+
+.tab.active:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 6rpx;
+  background-color: #1e88e5;
+  border-radius: 6rpx;
+}
+
+.tab-content {
+  margin-bottom: 20rpx;
+}
+
+.form-group {
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.form-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #eaeaea;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-item {
+  display: flex;
+  margin-bottom: 16rpx;
+  align-items: center;
+}
+
+.form-label {
+  width: 120rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.form-input {
+  flex: 1;
+  height: 72rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 0 16rpx;
+  font-size: 28rpx;
+}
+
+.picker {
+  flex: 1;
+  height: 72rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 0 16rpx;
+  font-size: 28rpx;
+  line-height: 72rpx;
+  color: #333;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20rpx;
+}
+
+.btn {
+  margin: 10rpx;
+  padding: 0 20rpx;
+  line-height: 2.2;
+  font-size: 28rpx;
+  flex: 1;
+  min-width: 160rpx;
+  text-align: center;
+  background-color: #1e88e5;
+  color: #fff;
+  border-radius: 8rpx;
+}
+
+.btn.danger {
+  background-color: #dc3545;
+}
+
+.data-display {
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.data-content {
+  background-color: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  color: #333;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.status-display {
+  background-color: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.status-item {
+  display: flex;
+  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.status-label {
+  width: 120rpx;
+  color: #666;
+}
+
+.status-value {
+  flex: 1;
+  color: #333;
+}
+
+.status-value.syncing {
+  color: #ffc107;
+}
+
+.status-value.error {
+  color: #dc3545;
+}
+
+.status-value.warning {
+  color: #ffc107;
+}
+
+.status-value.online {
+  color: #28a745;
+}
+
+.status-value.offline {
+  color: #dc3545;
+}
+
+.storage-info {
+  background-color: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.progress-bar {
+  height: 16rpx;
+  background-color: #e9ecef;
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin-top: 10rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #28a745;
+  border-radius: 8rpx;
+  transition: width 0.3s;
+}
+
+.type-breakdown {
+  margin-top: 10rpx;
+}
+
+.type-item {
+  background-color: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 10rpx;
+}
+
+.type-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.type-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.type-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.log-container {
+  max-height: 600rpx;
+  background-color: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 8rpx;
+}
+
+.log-item {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: #333;
+  border-bottom: 1rpx solid #eaeaea;
+  padding: 8rpx 0;
+  word-break: break-all;
+}
+
+.clear-log {
+  font-size: 24rpx;
+  color: #1e88e5;
+  font-weight: normal;
+} 

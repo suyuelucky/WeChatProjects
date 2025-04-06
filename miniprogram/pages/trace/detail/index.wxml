@@ -1,0 +1,80 @@
+<view class="container">
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{loading}}">
+    <view class="loading-icon"></view>
+    <view class="loading-text">加载中...</view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error" wx:if="{{error}}">
+    <view class="error-text">{{error}}</view>
+    <view class="error-retry" bindtap="handleRefresh">重试</view>
+  </view>
+  
+  <block wx:if="{{!loading && !error && trace}}">
+    <!-- 顶部工具栏 -->
+    <view class="toolbar">
+      <view class="toolbar-left" bindtap="handleBack">
+        <text class="icon-back">←</text>
+        <text>返回</text>
+      </view>
+      <view class="toolbar-title">留痕详情</view>
+      <view class="toolbar-right" bindtap="handleShare">
+        <text>分享</text>
+      </view>
+    </view>
+    
+    <!-- 头部信息 -->
+    <view class="header">
+      <view class="title">{{trace.title || '无标题'}}</view>
+      <view class="meta">
+        <view class="type">{{typeName}}</view>
+        <view class="time">{{trace.updatedAt}}</view>
+        <view class="status {{trace.syncStatus === 'synced' ? 'synced' : 'local'}}">
+          {{trace.syncStatus === 'synced' ? '已同步' : '本地'}}
+        </view>
+      </view>
+    </view>
+    
+    <!-- 照片区域 -->
+    <view class="photo-section" wx:if="{{photos.length > 0}}">
+      <view class="section-title">照片 ({{photos.length}})</view>
+      <view class="photo-grid">
+        <view 
+          class="photo-item" 
+          wx:for="{{photos}}" 
+          wx:key="id" 
+          data-index="{{index}}" 
+          bindtap="handlePreviewPhoto">
+          <image class="photo" src="{{item.path}}" mode="aspectFill" />
+        </view>
+      </view>
+    </view>
+    
+    <!-- 内容区域 -->
+    <view class="content-section">
+      <view class="section-title">内容</view>
+      <view class="content">
+        <text>{{trace.content || '暂无内容'}}</text>
+      </view>
+    </view>
+    
+    <!-- 底部操作区 -->
+    <view class="footer">
+      <view class="action-list">
+        <view class="action-item" bindtap="handleEdit">
+          <view class="action-icon">✏️</view>
+          <view class="action-text">编辑</view>
+        </view>
+        <view class="action-item" bindtap="handleShare">
+          <view class="action-icon">🔄</view>
+          <view class="action-text">分享</view>
+        </view>
+        <view class="action-item danger" bindtap="handleDelete">
+          <view class="action-icon">🗑️</view>
+          <view class="action-text">删除</view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view> 

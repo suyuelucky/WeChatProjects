@@ -1,0 +1,121 @@
+<!-- 相机管理组件模板 -->
+<view class="camera-container">
+  <!-- 权限状态判断 -->
+  <block wx:if="{{permissionStatus === 'authorized'}}">
+    <!-- 相机组件 -->
+    <camera 
+      device-position="{{devicePosition}}" 
+      flash="{{flash}}"
+      binderror="onCameraError"
+      bindinitialized="onCameraReady"
+      class="camera-view">
+      
+      <!-- 拍照模式显示 -->
+      <view class="mode-indicator">
+        <text class="mode-text">{{
+          currentMode === 'normal' ? '标准模式' : 
+          currentMode === 'continuous' ? '连拍模式' : 
+          currentMode === 'timer' ? '定时模式' : ''
+        }}</text>
+      </view>
+
+      <!-- 定时器倒计时显示 -->
+      <view wx:if="{{currentMode === 'timer' && timerCount > 0}}" class="timer-overlay">
+        <text class="timer-count">{{timerCount}}</text>
+      </view>
+
+      <!-- 连拍计数器显示 -->
+      <view wx:if="{{currentMode === 'continuous' && continuousCount > 0}}" class="continuous-counter">
+        <text class="counter-text">已拍: {{continuousCount}}</text>
+      </view>
+    </camera>
+
+    <!-- 控制面板 -->
+    <block wx:if="{{showControls}}">
+      <view class="controls-container">
+        <!-- 顶部控制栏 -->
+        <view class="top-controls">
+          <!-- 闪光灯切换 -->
+          <view class="control-btn" bindtap="switchFlash">
+            <view class="icon flash-icon {{flash}}">
+              <text class="icon-text">{{
+                flash === 'auto' ? '自动' : 
+                flash === 'on' ? '开启' : '关闭'
+              }}</text>
+            </view>
+          </view>
+          
+          <!-- 切换相机 -->
+          <view class="control-btn" bindtap="switchCamera">
+            <view class="icon switch-camera-icon">
+              <text class="icon-text">切换</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 底部控制栏 -->
+        <view class="bottom-controls">
+          <!-- 模式选择器 -->
+          <view class="mode-selector">
+            <view 
+              class="mode-option {{currentMode === 'normal' ? 'active' : ''}}" 
+              bindtap="switchMode" 
+              data-mode="normal">
+              <text>标准</text>
+            </view>
+            <view 
+              class="mode-option {{currentMode === 'continuous' ? 'active' : ''}}" 
+              bindtap="switchMode" 
+              data-mode="continuous">
+              <text>连拍</text>
+            </view>
+            <view 
+              class="mode-option {{currentMode === 'timer' ? 'active' : ''}}" 
+              bindtap="switchMode" 
+              data-mode="timer">
+              <text>定时</text>
+            </view>
+          </view>
+
+          <!-- 拍照按钮 -->
+          <view 
+            class="capture-btn {{isTakingPhoto ? 'disabled' : ''}}" 
+            bindtap="handleTakePhotoTap"
+            hover-class="btn-hover">
+            <view class="inner-circle"></view>
+          </view>
+
+          <!-- 照片计数 -->
+          <view class="photo-count">
+            <text>{{photoList.length}}张</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <!-- 权限请求中 -->
+  <block wx:elif="{{permissionStatus === 'requesting'}}">
+    <view class="permission-view">
+      <text class="loading-text">正在请求相机权限...</text>
+    </view>
+  </block>
+
+  <!-- 权限被拒绝 -->
+  <block wx:elif="{{permissionStatus === 'denied'}}">
+    <view class="permission-view">
+      <text class="error-text">相机权限被拒绝</text>
+      <text class="tip-text">没有相机权限，将无法使用拍照功能</text>
+      <button class="permission-btn" bindtap="openSettings">前往设置开启权限</button>
+      <!-- 备选方案：从相册选择 -->
+      <button class="alternative-btn" bindtap="chooseFromAlbum">从相册选择照片</button>
+    </view>
+  </block>
+
+  <!-- 未知状态 -->
+  <block wx:else>
+    <view class="permission-view">
+      <text class="loading-text">正在初始化相机...</text>
+    </view>
+  </block>
+</view> 

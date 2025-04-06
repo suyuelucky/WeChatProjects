@@ -1,0 +1,71 @@
+<!-- miniprogram/pages/trace/index/index.wxml -->
+<view class="container">
+  <view class="header">
+    <view class="title">工作留痕</view>
+    <view class="refresh" bindtap="handleRefresh">刷新</view>
+  </view>
+
+  <!-- 留痕类型选择 -->
+  <view class="trace-types">
+    <view class="section-title">创建新留痕</view>
+    <view class="type-list">
+      <view 
+        class="type-item" 
+        wx:for="{{traceTypes}}" 
+        wx:key="id" 
+        data-type="{{item.id}}" 
+        bindtap="handleCreateTrace">
+        <view class="type-icon {{item.icon}}"></view>
+        <view class="type-name">{{item.name}}</view>
+        <view class="type-desc">{{item.description}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 留痕记录列表 -->
+  <view class="trace-list">
+    <view class="section-title">我的留痕记录</view>
+    
+    <!-- 加载中 -->
+    <view class="loading" wx:if="{{loading}}">
+      <view class="loading-icon"></view>
+      <view class="loading-text">加载中...</view>
+    </view>
+    
+    <!-- 错误提示 -->
+    <view class="error" wx:if="{{error}}">
+      <view class="error-text">{{error}}</view>
+      <view class="error-retry" bindtap="handleRefresh">重试</view>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty" wx:if="{{!loading && !error && traces.length === 0}}">
+      <view class="empty-icon"></view>
+      <view class="empty-text">暂无留痕记录</view>
+      <view class="empty-desc">选择上方留痕类型开始创建</view>
+    </view>
+    
+    <!-- 记录列表 -->
+    <view class="list" wx:if="{{!loading && traces.length > 0}}">
+      <view 
+        class="trace-item" 
+        wx:for="{{traces}}" 
+        wx:key="id" 
+        data-id="{{item.id}}" 
+        bindtap="handleViewTrace">
+        <view class="trace-icon {{item.type}}"></view>
+        <view class="trace-info">
+          <view class="trace-title">{{item.title || '无标题'}}</view>
+          <view class="trace-type">{{item.type === 'article' ? '文章型留痕' : 
+                                item.type === 'story' ? '事迹型留痕' : 
+                                item.type === 'daily' ? '日常型留痕' : 
+                                item.type === 'project' ? '项目型留痕' : item.type}}</view>
+          <view class="trace-time">{{item.updatedAt}}</view>
+        </view>
+        <view class="trace-status">
+          <view class="status-icon {{item.syncStatus === 'synced' ? 'synced' : 'local'}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

@@ -1,0 +1,42 @@
+<view class="camera-container">
+  <!-- 相机组件 -->
+  <camera 
+    wx:if="{{!hasError}}" 
+    class="camera" 
+    device-position="{{devicePosition}}" 
+    flash="{{flash}}"
+    resolution="{{resolution}}"
+    binderror="handleCameraError">
+    
+    <!-- 相机内容，比如辅助线等 -->
+    <view class="camera-content">
+      <view class="focus-area"></view>
+      <view class="grid-lines"></view>
+      <slot name="camera-content"></slot>
+    </view>
+    
+    <!-- 相机控制栏将通过外部组合组件提供 -->
+  </camera>
+  
+  <!-- 相机错误或未授权时的提示 -->
+  <view wx:if="{{hasError}}" class="camera-error">
+    <icon type="warn" size="64"></icon>
+    <text class="error-text">{{errorMsg || '相机无法启动'}}</text>
+    <view class="error-help">
+      <text>可能原因：</text>
+      <text>1. 未授权相机权限</text>
+      <text>2. 设备相机被占用</text>
+      <text>3. 设备不支持相机功能</text>
+    </view>
+    <button class="retry-button" type="primary" bindtap="init">重试</button>
+  </view>
+  
+  <!-- 相机加载中 -->
+  <view wx:if="{{!isReady && !hasError}}" class="camera-loading">
+    <view class="loading-spinner"></view>
+    <text>相机正在初始化...</text>
+  </view>
+  
+  <!-- 拍照时的闪光效果 -->
+  <view wx:if="{{isTaking}}" class="camera-shutter-effect"></view>
+</view> 

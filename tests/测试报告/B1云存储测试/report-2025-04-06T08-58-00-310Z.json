@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-04-06T08-58-00-310Z",
+  "totalTests": 1,
+  "successCount": 1,
+  "failCount": 0,
+  "results": [
+    {
+      "name": "TC-B1-01-云存储上传测试",
+      "description": "验证照片上传至云服务器的完整功能",
+      "startTime": 1743929880003,
+      "endTime": 1743929880309,
+      "success": true,
+      "results": [
+        {
+          "step": "创建测试照片",
+          "status": "success",
+          "details": "成功创建3张测试照片"
+        },
+        {
+          "step": "保存照片到本地",
+          "status": "success",
+          "details": "成功保存3张照片到本地"
+        },
+        {
+          "step": "开始上传照片",
+          "status": "success",
+          "details": "成功提交3个上传任务"
+        },
+        {
+          "step": "上传完成情况",
+          "status": "partial",
+          "details": "完成: 0, 失败: 0, 总数: 3"
+        },
+        {
+          "step": "云端状态验证",
+          "status": "success",
+          "details": "云端照片数: 3, 总数: 3"
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

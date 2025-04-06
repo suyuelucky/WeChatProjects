@@ -1,0 +1,14 @@
+{
+  "name": "B1照片云存储上传测试套件",
+  "description": "测试照片上传到云存储的全部功能",
+  "version": "1.0",
+  "testFiles": [
+    "photo-cloud-upload-test.js"
+  ],
+  "dependencies": [
+    "../../utils/test-utils.js",
+    "../../utils/mock-photo-data.js"
+  ],
+  "author": "AI测试团队",
+  "date": "2024-04-06"
+} 

@@ -3,8 +3,8 @@
  * 提供大文件分片上传、断点续传和上传进度管理功能
  */
 
-import { hasNetworkConnection, getNetworkType, isWeakNetwork } from './networkUtils';
-import { storage } from './storageUtils';
+const { hasNetworkConnection, getNetworkType, isWeakNetwork } = require('./networkUtils');
+const { storage } = require('./storageUtils');
 
 // 默认配置
 const DEFAULT_CONFIG = {
@@ -24,7 +24,7 @@ const STORAGE_KEYS = {
 /**
  * 文件分片上传管理器
  */
-export default class FileUploadManager {
+class FileUploadManager {
   constructor(config = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
     this.activeUploads = new Map(); // 活跃上传任务Map
@@ -640,4 +640,35 @@ export default class FileUploadManager {
       return 0;
     }
   }
-} 
+}
+
+// 创建并导出文件上传管理器实例
+const fileUploadUtils = {
+  manager: new FileUploadManager(),
+  
+  uploadFile(filePath, options) {
+    return this.manager.uploadFile(filePath, options);
+  },
+  
+  pauseUpload(taskId) {
+    return this.manager.pauseUpload(taskId);
+  },
+  
+  resumeUpload(taskId) {
+    return this.manager.resumeUpload(taskId);
+  },
+  
+  cancelUpload(taskId) {
+    return this.manager.cancelUpload(taskId);
+  },
+  
+  addProgressListener(taskId, listener) {
+    return this.manager.addProgressListener(taskId, listener);
+  },
+  
+  removeProgressListener(taskId) {
+    return this.manager.removeProgressListener(taskId);
+  }
+};
+
+module.exports = fileUploadUtils; 

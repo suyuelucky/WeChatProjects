@@ -18,6 +18,16 @@
     </swiper>
   </view>
   
+  <!-- 添加极限测试入口 -->
+  <view class="test-center-entry" bindtap="navigateToExtremeTest">
+    <view class="test-center-icon">🧪</view>
+    <view class="test-center-text">
+      <text class="test-center-title">云开发极限测试中心</text>
+      <text class="test-center-desc">测试系统在极端条件下的性能和稳定性</text>
+    </view>
+    <view class="test-center-arrow">→</view>
+  </view>
+  
   <view class="navigation-grid">
     <view class="grid-item" wx:for="{{navItems}}" wx:key="id">
       <view class="grid-icon">{{item.icon}}</view>
@@ -36,5 +46,10 @@
         </view>
       </view>
     </view>
+  </view>
+  
+  <!-- 添加浮动拍照按钮 -->
+  <view class="floating-camera-btn" bindtap="navigateToPhotoCapture">
+    <view class="camera-icon">📷</view>
   </view>
 </view> 

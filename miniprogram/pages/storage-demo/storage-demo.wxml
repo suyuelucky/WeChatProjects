@@ -1,0 +1,161 @@
+<view class="container">
+  <view class="header">
+    <view class="title">本地存储管理系统</view>
+    <view class="network-status {{isOnline ? 'online' : 'offline'}}">
+      {{isOnline ? '在线' : '离线'}}
+    </view>
+  </view>
+  
+  <!-- 选项卡标题 -->
+  <view class="tabs">
+    <view class="tab {{activeTab === 'basic' ? 'active' : ''}}" bindtap="switchTab" data-tab="basic">基础操作</view>
+    <view class="tab {{activeTab === 'sync' ? 'active' : ''}}" bindtap="switchTab" data-tab="sync">同步管理</view>
+    <view class="tab {{activeTab === 'manage' ? 'active' : ''}}" bindtap="switchTab" data-tab="manage">空间管理</view>
+    <view class="tab {{activeTab === 'debug' ? 'active' : ''}}" bindtap="switchTab" data-tab="debug">调试日志</view>
+  </view>
+  
+  <!-- 基础操作选项卡 -->
+  <view class="tab-content" hidden="{{activeTab !== 'basic'}}">
+    <!-- 存储操作表单 -->
+    <view class="form-group">
+      <view class="form-title">数据操作</view>
+      
+      <view class="form-item">
+        <view class="form-label">集合:</view>
+        <picker mode="selector" range="{{collections}}" range-key="name" value="{{selectedCollection}}" bindchange="handleCollectionChange">
+          <view class="picker">
+            {{collections[selectedCollection].name || '选择集合'}}
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-item">
+        <view class="form-label">键名:</view>
+        <input class="form-input" type="text" value="{{testKey}}" bindinput="handleKeyChange" placeholder="输入键名" />
+      </view>
+      
+      <view class="form-item">
+        <view class="form-label">数据:</view>
+        <input class="form-input" type="text" value="{{testValue}}" bindinput="handleValueChange" placeholder="输入数据内容" />
+      </view>
+      
+      <view class="button-group">
+        <button class="btn" bindtap="handleSaveData">保存</button>
+        <button class="btn" bindtap="handleLoadData">读取</button>
+        <button class="btn danger" bindtap="handleRemoveData">删除</button>
+        <button class="btn danger" bindtap="handleClearCollection">清空集合</button>
+      </view>
+    </view>
+    
+    <!-- 测试结果 -->
+    <view class="data-display" wx:if="{{testData !== null}}">
+      <view class="form-title">读取结果</view>
+      <text class="data-content">{{testData}}</text>
+    </view>
+    
+    <!-- 数据类型管理测试 -->
+    <view class="form-group">
+      <view class="form-title">数据类型测试</view>
+      <view class="button-group">
+        <button class="btn" bindtap="handleTestDataTypes">创建测试数据</button>
+        <button class="btn danger" bindtap="handleClearTestData">清除测试数据</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 同步管理选项卡 -->
+  <view class="tab-content" hidden="{{activeTab !== 'sync'}}">
+    <view class="form-group">
+      <view class="form-title">同步状态</view>
+      
+      <view class="status-display">
+        <view class="status-item">
+          <text class="status-label">状态:</text>
+          <text class="status-value {{syncStatus === 'syncing' ? 'syncing' : syncStatus === 'error' ? 'error' : ''}}">
+            {{syncStatus === 'idle' ? '空闲' : syncStatus === 'syncing' ? '同步中' : syncStatus === 'pending' ? '等待同步' : syncStatus === 'error' ? '错误' : syncStatus}}
+          </text>
+        </view>
+        
+        <view class="status-item">
+          <text class="status-label">队列:</text>
+          <text class="status-value">{{syncQueue}}项</text>
+        </view>
+        
+        <view class="status-item">
+          <text class="status-label">网络:</text>
+          <text class="status-value {{isOnline ? 'online' : 'offline'}}">{{isOnline ? '在线' : '离线'}}</text>
+        </view>
+      </view>
+      
+      <view class="button-group">
+        <button class="btn" bindtap="handleStartSync" disabled="{{syncStatus === 'syncing'}}">开始同步</button>
+        <button class="btn" bindtap="handleTestOfflineSync">添加测试同步项</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 空间管理选项卡 -->
+  <view class="tab-content" hidden="{{activeTab !== 'manage'}}">
+    <view class="form-group">
+      <view class="form-title">存储空间信息</view>
+      
+      <view class="storage-info" wx:if="{{storageInfo}}">
+        <view class="status-item">
+          <text class="status-label">已使用:</text>
+          <text class="status-value">{{storageInfo.currentSize / 1024}} KB / {{storageInfo.limitSize / 1024}} KB</text>
+        </view>
+        
+        <view class="status-item">
+          <text class="status-label">使用率:</text>
+          <text class="status-value {{storageInfo.status === 'warning' ? 'warning' : storageInfo.status === 'critical' ? 'error' : ''}}">
+            {{storageInfo.percentUsed}}%
+          </text>
+        </view>
+        
+        <view class="status-item">
+          <text class="status-label">键数量:</text>
+          <text class="status-value">{{storageInfo.keysCount}}个</text>
+        </view>
+        
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{storageInfo.percentUsed}}%"></view>
+        </view>
+      </view>
+      
+      <view class="button-group">
+        <button class="btn" bindtap="refreshStorageInfo">刷新信息</button>
+        <button class="btn danger" bindtap="handleCleanStorage">清理空间</button>
+      </view>
+    </view>
+    
+    <!-- 存储类型分布 -->
+    <view class="form-group" wx:if="{{storageInfo && storageInfo.typeBreakdown}}">
+      <view class="form-title">存储类型分布</view>
+      
+      <view class="type-breakdown">
+        <block wx:for="{{storageInfo.typeBreakdown}}" wx:for-index="type" wx:for-item="info" wx:key="type">
+          <view class="type-item" wx:if="{{info.count > 0}}">
+            <view class="type-header">
+              <text class="type-name">{{type}}类型</text>
+              <text class="type-count">{{info.count}}项 / {{info.totalSize / 1024}} KB</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 调试日志选项卡 -->
+  <view class="tab-content" hidden="{{activeTab !== 'debug'}}">
+    <view class="form-group">
+      <view class="form-title">
+        <text>操作日志</text>
+        <text class="clear-log" bindtap="clearLogs">清空</text>
+      </view>
+      
+      <scroll-view class="log-container" scroll-y>
+        <view class="log-item" wx:for="{{logs}}" wx:key="index">{{item}}</view>
+      </scroll-view>
+    </view>
+  </view>
+</view> 

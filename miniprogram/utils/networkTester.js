@@ -3,16 +3,16 @@
  * 提供测试断网和弱网环境下应用表现的工具函数
  */
 
-import { hasNetworkConnection, isWeakNetwork } from './networkUtils';
-import apiService from './apiService';
-import { syncQueue } from './storageUtils';
+const { hasNetworkConnection, isWeakNetwork } = require('./networkUtils');
+const apiService = require('./apiService');
+const { syncQueue } = require('./storageUtils');
 
 /**
  * 模拟断网环境测试
  * @param {Function} callback - 测试回调函数
  * @returns {Promise<Object>} - 测试结果
  */
-export const testOfflineMode = async (callback) => {
+const testOfflineMode = async (callback) => {
   const results = {
     offlineDataAccess: false,
     offlineOperation: false,
@@ -58,7 +58,7 @@ export const testOfflineMode = async (callback) => {
  * @param {Function} callback - 测试回调函数
  * @returns {Promise<Object>} - 测试结果
  */
-export const testWeakNetwork = async (callback) => {
+const testWeakNetwork = async (callback) => {
   const results = {
     responseTime: [],
     requestsCompleted: 0,
@@ -127,7 +127,7 @@ export const testWeakNetwork = async (callback) => {
  * 综合网络适应性测试
  * @returns {Promise<Object>} - 测试结果
  */
-export const runNetworkAdaptationTests = async () => {
+const runNetworkAdaptationTests = async () => {
   const results = {
     offlineTest: null,
     weakNetworkTest: null,
@@ -160,4 +160,14 @@ export const runNetworkAdaptationTests = async () => {
     results.overall.message = `网络适应性测试失败: ${error.message}`;
     return results;
   }
-}; 
+};
+
+// 创建网络测试工具对象
+const NetworkTester = {
+  testOfflineMode,
+  testWeakNetwork,
+  runNetworkAdaptationTests
+};
+
+// 导出NetworkTester对象
+module.exports = NetworkTester; 

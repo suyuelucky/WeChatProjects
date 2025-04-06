@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "拍照采集",
+  "navigationBarTextStyle": "white",
+  "navigationBarBackgroundColor": "#000000",
+  "navigationStyle": "custom",
+  "backgroundColor": "#000000",
+  "disableScroll": true,
+  "usingComponents": {
+    "camera-mode-controller": "/components/camera-mode-controller/index",
+    "shutter-mask": "/components/shutter-mask/index"
+  }
+} 

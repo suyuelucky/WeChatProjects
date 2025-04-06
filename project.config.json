@@ -47,5 +47,8 @@
     "ignore": [],
     "include": []
   },
-  "appid": "wx4d718fde11559f38"
+  "appid": "wx4d718fde11559f38",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "cloudbaseRoot": ".cloudbase/",
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
 }

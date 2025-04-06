@@ -8,7 +8,15 @@
     "pages/profile/index/index",
     "pages/diary/camera/index",
     "pages/diary/album/index",
-    "pages/networkTest/index"
+    "pages/networkTest/index",
+    "pages/trace/index/index",
+    "pages/trace/edit/index",
+    "pages/trace/detail/index",
+    "pages/storage-demo/storage-demo",
+    "pages/photo-capture/index",
+    "pages/test/index",
+    "pages/cloud-test/index",
+    "pages/cloud-test/extreme-tests/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -37,8 +45,14 @@
         "selectedIconPath": "static/images/diary-active.png"
       },
       {
-        "pagePath": "pages/ledger/index/index",
-        "text": "账本",
+        "pagePath": "pages/photo-capture/index",
+        "text": "拍照",
+        "iconPath": "static/images/ledger.png",
+        "selectedIconPath": "static/images/ledger-active.png"
+      },
+      {
+        "pagePath": "pages/trace/index/index",
+        "text": "留痕",
         "iconPath": "static/images/ledger.png",
         "selectedIconPath": "static/images/ledger-active.png"
       },

@@ -1,0 +1,74 @@
+<!-- 相机页面 -->
+<view class="camera-page">
+  <!-- 顶部状态栏 -->
+  <view class="status-bar">
+    <view class="left-buttons">
+      <view class="back-button" bindtap="navigateBack">
+        <text class="back-icon">←</text>
+        <text>返回</text>
+      </view>
+    </view>
+    <view class="title">
+      {{modeTitle}}
+    </view>
+    <view class="right-buttons">
+      <view class="photo-counter" bindtap="viewPhotoList">
+        <text class="counter-value">{{photoCounter}}</text>
+        <text class="counter-label">张</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 相机视图 -->
+  <camera 
+    device-position="{{devicePosition}}" 
+    flash="{{flash}}"
+    resolution="{{resolution}}"
+    binderror="handleCameraError"
+    class="camera-view {{showPreview ? 'hidden' : ''}}"
+  ></camera>
+  
+  <!-- 快门动画遮罩 -->
+  <shutter-mask id="shutterMask"></shutter-mask>
+  
+  <!-- 错误信息显示 -->
+  <view class="error-container" wx:if="{{hasError}}">
+    <text>相机初始化失败</text>
+    <text class="error-message">{{errorMsg}}</text>
+    <button class="retry-button" bindtap="navigateBack">返回</button>
+  </view>
+  
+  <!-- 预览图片视图 -->
+  <view class="preview-container {{showPreview ? 'active' : ''}}">
+    <image class="preview-image" src="{{tempImagePath}}" mode="aspectFit"></image>
+    <view class="preview-actions">
+      <button class="action-button cancel" bindtap="cancelSave">重拍</button>
+      <button class="action-button confirm" bindtap="savePhoto">保存</button>
+    </view>
+  </view>
+  
+  <!-- 相机控制区域 -->
+  <view class="camera-controls" wx:if="{{!showPreview && !hasError}}">
+    <!-- 相机设置控制 -->
+    <view class="camera-settings">
+      <view class="setting-item" bindtap="switchCamera">
+        <view class="setting-icon camera-flip-icon"></view>
+        <view class="setting-label">翻转</view>
+      </view>
+      <view class="setting-item" bindtap="switchFlash">
+        <view class="setting-icon flash-{{flash}}-icon"></view>
+        <view class="setting-label">闪光灯: {{flash}}</view>
+      </view>
+    </view>
+    
+    <!-- 相机模式控制组件 -->
+    <camera-mode-controller
+      id="cameraMode"
+      bindonmodechange="handleModeChange"
+      bindoncapturestart="handleCaptureStart"
+      bindoncaptureprepare="handleCapturePrepare"
+      bindoncapturecomplete="handleCaptureComplete"
+      disabled="{{isTaking}}"
+    ></camera-mode-controller>
+  </view>
+</view> 
