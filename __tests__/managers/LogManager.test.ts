@@ -1,23 +1,25 @@
 import { jest } from '@jest/globals';
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { LogManager } from '../../src/managers/LogManager.js';
 
 // 模拟fs/promises模块
-jest.mock('fs/promises', () => ({
-    mkdir: jest.fn().mockResolvedValue(undefined),
-    writeFile: jest.fn().mockResolvedValue(undefined),
-    appendFile: jest.fn().mockResolvedValue(undefined)
-}));
+jest.mock('fs/promises', () => {
+    return {
+        mkdir: jest.fn().mockResolvedValue(undefined),
+        writeFile: jest.fn().mockResolvedValue(undefined),
+        appendFile: jest.fn().mockResolvedValue(undefined)
+    };
+});
 
 // 导入模拟后的模块
 import { mkdir, writeFile, appendFile } from 'fs/promises';
 import { join } from 'path';
+import { LogManager } from '../../src/managers/LogManager.js';
 
 describe('LogManager', () => {
     let logManager: LogManager;
     const testLogDir = 'test-logs';
-    const mockConsoleLog = jest.spyOn(console, 'log');
-    const mockConsoleError = jest.spyOn(console, 'error');
+    const mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -25,6 +27,7 @@ describe('LogManager', () => {
     });
 
     test('初始化时创建日志目录', () => {
+        // 验证mkdir被调用
         expect(mkdir).toHaveBeenCalledWith(testLogDir, { recursive: true });
     });
 
@@ -50,8 +53,12 @@ describe('LogManager', () => {
     });
 
     test('调试模式下输出debug日志', async () => {
+        // 创建一个新的调试模式日志管理器
         const debugManager = new LogManager({ logDir: testLogDir, debugMode: true });
         const message = '调试信息';
+        
+        // 重置模拟计数器，因为构造函数已经调用了一些方法
+        jest.clearAllMocks();
         
         await debugManager.debug(message);
         
@@ -61,6 +68,9 @@ describe('LogManager', () => {
 
     test('非调试模式下不输出debug日志', async () => {
         const message = '调试信息';
+        
+        // 重置模拟计数器
+        jest.clearAllMocks();
         
         await logManager.debug(message);
         
@@ -87,6 +97,9 @@ describe('LogManager', () => {
     test('切换调试模式', async () => {
         const message = '调试信息';
         
+        // 重置模拟计数器
+        jest.clearAllMocks();
+        
         logManager.setDebugMode(true);
         await logManager.debug(message);
         expect(appendFile).toHaveBeenCalled();
@@ -102,6 +115,9 @@ describe('LogManager', () => {
 
     test('处理文件操作错误', async () => {
         const error = new Error('文件操作失败');
+        
+        // 重置模拟计数器并设置下一次调用抛出错误
+        jest.clearAllMocks();
         (appendFile as jest.Mock).mockRejectedValueOnce(error);
         
         await logManager.info('测试信息');
