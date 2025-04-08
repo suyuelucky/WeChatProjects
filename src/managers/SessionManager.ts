@@ -1,5 +1,6 @@
 import { writeFile, readFile } from 'fs/promises';
 import { join } from 'path';
+import { randomUUID } from 'crypto';
 import type { SessionState } from '../types.js';
 
 export class SessionManager {
@@ -40,7 +41,7 @@ export class SessionManager {
 
   async createNewSession(): Promise<SessionState> {
     const newState: SessionState = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       startTime: Date.now(),
       lastActive: Date.now(),
       context: {

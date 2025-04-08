@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
 import { SessionManager } from '../../src/managers/SessionManager.js';
 import { mkdir, rm } from 'fs/promises';
+import { jest } from '@jest/globals';
 
 const TEST_DIR = './test-sessions';
 
@@ -44,8 +45,14 @@ describe('SessionManager', () => {
   });
 
   test('should handle missing session file', async () => {
-    const loadedSession = await sessionManager.loadState();
-    expect(loadedSession).toBeNull();
+    // 使用一个不存在任何会话文件的新实例
+    const emptySessionManager = new SessionManager('./non-existent-dir');
+    
+    // 期望loadState会抛出错误
+    await expect(emptySessionManager.loadState()).rejects.toThrow();
+    
+    // 确认当前状态为null
+    expect(emptySessionManager.getCurrentState()).toBeNull();
   });
 
   test('should throw error when updating without active session', async () => {
