@@ -1,10 +1,17 @@
 import { jest } from '@jest/globals';
+import { describe, expect, test, beforeEach } from '@jest/globals';
+import { LogManager } from '../../src/managers/LogManager.js';
+
+// 模拟fs/promises模块
+jest.mock('fs/promises', () => ({
+    mkdir: jest.fn().mockResolvedValue(undefined),
+    writeFile: jest.fn().mockResolvedValue(undefined),
+    appendFile: jest.fn().mockResolvedValue(undefined)
+}));
+
+// 导入模拟后的模块
 import { mkdir, writeFile, appendFile } from 'fs/promises';
 import { join } from 'path';
-import { LogManager } from '../../src/managers/LogManager.js';
-import { describe, expect, test } from '@jest/globals';
-
-jest.mock('fs/promises');
 
 describe('LogManager', () => {
     let logManager: LogManager;
