@@ -1,4 +1,4 @@
-name: 代码测试与检查
+name: "代码测试与检查"
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
     - name: 设置 Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18'
+        node-version: 18
         cache: 'npm'
     
     - name: 安装依赖

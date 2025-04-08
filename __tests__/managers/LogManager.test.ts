@@ -1,18 +1,19 @@
-import { jest } from '@jest/globals';
-import { describe, expect, test, beforeEach } from '@jest/globals';
+import { describe, expect, test, beforeEach, jest } from '@jest/globals';
+import { join } from 'path';
+
+// 创建模拟函数
+const mockMkdir = jest.fn().mockResolvedValue(undefined);
+const mockWriteFile = jest.fn().mockResolvedValue(undefined);
+const mockAppendFile = jest.fn().mockResolvedValue(undefined);
 
 // 模拟fs/promises模块
-jest.mock('fs/promises', () => {
-    return {
-        mkdir: jest.fn().mockResolvedValue(undefined),
-        writeFile: jest.fn().mockResolvedValue(undefined),
-        appendFile: jest.fn().mockResolvedValue(undefined)
-    };
-});
+jest.mock('fs/promises', () => ({
+    mkdir: mockMkdir,
+    writeFile: mockWriteFile,
+    appendFile: mockAppendFile
+}));
 
-// 导入模拟后的模块
-import { mkdir, writeFile, appendFile } from 'fs/promises';
-import { join } from 'path';
+// 导入被测试的模块 (必须在模拟之后)
 import { LogManager } from '../../src/managers/LogManager.js';
 
 describe('LogManager', () => {
@@ -28,7 +29,7 @@ describe('LogManager', () => {
 
     test('初始化时创建日志目录', () => {
         // 验证mkdir被调用
-        expect(mkdir).toHaveBeenCalledWith(testLogDir, { recursive: true });
+        expect(mockMkdir).toHaveBeenCalledWith(testLogDir, { recursive: true });
     });
 
     test('写入info日志', async () => {
@@ -37,8 +38,8 @@ describe('LogManager', () => {
         
         await logManager.info(message, context);
         
-        expect(appendFile).toHaveBeenCalledTimes(1);
-        const logCall = (appendFile as jest.Mock).mock.calls[0];
+        expect(mockAppendFile).toHaveBeenCalledTimes(1);
+        const logCall = mockAppendFile.mock.calls[0];
         expect(logCall[0]).toBe(join(testLogDir, 'exobrain.log'));
         expect(logCall[1]).toMatch(/\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\] INFO \| 测试信息 \| {"test":true}/);
     });
@@ -48,7 +49,7 @@ describe('LogManager', () => {
         
         await logManager.error(message);
         
-        expect(appendFile).toHaveBeenCalledTimes(2); // 主日志和错误日志
+        expect(mockAppendFile).toHaveBeenCalledTimes(2); // 主日志和错误日志
         expect(mockConsoleError).toHaveBeenCalled();
     });
 
@@ -62,7 +63,7 @@ describe('LogManager', () => {
         
         await debugManager.debug(message);
         
-        expect(appendFile).toHaveBeenCalled();
+        expect(mockAppendFile).toHaveBeenCalled();
         expect(mockConsoleLog).toHaveBeenCalled();
     });
 
@@ -74,20 +75,20 @@ describe('LogManager', () => {
         
         await logManager.debug(message);
         
-        expect(appendFile).not.toHaveBeenCalled();
+        expect(mockAppendFile).not.toHaveBeenCalled();
         expect(mockConsoleLog).not.toHaveBeenCalled();
     });
 
     test('清除日志文件', async () => {
         await logManager.clearLogs();
         
-        expect(writeFile).toHaveBeenCalledTimes(2);
-        expect(writeFile).toHaveBeenCalledWith(
+        expect(mockWriteFile).toHaveBeenCalledTimes(2);
+        expect(mockWriteFile).toHaveBeenCalledWith(
             join(testLogDir, 'exobrain.log'),
             '',
             'utf-8'
         );
-        expect(writeFile).toHaveBeenCalledWith(
+        expect(mockWriteFile).toHaveBeenCalledWith(
             join(testLogDir, 'error.log'),
             '',
             'utf-8'
@@ -102,14 +103,14 @@ describe('LogManager', () => {
         
         logManager.setDebugMode(true);
         await logManager.debug(message);
-        expect(appendFile).toHaveBeenCalled();
+        expect(mockAppendFile).toHaveBeenCalled();
         expect(mockConsoleLog).toHaveBeenCalled();
         
         jest.clearAllMocks();
         
         logManager.setDebugMode(false);
         await logManager.debug(message);
-        expect(appendFile).not.toHaveBeenCalled();
+        expect(mockAppendFile).not.toHaveBeenCalled();
         expect(mockConsoleLog).not.toHaveBeenCalled();
     });
 
@@ -118,7 +119,7 @@ describe('LogManager', () => {
         
         // 重置模拟计数器并设置下一次调用抛出错误
         jest.clearAllMocks();
-        (appendFile as jest.Mock).mockRejectedValueOnce(error);
+        mockAppendFile.mockRejectedValueOnce(error);
         
         await logManager.info('测试信息');
         
