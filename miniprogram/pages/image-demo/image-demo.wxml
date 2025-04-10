@@ -1,0 +1,128 @@
+<!--
+ * image-demo.wxml
+ * 优化图片加载器示例页面
+ * 
+ * 创建时间: 2025-04-09 20:50:12
+ * 创建者: Claude AI 3.7 Sonnet
+-->
+
+<view class="container">
+  <view class="header">
+    <view class="title">优化图片加载器演示</view>
+    <view class="tabs">
+      <view class="tab {{activeTab === 'normal' ? 'active' : ''}}" 
+            bindtap="switchTab" data-tab="normal">原图</view>
+      <view class="tab {{activeTab === 'thumbnail' ? 'active' : ''}}" 
+            bindtap="switchTab" data-tab="thumbnail">缩略图</view>
+      <view class="tab {{activeTab === 'preload' ? 'active' : ''}}" 
+            bindtap="switchTab" data-tab="preload">预加载</view>
+      <view class="tab {{activeTab === 'cache' ? 'active' : ''}}" 
+            bindtap="switchTab" data-tab="cache">缓存</view>
+    </view>
+  </view>
+  
+  <view class="content">
+    <!-- 原图加载模式 -->
+    <view class="tab-content" wx:if="{{activeTab === 'normal'}}">
+      <view class="control-panel">
+        <button class="btn" bindtap="loadNormalImages">加载原图</button>
+        <view class="performance" wx:if="{{performance.normalLoadTime > 0}}">
+          加载耗时: {{performance.normalLoadTime}}ms
+        </view>
+      </view>
+      
+      <view class="image-list">
+        <view class="image-item" wx:for="{{imageList}}" wx:key="id">
+          <view class="image-title">{{item.title}}</view>
+          <view class="image-container">
+            <image wx:if="{{item.path}}" src="{{item.path}}" mode="aspectFill" 
+                   bindtap="showPreview" data-index="{{index}}"></image>
+            <view wx:elif="{{item.loading}}" class="loading">加载中...</view>
+            <view wx:elif="{{item.error}}" class="error">{{item.error}}</view>
+            <view wx:else class="placeholder">点击加载按钮开始</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 缩略图加载模式 -->
+    <view class="tab-content" wx:if="{{activeTab === 'thumbnail'}}">
+      <view class="control-panel">
+        <button class="btn" bindtap="loadThumbnails">加载缩略图</button>
+        <view class="performance" wx:if="{{performance.thumbnailLoadTime > 0}}">
+          加载耗时: {{performance.thumbnailLoadTime}}ms
+        </view>
+      </view>
+      
+      <view class="image-list">
+        <view class="image-item" wx:for="{{imageList}}" wx:key="id">
+          <view class="image-title">{{item.title}}</view>
+          <view class="image-container thumbnail">
+            <image wx:if="{{item.thumbnail}}" src="{{item.thumbnail}}" mode="aspectFill" 
+                   bindtap="showPreview" data-index="{{index}}"></image>
+            <view wx:elif="{{item.loading}}" class="loading">加载中...</view>
+            <view wx:elif="{{item.error}}" class="error">{{item.error}}</view>
+            <view wx:else class="placeholder">点击加载按钮开始</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 预加载模式 -->
+    <view class="tab-content" wx:if="{{activeTab === 'preload'}}">
+      <view class="control-panel">
+        <button class="btn" bindtap="startPreload" disabled="{{preloadStarted}}">
+          {{preloadStarted ? '预加载中...' : '开始预加载'}}
+        </button>
+        <view class="performance" wx:if="{{performance.preloadTime > 0}}">
+          预加载耗时: {{performance.preloadTime}}ms
+        </view>
+      </view>
+      
+      <view class="preload-stats" wx:if="{{preloadStarted}}">
+        <view class="stat-item">
+          <text class="label">成功:</text>
+          <text class="value success">{{preloadSuccess}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="label">失败:</text>
+          <text class="value error">{{preloadFailed}}</text>
+        </view>
+      </view>
+      
+      <view class="tips">
+        <text>预加载会在后台加载所有图片的缩略图版本，以便在需要时快速显示。</text>
+        <text>切换到缩略图标签查看缓存加载速度。</text>
+      </view>
+    </view>
+    
+    <!-- 缓存管理模式 -->
+    <view class="tab-content" wx:if="{{activeTab === 'cache'}}">
+      <view class="control-panel split">
+        <button class="btn" bindtap="clearCache" data-mode="normal">一般清理</button>
+        <button class="btn warning" bindtap="clearCache" data-mode="aggressive">强力清理</button>
+      </view>
+      
+      <view class="cache-stats">
+        <view class="stat-item">
+          <text class="label">缓存大小:</text>
+          <text class="value">{{cacheStatus.totalSize}} MB</text>
+        </view>
+        <view class="stat-item">
+          <text class="label">原图数量:</text>
+          <text class="value">{{cacheStatus.imageCount}}</text>
+        </view>
+        <view class="stat-item">
+          <text class="label">缩略图数量:</text>
+          <text class="value">{{cacheStatus.thumbCount}}</text>
+        </view>
+      </view>
+      
+      <view class="tips">
+        <text>一般清理: 保留70%最近使用的图片</text>
+        <text>强力清理: 仅保留30%最近使用的图片</text>
+        <text>缓存会根据内存警告和大小阈值自动管理</text>
+      </view>
+    </view>
+  </view>
+</view> 

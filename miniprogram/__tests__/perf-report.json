@@ -1,0 +1,21 @@
+{
+  "timestamp": 1744165057829,
+  "date": "2025-04-09T02:17:37.829Z",
+  "results": {
+    "services/SyncPerformance.test.js": {
+      "error": "Command failed: npx jest /Users/suheng/my-project/xiuhuazhen/WeChatProjects/miniprogram/__tests__/services/SyncPerformance.test.js --no-cache --testTimeout=30000\nFAIL miniprogram/__tests__/services/SyncPerformance.test.js\n  同步框架性能测试\n    初始化性能\n      ✓ SyncManager初始化性能测试 (114 ms)\n    数据操作性能\n      ✓ 单条数据保存性能测试 (8 ms)\n      ✓ 单条数据读取性能测试 (6 ms)\n      ✓ 单条数据删除性能测试 (6 ms)\n    批量操作性能\n      ✓ 批量数据保存性能测试(100条) (6 ms)\n      ✓ 批量数据查询性能测试(100条) (10 ms)\n    同步任务性能\n      ✕ 同步任务队列性能测试(100条) (9 ms)\n    冲突解决性能\n      ✕ 数据冲突解决性能测试 (5 ms)\n\n  ● 同步框架性能测试 › 同步任务性能 › 同步任务队列性能测试(100条)\n\n    expect(received).toBeGreaterThanOrEqual(expected)\n\n    Expected: >= 100\n    Received:    99\n\n      386 |       // 获取初始同步任务状态\n      387 |       const initialStatus = manager.getSyncStatus();\n    > 388 |       expect(initialStatus.scheduler.taskCount).toBeGreaterThanOrEqual(100);\n          |                                                 ^\n      389 |       \n      390 |       // 执行同步 - 修改为使用正确的同步方法\n      391 |       PerfMonitor.mark('sync_task_start');\n\n      at Object.<anonymous> (miniprogram/__tests__/services/SyncPerformance.test.js:388:49)\n\n  ● 同步框架性能测试 › 冲突解决性能 › 数据冲突解决性能测试\n\n    TypeError: manager.resolveConflict is not a function\n\n      451 |         \n      452 |         // 修正为正确的冲突解决方法\n    > 453 |         await manager.resolveConflict('users', 'conflict_user', localData, remoteData);\n          |                       ^\n      454 |       }, 10);\n      455 |       \n      456 |       console.log(`数据冲突解决平均时间: ${result.average.toFixed(2)}ms`);\n\n      at miniprogram/__tests__/services/SyncPerformance.test.js:453:23\n      at Object.benchmarkAsync (miniprogram/__tests__/services/SyncPerformance.test.js:157:13)\n      at Object.<anonymous> (miniprogram/__tests__/services/SyncPerformance.test.js:430:40)\n\nTest Suites: 1 failed, 1 total\nTests:       2 failed, 6 passed, 8 total\nSnapshots:   0 total\nTime:        1.323 s\nRan all test suites matching /\\/Users\\/suheng\\/my-project\\/xiuhuazhen\\/WeChatProjects\\/miniprogram\\/__tests__\\/services\\/SyncPerformance.test.js/i.\n"
+    }
+  },
+  "summary": {
+    "total": 0,
+    "passed": 0,
+    "failed": 0,
+    "improved": 0,
+    "degraded": 0
+  },
+  "system": {
+    "platform": "darwin",
+    "arch": "x64",
+    "nodeVersion": "v18.15.0"
+  }
+}

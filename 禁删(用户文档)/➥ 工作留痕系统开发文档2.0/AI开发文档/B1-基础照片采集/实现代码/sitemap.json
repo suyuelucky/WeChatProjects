@@ -1,7 +1,0 @@
-{
-  "desc": "照片采集工具的索引规则",
-  "rules": [{
-    "action": "disallow",
-    "page": "*"
-  }]
-} 

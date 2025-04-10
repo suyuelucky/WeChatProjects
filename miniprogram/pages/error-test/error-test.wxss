@@ -1,0 +1,328 @@
+/* pages/error-test/error-test.wxss */
+.container {
+  padding: 30rpx;
+  box-sizing: border-box;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.description {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.section {
+  margin-bottom: 30rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  padding-bottom: 10rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+/* 系统和存储信息样式 */
+.info-section {
+  padding: 20rpx;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10rpx 0;
+}
+
+.info-label {
+  color: #666;
+  font-size: 28rpx;
+}
+
+.info-value {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.storage-progress {
+  margin-top: 20rpx;
+}
+
+/* 按钮样式 */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.test-button {
+  width: 48%;
+  margin-bottom: 15rpx;
+  font-size: 28rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background-color: #4a6bff;
+  color: #fff;
+}
+
+.test-button::after {
+  border: none;
+}
+
+.clear-button {
+  background-color: #ff4a4a;
+}
+
+/* 加载状态 */
+.loading-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20rpx;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  color: #fff;
+  font-size: 30rpx;
+}
+
+/* 测试结果样式 */
+.result-list {
+  max-height: 500rpx;
+  overflow-y: auto;
+}
+
+.result-item {
+  background-color: #f9f9f9;
+  border-radius: 8rpx;
+  padding: 15rpx;
+  margin-bottom: 15rpx;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.result-name {
+  font-weight: bold;
+  font-size: 28rpx;
+}
+
+.result-status {
+  font-size: 26rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+}
+
+.success {
+  background-color: #e8f5e9;
+  color: #4caf50;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #f44336;
+}
+
+.result-message {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin: 10rpx 0;
+}
+
+.result-time {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  text-align: right;
+}
+
+/* 诊断报告样式 */
+.diagnostic-section {
+  background-color: #fff;
+  border-radius: 12rpx;
+}
+
+.diagnostic-content {
+  padding: 10rpx;
+}
+
+.diagnostic-group {
+  margin-bottom: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 8rpx;
+  padding: 15rpx;
+}
+
+.diagnostic-header {
+  font-size: 28rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+  color: #444;
+}
+
+.diagnostic-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8rpx 0;
+}
+
+.diagnostic-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.diagnostic-value {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.error-text {
+  color: #f44336;
+}
+
+.warning-text {
+  color: #ff9800;
+}
+
+.success-text {
+  color: #4caf50;
+}
+
+/* 日志列表样式 */
+.log-section {
+  margin-bottom: 60rpx;
+}
+
+.log-list {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.log-item {
+  padding: 15rpx;
+  margin-bottom: 15rpx;
+  border-radius: 8rpx;
+}
+
+.error-log {
+  background-color: #ffebee;
+  border-left: 4rpx solid #f44336;
+}
+
+.warning-log {
+  background-color: #fff8e1;
+  border-left: 4rpx solid #ff9800;
+}
+
+.info-log {
+  background-color: #e8f5e9;
+  border-left: 4rpx solid #4caf50;
+}
+
+.log-header {
+  display: flex;
+  margin-bottom: 8rpx;
+}
+
+.log-type {
+  font-size: 24rpx;
+  font-weight: bold;
+  padding: 2rpx 10rpx;
+  border-radius: 4rpx;
+  margin-right: 10rpx;
+}
+
+.error-log .log-type {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.warning-log .log-type {
+  background-color: #ff9800;
+  color: #fff;
+}
+
+.info-log .log-type {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.log-category {
+  font-size: 24rpx;
+  color: #555;
+  flex: 1;
+  padding: 2rpx 0;
+}
+
+.log-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.log-message {
+  display: block;
+  font-size: 26rpx;
+  margin: 8rpx 0;
+  word-break: break-all;
+}
+
+.log-stack {
+  display: block;
+  font-size: 24rpx;
+  color: #777;
+  background-color: rgba(0, 0, 0, 0.03);
+  padding: 8rpx;
+  border-radius: 4rpx;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-top: 8rpx;
+}
+
+.no-data {
+  text-align: center;
+  padding: 30rpx;
+  color: #999;
+  font-size: 28rpx;
+} 

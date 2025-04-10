@@ -1,0 +1,258 @@
+/* 
+  博客页面诊断工具样式
+  创建时间：2025-04-10 23:17:13
+  创建者：Claude助手
+*/
+
+.diagnostic-container {
+  display: flex;
+  flex-direction: column;
+  padding: 30rpx;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+/* 页面标题样式 */
+.header {
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  padding: 20rpx 0;
+}
+
+/* 区块标题通用样式 */
+.section-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  margin: 20rpx 0;
+  padding-left: 20rpx;
+  border-left: 8rpx solid #3c7cfc;
+  color: #333;
+}
+
+.section-title.unresolved {
+  border-left-color: #f56c6c;
+}
+
+.section-title.resolved {
+  border-left-color: #67c23a;
+}
+
+/* 系统信息展示样式 */
+.system-info {
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.info-row {
+  display: flex;
+  padding: 16rpx 10rpx;
+  border-bottom: 1rpx solid #f2f2f2;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  flex: 0 0 200rpx;
+  color: #666;
+}
+
+.value {
+  flex: 1;
+  color: #333;
+}
+
+/* 操作按钮区样式 */
+.control-area {
+  margin-bottom: 30rpx;
+}
+
+.button-group, .result-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 20rpx 0;
+}
+
+.primary-btn {
+  background-color: #3c7cfc;
+  color: white;
+  font-weight: normal;
+  font-size: 30rpx;
+  min-width: 240rpx;
+}
+
+.primary-btn:active {
+  background-color: #3062c9;
+}
+
+.normal-btn {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: normal;
+  font-size: 30rpx;
+  min-width: 200rpx;
+}
+
+/* 进度条样式 */
+.progress-container {
+  padding: 20rpx;
+  background-color: white;
+  border-radius: 12rpx;
+  margin: 20rpx 0;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 28rpx;
+  color: #666;
+  margin-top: 10rpx;
+}
+
+/* 诊断摘要样式 */
+.issues-summary {
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 15rpx 10rpx;
+  border-bottom: 1rpx solid #f2f2f2;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-label {
+  color: #666;
+}
+
+.summary-value {
+  color: #333;
+  font-weight: 500;
+}
+
+/* 问题列表样式 */
+.issues-section {
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.issues-list {
+  max-height: 500rpx;
+  overflow-y: auto;
+}
+
+.issue-item {
+  display: flex;
+  padding: 20rpx 10rpx;
+  border-bottom: 1rpx solid #f2f2f2;
+  align-items: flex-start;
+}
+
+.issue-item:last-child {
+  border-bottom: none;
+}
+
+.issue-severity {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-top: 10rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.issue-severity.critical {
+  background-color: #f56c6c;
+}
+
+.issue-severity.warning {
+  background-color: #e6a23c;
+}
+
+.issue-severity.info {
+  background-color: #409eff;
+}
+
+.issue-content {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.5;
+}
+
+.issue-item.fixed .issue-content {
+  color: #67c23a;
+}
+
+/* 日志容器样式 */
+.log-container {
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  flex: 1;
+}
+
+.log-scroll {
+  height: 500rpx;
+  overflow-y: auto;
+}
+
+.log-entry {
+  font-size: 26rpx;
+  padding: 10rpx;
+  border-bottom: 1rpx solid #f2f2f2;
+  display: flex;
+}
+
+.log-time {
+  color: #909399;
+  margin-right: 10rpx;
+  font-family: monospace;
+  flex-shrink: 0;
+}
+
+.log-message {
+  color: #606266;
+  flex: 1;
+}
+
+.log-entry.info .log-message {
+  color: #409eff;
+}
+
+.log-entry.success .log-message {
+  color: #67c23a;
+}
+
+.log-entry.warning .log-message {
+  color: #e6a23c;
+}
+
+.log-entry.error .log-message {
+  color: #f56c6c;
+} 

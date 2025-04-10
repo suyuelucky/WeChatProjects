@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "B1照片捕捉测试",
+  "usingComponents": {},
+  "enablePullDownRefresh": false,
+  "backgroundTextStyle": "light",
+  "navigationBarBackgroundColor": "#3a8ee6",
+  "navigationBarTextStyle": "white"
+} 

@@ -1,0 +1,118 @@
+<!-- 
+  博客列表页面
+  创建时间：2025年04月10日 21:08:42
+  创建者：Claude助手
+  编辑时间：2025年04月10日 21:45:37
+  编辑内容：修复函数名不匹配问题
+  编辑时间：2025年04月10日 21:52:55
+  编辑内容：修复XML语法错误，移除重叠绑定
+  编辑时间：2025-04-10 22:58:44
+  编辑内容：增加错误提示和真机兼容性
+  编辑时间：2025-05-12 20:56:51
+  编辑内容：简化滚动视图配置，确保正常滚动
+  编辑时间：2025年04月10日 23:21:39
+  编辑内容：添加图片加载错误处理
+-->
+
+<view class="blog-container">
+  <!-- 顶部操作栏 -->
+  <view class="header">
+    <view class="title">博客</view>
+    <view class="publish-btn" bindtap="onTapPublish">
+      <text class="btn-text">发布</text>
+    </view>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-message" wx:if="{{errorMessage}}">
+    <text>{{errorMessage}}</text>
+    <view class="retry-btn" bindtap="loadBlogList" data-refresh="true">重试</view>
+  </view>
+  
+  <!-- 真机安全模式提示 -->
+  <view class="safe-mode-tip" wx:if="{{_safeMode}}">
+    <text>兼容模式</text>
+  </view>
+
+  <!-- 博客列表 - 使用简单的scroll-view配置 -->
+  <scroll-view 
+    class="blog-list" 
+    scroll-y="true" 
+    enable-back-to-top="true"
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{refresherTriggered}}"
+    bindrefresherrefresh="onPullDownRefresh"
+    bindscrolltolower="onReachBottom">
+    
+    <!-- 普通列表 -->
+    <view class="blog-cards">
+      <view class="blog-card" wx:for="{{blogList}}" wx:key="id" bindtap="onTapBlogItem" data-id="{{item.id}}">
+        <!-- 作者信息 -->
+        <view class="blog-author">
+          <image class="author-avatar" src="{{item.author.avatarUrl}}" mode="aspectFill"></image>
+          <text class="author-name">{{item.author.nickname}}</text>
+          <text class="blog-time">{{item.createTime}}</text>
+        </view>
+        
+        <!-- 博客内容 -->
+        <view class="blog-content">
+          <text class="content-text">{{item.content}}</text>
+          
+          <!-- 图片展示 -->
+          <block wx:if="{{item.images.length > 0}}">
+            <view class="image-container {{item.images.length === 1 ? 'single-image' : ''}}">
+              <image 
+                wx:for="{{item.images}}" 
+                wx:for-item="img" 
+                wx:key="*this" 
+                src="{{img}}" 
+                mode="aspectFill" 
+                class="content-image"
+                lazy-load="true"
+                binderror="onImageError"
+                data-index="{{index}}"
+                data-blog-index="{{index}}"
+              ></image>
+            </view>
+          </block>
+          
+          <!-- 无图片错误提示 -->
+          <view class="image-error-tip" wx:if="{{item.hasImageError}}">
+            <text class="error-text">图片加载失败</text>
+          </view>
+        </view>
+        
+        <!-- 交互栏 -->
+        <view class="interaction-bar">
+          <view class="action-item" catchtap="onTapLike" data-index="{{index}}">
+            <view class="icon-like"></view>
+            <text class="count">{{item.likes}}</text>
+          </view>
+          <view class="action-item">
+            <view class="icon-comment"></view>
+            <text class="count">{{item.comments}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 加载状态 -->
+    <view class="loading-status">
+      <view wx:if="{{loadingMore}}" class="loading-more">
+        <view class="loading-icon"></view>
+        <text>加载中...</text>
+      </view>
+      <view wx:elif="{{noMore && blogList.length > 0}}" class="no-more">
+        <text>- 已经到底了 -</text>
+      </view>
+      <view wx:elif="{{blogList.length === 0 && !loading}}" class="empty-list">
+        <text>暂无博客内容</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 悬浮拍照按钮 -->
+  <view class="float-button" bindtap="onTapCamera">
+    <view class="icon-camera"></view>
+  </view>
+</view> 

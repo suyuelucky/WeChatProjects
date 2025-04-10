@@ -25,7 +25,12 @@
     </view>
     
     <view class="action-container">
-      <button class="chanel-btn diary-btn" bindtap="goToDiary">我的日记</button>
+      <button class="chanel-btn discover-btn" bindtap="goToDiscover">
+        <text class="discover-icon">🔍</text> 去发现
+      </button>
+      <button class="chanel-btn diary-btn" bindtap="goToDiary">
+        <text class="diary-icon">📝</text> 我的日记
+      </button>
       <button class="chanel-btn camera-btn" bindtap="takePicture">
         <text class="camera-icon">📷</text> 拍照
       </button>

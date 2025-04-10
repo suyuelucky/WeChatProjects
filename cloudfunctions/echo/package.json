@@ -1,0 +1,14 @@
+{
+  "name": "echo",
+  "version": "1.0.0",
+  "description": "Echo云函数，用于测试云环境连接",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+} 

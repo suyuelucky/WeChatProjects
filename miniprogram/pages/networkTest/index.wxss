@@ -209,4 +209,206 @@
   color: #333;
   margin-bottom: 20rpx;
   display: block;
+}
+
+/**
+ * 网络测试页面样式
+ */
+
+.network-test-container {
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 通用标题样式 */
+.section-header {
+  margin-bottom: 30rpx;
+  border-bottom: 1rpx solid #eaeaea;
+  padding-bottom: 20rpx;
+}
+
+.section-header .title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 通用卡片样式 */
+.status-card,
+.diagnostic-card,
+.test-card,
+.timeout-card {
+  background-color: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  padding: 24rpx;
+  margin-bottom: 30rpx;
+}
+
+/* 网络状态区域 */
+.status-title,
+.diagnostic-title,
+.test-title,
+.timeout-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: #333;
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 2;
+  padding: 16rpx;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.status-connected {
+  background-color: #f0f9eb;
+  color: #67c23a;
+}
+
+.status-disconnected {
+  background-color: #fee;
+  color: #f56c6c;
+}
+
+/* 诊断结果区域 */
+.diagnostic-overall {
+  font-size: 30rpx;
+  font-weight: bold;
+  padding: 16rpx;
+  background-color: #f5f7fa;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.diagnostic-details {
+  padding: 0 16rpx;
+}
+
+.details-title {
+  font-weight: bold;
+  display: block;
+  margin: 16rpx 0;
+}
+
+.detail-item,
+.suggestion-item {
+  line-height: 1.8;
+  margin-bottom: 12rpx;
+  padding-left: 10rpx;
+}
+
+.suggestion-item {
+  color: #409eff;
+}
+
+/* 网络测试区域 */
+.average-latency {
+  font-size: 30rpx;
+  font-weight: bold;
+  padding: 16rpx;
+  background-color: #f5f7fa;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.test-items {
+  margin-bottom: 20rpx;
+}
+
+.test-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10rpx 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.test-item.success .test-value {
+  color: #67c23a;
+}
+
+.test-item.fail .test-value {
+  color: #f56c6c;
+}
+
+.test-url {
+  width: 70%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.test-in-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.loading {
+  width: 32rpx;
+  height: 32rpx;
+  border: 4rpx solid #f3f3f3;
+  border-top: 4rpx solid #3498db;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 超时记录区域 */
+.timeout-stats {
+  padding: 16rpx;
+}
+
+.timeout-total {
+  font-size: 30rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.timeout-breakdown {
+  margin-top: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.breakdown-title {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.breakdown-item {
+  line-height: 1.8;
+  padding-left: 10rpx;
+}
+
+/* 按钮区域 */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20rpx;
+}
+
+.action-buttons button {
+  margin-left: 16rpx;
+}
+
+/* 底部提示 */
+.footer-tips {
+  text-align: center;
+  color: #909399;
+  font-size: 24rpx;
+  margin: 40rpx 0 20rpx;
 } 

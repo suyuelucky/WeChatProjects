@@ -1,0 +1,209 @@
+/* B1照片捕捉功能测试页面样式 */
+
+.test-container {
+  padding: 30rpx;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 测试页面标题 */
+.test-header {
+  margin-bottom: 40rpx;
+}
+
+.test-title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.test-subtitle {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 区块通用标题 */
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-left: 20rpx;
+  border-left: 8rpx solid #3a8ee6;
+}
+
+/* 测试选项区域 */
+.test-options {
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 30rpx;
+}
+
+.options-list {
+  margin-bottom: 30rpx;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1px solid #eee;
+}
+
+.option-item:last-child {
+  border-bottom: none;
+}
+
+.option-item.selected {
+  background-color: rgba(58, 142, 230, 0.05);
+}
+
+.option-checkbox {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #ccc;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-inner {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 4rpx;
+  background-color: transparent;
+}
+
+.checkbox-inner.checked {
+  background-color: #3a8ee6;
+}
+
+.option-name {
+  font-size: 30rpx;
+  color: #333;
+}
+
+/* 按钮区域 */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20rpx;
+}
+
+.btn-run, .btn-clear {
+  width: 48%;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 8rpx;
+  font-size: 30rpx;
+}
+
+.btn-run {
+  background-color: #3a8ee6;
+  color: #fff;
+}
+
+.btn-run[disabled] {
+  background-color: #abc6e6;
+}
+
+.btn-clear {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1rpx solid #ddd;
+}
+
+/* 测试结果区域 */
+.test-results {
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 30rpx;
+}
+
+.results-summary {
+  display: flex;
+  justify-content: space-around;
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.result-value {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.result-value.pass {
+  color: #52c41a;
+}
+
+.result-value.fail {
+  color: #f5222d;
+}
+
+/* 测试日志区域 */
+.test-logs {
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.logs-container {
+  height: 700rpx;
+  background-color: #2a2a2a;
+  padding: 20rpx;
+  border-radius: 8rpx;
+}
+
+.log-item {
+  font-size: 24rpx;
+  font-family: monospace;
+  line-height: 1.5;
+  margin-bottom: 10rpx;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.log-time {
+  color: #888;
+  margin-right: 10rpx;
+}
+
+.log-item.info .log-message {
+  color: #fff;
+}
+
+.log-item.warn .log-message {
+  color: #faad14;
+}
+
+.log-item.error .log-message {
+  color: #ff4d4f;
+}
+
+.log-empty {
+  color: #888;
+  font-size: 28rpx;
+  text-align: center;
+  padding: 40rpx 0;
+} 

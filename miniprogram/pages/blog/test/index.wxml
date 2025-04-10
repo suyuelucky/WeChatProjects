@@ -1,0 +1,43 @@
+<!-- 
+  博客功能测试页面
+  创建时间：2025年04月10日 22:22:45
+  创建者：Claude助手
+-->
+
+<view class="test-container">
+  <view class="test-header">
+    <text class="test-title">博客功能测试</text>
+    <text class="test-time">{{pageReady ? '测试完成' : '测试中...'}}</text>
+  </view>
+  
+  <!-- 测试结果展示 -->
+  <view class="test-results">
+    <block wx:for="{{testResults}}" wx:key="name">
+      <view class="test-group">
+        <view class="group-title">{{item.name}}</view>
+        
+        <view class="test-items">
+          <block wx:for="{{item.tests}}" wx:for-item="test" wx:key="name">
+            <view class="test-item {{test.result ? 'success' : 'fail'}}">
+              <view class="test-item-header">
+                <text class="test-name">{{test.name}}</text>
+                <text class="test-status">{{test.result ? '通过' : '失败'}}</text>
+              </view>
+              <text class="test-message">{{test.message}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
+  
+  <!-- 导航测试按钮 -->
+  <view class="test-actions">
+    <view class="action-title">实际导航测试</view>
+    <view class="action-buttons">
+      <button class="test-btn" bindtap="onTestNavToPublish">测试发布页</button>
+      <button class="test-btn" bindtap="onTestNavToDetail">测试详情页</button>
+      <button class="test-btn" bindtap="onTestNavToUser">测试用户页</button>
+    </view>
+  </view>
+</view> 

@@ -1,0 +1,128 @@
+<view class="camera-page">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">正在初始化相机...</view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error-container" wx:elif="{{hasError}}">
+    <icon type="warn" size="60" color="#FF5252"></icon>
+    <view class="error-message">{{errorMessage}}</view>
+    <button class="retry-button" bind:tap="handleRetry">重试</button>
+    <button class="back-button" open-type="navigateBack">返回</button>
+  </view>
+  
+  <!-- 相机组件 -->
+  <block wx:else>
+    <camera-manager id="cameraManager"
+      initial-mode="{{currentMode}}"
+      device-position="{{devicePosition}}"
+      flash-mode="{{flashMode}}"
+      resolution="{{resolution}}"
+      show-controls="{{showControls}}"
+      timer-delay="{{timerDelay}}"
+      enable-diagnostics="{{true}}"
+      bind:cameraReady="handleCameraReady"
+      bind:permissionDenied="handlePermissionDenied"
+      bind:photoTaken="handlePhotoTaken"
+      bind:error="handleCameraError"
+      class="camera-component {{!cameraReady ? 'camera-initializing' : ''}}">
+    </camera-manager>
+    
+    <!-- 相机控制栏 -->
+    <view class="camera-controls" wx:if="{{cameraReady}}">
+      <view class="control-button" bind:tap="toggleFlash">
+        <text class="control-icon">
+          {{flashMode === 'auto' ? '闪光灯自动' : (flashMode === 'on' ? '闪光灯开' : '闪光灯关')}}
+        </text>
+      </view>
+      
+      <view class="shutter-button" bind:tap="handleTakePhoto">
+        <view class="shutter-inner"></view>
+      </view>
+      
+      <view class="control-button" bind:tap="toggleCameraPosition">
+        <text class="control-icon">切换</text>
+      </view>
+    </view>
+    
+    <!-- 模式切换栏 -->
+    <view class="mode-switcher" wx:if="{{cameraReady}}">
+      <view class="mode-item {{currentMode === 'normal' ? 'active' : ''}}" 
+        data-mode="normal" bind:tap="changeMode">
+        普通
+      </view>
+      <view class="mode-item {{currentMode === 'continuous' ? 'active' : ''}}" 
+        data-mode="continuous" bind:tap="changeMode">
+        连拍
+      </view>
+      <view class="mode-item {{currentMode === 'timer' ? 'active' : ''}}" 
+        data-mode="timer" bind:tap="changeMode">
+        定时
+      </view>
+    </view>
+    
+    <!-- 最近照片预览 -->
+    <scroll-view class="photo-preview-container" scroll-x="true" wx:if="{{photoList.length > 0 && cameraReady}}">
+      <view class="photo-item" wx:for="{{photoList}}" wx:key="path" bind:tap="previewPhoto" data-index="{{index}}">
+        <image class="photo-thumbnail" src="{{item.path}}" mode="aspectFill"></image>
+      </view>
+    </scroll-view>
+    
+    <!-- 诊断按钮 -->
+    <view class="diagnosis-button" bind:tap="runDiagnosis">
+      <text class="diagnosis-icon">{{diagnosisOn ? '关闭诊断' : '诊断'}}</text>
+    </view>
+    
+    <!-- 诊断结果面板 -->
+    <view class="diagnosis-panel" wx:if="{{diagnosisOn && diagnosisResults}}">
+      <view class="diagnosis-title">相机诊断信息</view>
+      
+      <view class="diagnosis-item">
+        <text class="diagnosis-label">相机就绪:</text>
+        <text class="diagnosis-value {{diagnosisResults.camera.isReady ? 'status-good' : 'status-bad'}}">
+          {{diagnosisResults.camera.isReady ? '是' : '否'}}
+        </text>
+      </view>
+      
+      <view class="diagnosis-item">
+        <text class="diagnosis-label">相机权限:</text>
+        <text class="diagnosis-value {{diagnosisResults.camera.hasPermission ? 'status-good' : 'status-bad'}}">
+          {{diagnosisResults.camera.hasPermission ? '已授权' : '未授权'}}
+        </text>
+      </view>
+      
+      <view class="diagnosis-item">
+        <text class="diagnosis-label">存储空间:</text>
+        <text class="diagnosis-value {{diagnosisResults.diagnostics.storageAvailable ? 'status-good' : 'status-bad'}}">
+          {{diagnosisResults.diagnostics.storageAvailable ? '充足' : '不足'}}
+        </text>
+      </view>
+      
+      <view class="diagnosis-item">
+        <text class="diagnosis-label">错误计数:</text>
+        <text class="diagnosis-value {{diagnosisResults.diagnostics.errors === 0 ? 'status-good' : 'status-bad'}}">
+          {{diagnosisResults.diagnostics.errors}}
+        </text>
+      </view>
+      
+      <view class="diagnosis-item" wx:if="{{diagnosisResults.diagnostics.lastError}}">
+        <text class="diagnosis-label">最近错误:</text>
+        <text class="diagnosis-value status-bad">{{diagnosisResults.diagnostics.lastError}}</text>
+      </view>
+      
+      <view class="diagnosis-logs" wx:if="{{diagnosisResults.recentLogs && diagnosisResults.recentLogs.length > 0}}">
+        <view class="diagnosis-subtitle">最近日志</view>
+        <view class="log-item" wx:for="{{diagnosisResults.recentLogs}}" wx:key="timestamp">
+          <text class="log-type {{item.type === 'error' ? 'log-error' : 'log-warning'}}">
+            [{{item.type}}]
+          </text>
+          <text class="log-message">{{item.message || item.reason}}</text>
+        </view>
+      </view>
+      
+      <button class="repair-button" bind:tap="handleRetry">尝试修复</button>
+    </view>
+  </block>
+</view> 

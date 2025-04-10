@@ -3,19 +3,19 @@
  * 提供网络状态检测、变化监听和离线功能支持
  */
 
-let networkType = 'unknown';
-let isConnected = true;
-let signalStrength = 'unknown'; // 网络信号强度
-const listeners = [];
+var networkType = 'unknown';
+var isConnected = true;
+var signalStrength = 'unknown'; // 网络信号强度
+var listeners = [];
 
 /**
  * 获取当前网络状态
  * @returns {Promise<{networkType: string, isConnected: boolean, signalStrength: string}>}
  */
-const getNetworkStatus = () => {
-  return new Promise((resolve) => {
+function getNetworkStatus() {
+  return new Promise(function(resolve) {
     wx.getNetworkType({
-      success: (res) => {
+      success: function(res) {
         networkType = res.networkType;
         isConnected = res.networkType !== 'none';
         signalStrength = getSignalStrengthByNetworkType(res.networkType);
@@ -23,10 +23,10 @@ const getNetworkStatus = () => {
         resolve({
           networkType: res.networkType,
           isConnected: res.networkType !== 'none',
-          signalStrength
+          signalStrength: signalStrength
         });
       },
-      fail: () => {
+      fail: function() {
         networkType = 'unknown';
         isConnected = false;
         signalStrength = 'unknown';
@@ -39,14 +39,14 @@ const getNetworkStatus = () => {
       }
     });
   });
-};
+}
 
 /**
  * 基于网络类型判断信号强度
  * @param {string} type 网络类型
  * @returns {string} 信号强度描述
  */
-const getSignalStrengthByNetworkType = (type) => {
+function getSignalStrengthByNetworkType(type) {
   switch (type) {
     case '5g':
       return 'excellent';
@@ -64,296 +64,368 @@ const getSignalStrengthByNetworkType = (type) => {
     default:
       return 'unknown';
   }
-};
+}
 
 /**
  * 检测WiFi信号强度
  * @returns {string} WiFi信号强度描述
  */
-const detectWifiStrength = () => {
+function detectWifiStrength() {
   // 由于小程序API限制，目前无法直接获取WiFi信号强度
   // 使用ping测试作为间接方法评估WiFi质量
   return 'good'; // 默认认为WiFi信号良好
-};
+}
 
 /**
  * 监听网络状态变化
  * @param {Function} callback - 网络状态变化回调函数
  * @returns {Function} - 取消监听的函数
  */
-const onNetworkStatusChange = (callback) => {
-  if (typeof callback !== 'function') return () => {};
+function onNetworkStatusChange(callback) {
+  if (typeof callback !== 'function') return function() {};
   
   // 保存回调函数
   listeners.push(callback);
   
   // 首次获取网络状态
-  getNetworkStatus().then(callback);
+  getNetworkStatus().then(function(status) {
+    callback(status);
+  });
   
   // 返回取消监听的函数
-  return () => {
-    const index = listeners.indexOf(callback);
+  return function() {
+    var index = listeners.indexOf(callback);
     if (index > -1) {
       listeners.splice(index, 1);
     }
   };
-};
+}
 
 /**
  * 初始化网络监听（应用启动时调用）
  */
-const initNetworkListener = () => {
+function initNetworkListener() {
   // 监听网络状态变化
-  wx.onNetworkStatusChange((res) => {
+  wx.onNetworkStatusChange(function(res) {
     networkType = res.networkType;
     isConnected = res.isConnected;
     signalStrength = getSignalStrengthByNetworkType(res.networkType);
     
     // 通知所有监听器
-    listeners.forEach(callback => {
+    for (var i = 0; i < listeners.length; i++) {
       try {
-        callback({
+        listeners[i]({
           networkType: res.networkType,
           isConnected: res.isConnected,
-          signalStrength
+          signalStrength: signalStrength
         });
       } catch (error) {
         console.error('网络状态变化回调执行失败:', error);
       }
-    });
+    }
   });
   
   // 初始获取网络状态
   return getNetworkStatus();
-};
+}
 
 /**
  * 判断当前是否有网络连接
  * @returns {boolean}
  */
-const hasNetworkConnection = () => {
+function hasNetworkConnection() {
   return isConnected;
-};
+}
 
 /**
  * 判断当前是否为弱网环境
  * @returns {boolean}
  */
-const isWeakNetwork = () => {
+function isWeakNetwork() {
   // 2g、3g或未知网络类型视为弱网
   return networkType === '2g' || networkType === '3g' || 
     signalStrength === 'poor' || signalStrength === 'fair';
-};
+}
 
 /**
  * 判断当前是否为强网环境（5G/4G/高速WiFi）
  * @returns {boolean}
  */
-const isStrongNetwork = () => {
+function isStrongNetwork() {
   return networkType === '5g' || networkType === '4g' || 
     (networkType === 'wifi' && signalStrength === 'excellent');
-};
+}
 
 /**
  * 获取网络类型
  * @returns {string} - 'wifi', '4g', '3g', '2g', 'unknown' 或 'none'
  */
-const getNetworkType = () => {
+function getNetworkType() {
   return networkType;
-};
+}
 
 /**
  * 测量当前网络延迟
  * @param {string} url 测试URL
  * @returns {Promise<number>} 延迟时间(ms)
  */
-const measureNetworkLatency = async (url = 'https://api.xiuhuazhen.com/ping') => {
-  return new Promise((resolve) => {
-    const startTime = Date.now();
+function measureNetworkLatency(url) {
+  url = url || 'https://api.xiuhuazhen.com/ping';
+  
+  return new Promise(function(resolve) {
+    var startTime = Date.now();
     
     wx.request({
-      url,
+      url: url,
       method: 'HEAD',
-      success: () => {
-        const latency = Date.now() - startTime;
+      success: function() {
+        var latency = Date.now() - startTime;
         resolve(latency);
       },
-      fail: () => {
+      fail: function() {
         resolve(-1); // 失败时返回-1表示无法测量
       }
     });
   });
-};
+}
 
 /**
  * 获取当前网络带宽估计
  * @returns {Promise<string>} 带宽等级描述
  */
-const estimateNetworkBandwidth = async () => {
+function estimateNetworkBandwidth() {
   // 基于网络类型和延迟粗略估计带宽
-  const latency = await measureNetworkLatency();
-  
-  if (latency < 0) {
-    return 'unknown';
-  }
-  
-  // 根据网络类型和延迟综合判断带宽
-  if (networkType === '5g' || (networkType === '4g' && latency < 50)) {
-    return 'high';
-  } else if (networkType === '4g' || (networkType === 'wifi' && latency < 100)) {
-    return 'medium';
-  } else if (networkType === '3g' || (networkType === 'wifi' && latency < 300)) {
-    return 'low';
-  } else {
-    return 'very-low';
-  }
-};
+  return new Promise(function(resolve) {
+    measureNetworkLatency().then(function(latency) {
+      if (latency < 0) {
+        resolve('unknown');
+        return;
+      }
+      
+      // 根据网络类型和延迟综合判断带宽
+      if (networkType === '5g') {
+        resolve(latency < 50 ? 'very-high' : 'high');
+      } else if (networkType === '4g') {
+        if (latency < 100) {
+          resolve('high');
+        } else if (latency < 200) {
+          resolve('medium');
+        } else {
+          resolve('low');
+        }
+      } else if (networkType === 'wifi') {
+        if (latency < 50) {
+          resolve('very-high');
+        } else if (latency < 150) {
+          resolve('high');
+        } else if (latency < 300) {
+          resolve('medium');
+        } else {
+          resolve('low');
+        }
+      } else if (networkType === '3g') {
+        resolve(latency < 300 ? 'medium-low' : 'low');
+      } else {
+        resolve('very-low');
+      }
+    });
+  });
+}
 
 /**
- * 获取详细网络信息
- * @returns {Promise<Object>} 网络详情
+ * 获取当前网络详细信息
+ * @returns {Promise<Object>} 网络详细信息
  */
-const getNetworkDetails = async () => {
-  const status = await getNetworkStatus();
-  const latency = await measureNetworkLatency();
-  const bandwidth = await estimateNetworkBandwidth();
-  
-  return {
-    ...status,
-    latency,
-    bandwidth,
-    timestamp: Date.now(),
-    // 计算网络质量评分 (0-100)
-    qualityScore: calculateNetworkQualityScore(status.networkType, latency, bandwidth),
-    // 网络质量分级
-    qualityLevel: getNetworkQualityLevel(status.networkType, latency, bandwidth)
-  };
-};
+function getNetworkDetails() {
+  return new Promise(function(resolve) {
+    var networkDetails = {
+      type: networkType,
+      isConnected: isConnected,
+      signalStrength: signalStrength
+    };
+    
+    // 测量延迟
+    measureNetworkLatency().then(function(latency) {
+      networkDetails.latency = latency;
+      
+      // 估计带宽
+      return estimateNetworkBandwidth();
+    }).then(function(bandwidth) {
+      networkDetails.bandwidthLevel = bandwidth;
+      
+      // 计算网络质量分数
+      var qualityScore = calculateNetworkQualityScore(
+        networkDetails.type, 
+        networkDetails.latency, 
+        networkDetails.bandwidthLevel
+      );
+      
+      networkDetails.qualityScore = qualityScore;
+      networkDetails.qualityLevel = getNetworkQualityLevel(qualityScore);
+      
+      resolve(networkDetails);
+    });
+  });
+}
 
 /**
- * 根据网络状况获取适应性配置
- * @returns {Object} 适应不同网络环境的配置
+ * 根据网络状态获取自适应配置
+ * @returns {Object} 自适应配置参数
  */
-const getNetworkAdaptiveConfig = () => {
-  // 基础配置
-  const config = {
-    timeout: 30000,            // 请求超时时间(ms)
-    retryCount: 3,             // 重试次数
-    retryDelay: 1000,          // 重试间隔(ms)
-    imageQuality: 'normal',    // 图片质量
-    preloadEnabled: true,      // 是否启用预加载
-    cacheDuration: 3600,       // 缓存时长(s)
-    backgroundSync: true,      // 后台同步
-    offlineMode: false,        // 离线模式
-    batchRequests: true,       // 批量请求
-    compressionEnabled: false, // 数据压缩
-    trackingEnabled: true,     // 跟踪启用
-    syncInterval: 30000        // 同步间隔(ms)
+function getNetworkAdaptiveConfig() {
+  var config = {
+    imageQuality: 'medium', // 图片质量: low, medium, high
+    preferCache: false,     // 是否优先使用缓存
+    autoSync: true,         // 是否自动同步
+    syncInterval: 30,       // 同步间隔(分钟)
+    offlineMode: false,     // 是否启用离线模式
+    retryCount: 3,          // 请求失败重试次数
+    timeout: 10000,         // 请求超时时间(ms)
+    concurrentRequests: 6,  // 并发请求数
+    preloadLevel: 2,        // 预加载级别
+    compressionLevel: 0.8   // 压缩级别
   };
   
-  // 根据网络类型调整配置
-  if (networkType === 'none') {
-    // 无网络
+  // 根据网络类型和信号强度调整配置
+  if (!isConnected) {
+    // 离线状态
+    config.imageQuality = 'low';
+    config.preferCache = true;
+    config.autoSync = false;
     config.offlineMode = true;
     config.timeout = 5000;
-    config.retryCount = 0;
-    config.preloadEnabled = false;
-    config.backgroundSync = false;
-    config.trackingEnabled = false;
-    config.syncInterval = 120000; // 长间隔尝试同步
+    config.concurrentRequests = 2;
+    config.preloadLevel = 0;
+    config.compressionLevel = 0.6;
   } else if (isWeakNetwork()) {
     // 弱网环境
-    config.timeout = 45000;
-    config.retryCount = 5;
-    config.retryDelay = 2000;
-    config.imageQuality = 'low';
-    config.preloadEnabled = false;
-    config.cacheDuration = 7200;
-    config.batchRequests = true;
-    config.compressionEnabled = true;
-    config.syncInterval = 60000;
+    if (networkType === '2g') {
+      config.imageQuality = 'low';
+      config.preferCache = true;
+      config.syncInterval = 60;
+      config.timeout = 20000;
+      config.concurrentRequests = 2;
+      config.preloadLevel = 1;
+      config.compressionLevel = 0.7;
+      config.retryCount = 5;
+    } else {
+      // 3g或信号较弱的WiFi
+      config.imageQuality = 'medium';
+      config.preferCache = true;
+      config.syncInterval = 45;
+      config.timeout = 15000;
+      config.concurrentRequests = 4;
+      config.preloadLevel = 1;
+      config.compressionLevel = 0.8;
+    }
   } else if (isStrongNetwork()) {
     // 强网环境
-    config.timeout = 15000;
-    config.retryCount = 2;
-    config.retryDelay = 500;
     config.imageQuality = 'high';
-    config.preloadEnabled = true;
-    config.cacheDuration = 1800;
-    config.compressionEnabled = false;
-    config.syncInterval = 10000;
+    config.preferCache = false;
+    config.syncInterval = 15;
+    config.timeout = 10000;
+    config.concurrentRequests = 8;
+    config.preloadLevel = 3;
+    config.compressionLevel = 0.9;
   }
   
   return config;
-};
+}
 
 /**
- * 计算网络质量评分(0-100)
+ * 计算网络质量得分(0-100)
  * @param {string} networkType 网络类型
- * @param {number} latency 网络延迟
+ * @param {number} latency 延迟(ms)
  * @param {string} bandwidth 带宽等级
- * @returns {number} 质量评分
+ * @returns {number} 网络质量得分
  */
-const calculateNetworkQualityScore = (networkType, latency, bandwidth) => {
-  // 基础分
-  let score = 50;
-  
-  // 根据网络类型加分
-  if (networkType === '5g') score += 30;
-  else if (networkType === '4g') score += 20;
-  else if (networkType === 'wifi') score += 25;
-  else if (networkType === '3g') score += 10;
-  else if (networkType === '2g') score += 5;
-  else if (networkType === 'none') score = 0;
-  
-  // 根据延迟调整分数
-  if (latency > 0) {
-    if (latency < 50) score += 20;
-    else if (latency < 100) score += 15;
-    else if (latency < 200) score += 10;
-    else if (latency < 500) score += 0;
-    else if (latency < 1000) score -= 10;
-    else score -= 20;
+function calculateNetworkQualityScore(networkType, latency, bandwidth) {
+  // 基础分数，根据网络类型
+  var baseScore = 0;
+  if (networkType === '5g') {
+    baseScore = 90;
+  } else if (networkType === '4g') {
+    baseScore = 75;
+  } else if (networkType === 'wifi') {
+    baseScore = 80;
+  } else if (networkType === '3g') {
+    baseScore = 60;
+  } else if (networkType === '2g') {
+    baseScore = 40;
+  } else if (networkType === 'none') {
+    return 0;
+  } else {
+    baseScore = 50;
   }
   
-  // 根据带宽调整
-  if (bandwidth === 'high') score += 5;
-  else if (bandwidth === 'medium') score += 0;
-  else if (bandwidth === 'low') score -= 5;
-  else if (bandwidth === 'very-low') score -= 10;
+  // 延迟调整
+  var latencyScore = 0;
+  if (latency <= 0) {
+    latencyScore = 0; // 无法测量
+  } else if (latency < 50) {
+    latencyScore = 10;
+  } else if (latency < 100) {
+    latencyScore = 8;
+  } else if (latency < 200) {
+    latencyScore = 5;
+  } else if (latency < 300) {
+    latencyScore = 2;
+  } else {
+    latencyScore = -5; // 延迟过高扣分
+  }
   
-  // 确保分数在0-100范围内
-  return Math.max(0, Math.min(100, score));
-};
+  // 带宽调整
+  var bandwidthScore = 0;
+  if (bandwidth === 'very-high') {
+    bandwidthScore = 10;
+  } else if (bandwidth === 'high') {
+    bandwidthScore = 7;
+  } else if (bandwidth === 'medium') {
+    bandwidthScore = 5;
+  } else if (bandwidth === 'low') {
+    bandwidthScore = 2;
+  } else if (bandwidth === 'very-low') {
+    bandwidthScore = 0;
+  } else {
+    bandwidthScore = 3; // 未知带宽给中等偏下分数
+  }
+  
+  // 计算总分，最高100分
+  var totalScore = baseScore + latencyScore + bandwidthScore;
+  return Math.max(0, Math.min(100, totalScore));
+}
 
 /**
- * 获取网络质量等级
- * @param {string} networkType 网络类型
- * @param {number} latency 网络延迟
- * @param {string} bandwidth 带宽等级
- * @returns {string} 质量等级
+ * 根据质量分数获取网络质量级别
+ * @param {number} score 质量分数(0-100)
+ * @returns {string} 质量级别描述
  */
-const getNetworkQualityLevel = (networkType, latency, bandwidth) => {
-  const score = calculateNetworkQualityScore(networkType, latency, bandwidth);
-  
-  if (score >= 80) return 'excellent';
-  else if (score >= 60) return 'good';
-  else if (score >= 40) return 'fair';
-  else if (score >= 20) return 'poor';
-  else return 'critical';
-};
+function getNetworkQualityLevel(score) {
+  if (score >= 90) {
+    return 'excellent';
+  } else if (score >= 75) {
+    return 'good';
+  } else if (score >= 60) {
+    return 'fair';
+  } else if (score >= 40) {
+    return 'poor';
+  } else if (score > 0) {
+    return 'bad';
+  } else {
+    return 'offline';
+  }
+}
 
-// 导出网络工具模块
 module.exports = {
-  getNetworkStatus,
-  onNetworkStatusChange,
-  initNetworkListener,
-  hasNetworkConnection,
-  isWeakNetwork,
-  isStrongNetwork,
-  getNetworkType,
-  measureNetworkLatency,
-  estimateNetworkBandwidth,
-  getNetworkDetails,
-  getNetworkAdaptiveConfig
+  getNetworkStatus: getNetworkStatus,
+  initNetworkListener: initNetworkListener,
+  onNetworkStatusChange: onNetworkStatusChange,
+  hasNetworkConnection: hasNetworkConnection,
+  isWeakNetwork: isWeakNetwork,
+  isStrongNetwork: isStrongNetwork,
+  getNetworkType: getNetworkType,
+  measureNetworkLatency: measureNetworkLatency,
+  estimateNetworkBandwidth: estimateNetworkBandwidth,
+  getNetworkDetails: getNetworkDetails,
+  getNetworkAdaptiveConfig: getNetworkAdaptiveConfig
 }; 

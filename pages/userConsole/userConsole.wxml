@@ -1,0 +1,69 @@
+<!-- 
+  用户控制台页面
+  创建时间：2025年04月10日 21:40:59
+  创建者：Claude助手
+-->
+
+<view class="container">
+  <!-- 加载中状态 -->
+  <block wx:if="{{isLoading}}">
+    <view class="loading-container">
+      <view class="loading-icon"></view>
+      <text class="loading-text">数据加载中...</text>
+    </view>
+  </block>
+  
+  <!-- 主要内容 -->
+  <block wx:else>
+    <!-- 用户信息区 -->
+    <view class="user-section">
+      <view class="user-info">
+        <image class="user-avatar" src="{{userInfo.avatarUrl || '/static/images/default-avatar.png'}}" mode="aspectFill"></image>
+        <view class="user-details">
+          <text class="user-name">{{userInfo.nickName || '微信用户'}}</text>
+          <text class="user-id">OpenID: {{openid ? openid.substring(0, 8) + '...' : '未获取'}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 功能区 -->
+    <view class="function-section">
+      <view class="section-title">控制台功能</view>
+      <view class="function-list">
+        <view class="function-item" 
+              wx:for="{{functionList}}" 
+              wx:key="id" 
+              data-id="{{item.id}}" 
+              bindtap="handleFunctionClick">
+          <view class="function-icon {{item.icon}}"></view>
+          <text class="function-name">{{item.name}}</text>
+          <view class="arrow-right"></view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 系统信息 -->
+    <view class="system-section">
+      <view class="section-title">系统信息</view>
+      <view class="system-info">
+        <view class="info-item">
+          <text class="info-label">环境版本</text>
+          <text class="info-value">生产环境</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">当前用户</text>
+          <text class="info-value">{{userInfo.nickName || '未获取'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">权限状态</text>
+          <text class="info-value">已授权</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 操作区 -->
+    <view class="action-section">
+      <button class="action-button" bindtap="clearStorage">清除缓存</button>
+    </view>
+  </block>
+</view> 

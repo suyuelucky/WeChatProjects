@@ -2,7 +2,7 @@
  * 事件总线
  * 用于解耦组件和服务之间的依赖关系，避免循环依赖
  */
-const EventBus = {
+var EventBus = {
   events: {},
   eventTimeouts: {}, // 存储事件超时控制器
   
@@ -117,9 +117,13 @@ const EventBus = {
     if (handlers) {
       if (callback) {
         // 通过比较回调函数来过滤
-        this.events[eventName] = handlers.filter(function(handler) {
-          return handler.callback !== callback;
-        });
+        var newHandlers = [];
+        for (var i = 0; i < handlers.length; i++) {
+          if (handlers[i].callback !== callback) {
+            newHandlers.push(handlers[i]);
+          }
+        }
+        this.events[eventName] = newHandlers;
       } else {
         delete this.events[eventName];
       }

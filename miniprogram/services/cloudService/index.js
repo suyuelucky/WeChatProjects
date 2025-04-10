@@ -15,9 +15,6 @@ const CloudService = (function() {
       return;
     }
     
-    // 云环境ID
-    this.envId = 'xiuhuazhenMiniProGram';
-    
     // 初始化状态
     this.ready = false;
   }
@@ -31,6 +28,9 @@ const CloudService = (function() {
       if (this.ready) return this;
       
       try {
+        // 云环境ID
+        this.envId = 'cloudbase-5giucop314e2cd87';
+        
         // 初始化云开发
         wx.cloud.init({
           env: this.envId,

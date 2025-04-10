@@ -1,0 +1,64 @@
+<!-- 照片采集示例页面 -->
+<view class="camera-page">
+  <!-- 顶部导航栏 -->
+  <view class="navigation-bar">
+    <view class="nav-left" bindtap="handleBack">
+      <text class="back-icon">←</text>
+      <text class="back-text">返回</text>
+    </view>
+    <view class="nav-title">照片采集</view>
+  </view>
+
+  <!-- 相机组件 -->
+  <photo-capture 
+    id="photoCapture"
+    device-position="back"
+    flash="auto"
+    resolution="medium"
+    show-controls="{{false}}"
+    bindready="handleCameraReady"
+    binderror="handleCameraError"
+    bindcapture="handleCapturePhoto"
+    bindsave="handleSavePhoto"
+    bindswitch="handleSwitchCamera"
+    bindflashchange="handleFlashChange"
+  />
+  
+  <!-- 存储空间信息 -->
+  <view class="space-info" wx:if="{{spaceInfo}}">
+    <text class="space-text">存储空间：{{spaceInfo.percentUsed}}%</text>
+    <view class="space-bar">
+      <view class="space-used" style="width: {{spaceInfo.percentUsed}}%;"></view>
+    </view>
+  </view>
+  
+  <!-- 底部控制栏 -->
+  <view class="control-bar">
+    <!-- 闪光灯控制 -->
+    <view class="control-item" bindtap="handleTapSwitchFlash">
+      <image class="control-icon" src="../../assets/flash-auto.png"></image>
+      <text class="control-text">闪光灯</text>
+    </view>
+    
+    <!-- 拍照按钮 -->
+    <view class="capture-button-container">
+      <view class="capture-button {{isReady ? '' : 'disabled'}}" bindtap="handleTapTakePhoto">
+        <view class="capture-button-inner"></view>
+      </view>
+    </view>
+    
+    <!-- 切换相机 -->
+    <view class="control-item" bindtap="handleTapSwitchCamera">
+      <image class="control-icon" src="../../assets/switch-camera.png"></image>
+      <text class="control-text">切换</text>
+    </view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error-container" wx:if="{{hasError}}">
+    <icon type="warn" size="60" color="#ff4d4f"></icon>
+    <text class="error-title">相机无法使用</text>
+    <text class="error-message">{{errorMessage}}</text>
+    <button class="retry-button" bindtap="handleBack">返回</button>
+  </view>
+</view> 

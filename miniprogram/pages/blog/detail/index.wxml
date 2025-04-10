@@ -1,0 +1,96 @@
+<!-- 
+  博客详情页面
+  创建时间：2025年04月10日 21:10:59
+  创建者：Claude助手
+-->
+
+<view class="detail-container">
+  <!-- 博客内容展示 -->
+  <view class="blog-content">
+    <!-- 作者信息 -->
+    <view class="author-info">
+      <image class="avatar" src="{{blog.author.avatarUrl}}" mode="aspectFill"></image>
+      <view class="author-detail">
+        <text class="nickname">{{blog.author.nickname}}</text>
+        <text class="time">{{blog.createTime}}</text>
+      </view>
+    </view>
+    
+    <!-- 文本内容 -->
+    <text class="content-text">{{blog.content}}</text>
+    
+    <!-- 图片展示 -->
+    <view class="image-list" wx:if="{{blog.images && blog.images.length > 0}}">
+      <block wx:for="{{blog.images}}" wx:key="*this">
+        <image 
+          class="content-image" 
+          src="{{item}}" 
+          mode="widthFix" 
+          data-index="{{index}}"
+          bindtap="onPreviewImage"
+        ></image>
+      </block>
+    </view>
+    
+    <!-- 没有错误提示 -->
+    
+    <!-- 位置信息 -->
+    <view class="location" wx:if="{{blog.location}}">
+      <text class="iconfont icon-location"></text>
+      <text class="location-name">{{blog.location.name}}</text>
+    </view>
+    
+    <!-- 互动栏 -->
+    <view class="interaction-bar">
+      <view class="action-btn" bindtap="onTapLike">
+        <text class="iconfont {{isLiked ? 'icon-like-filled' : 'icon-like'}}"></text>
+        <text class="count">{{blog.likes}}</text>
+      </view>
+      <view class="action-btn" bindtap="onTapComment">
+        <text class="iconfont icon-comment"></text>
+        <text class="count">{{blog.comments}}</text>
+      </view>
+      <button class="action-btn share-btn" open-type="share">
+        <text class="iconfont icon-share"></text>
+        <text class="count">分享</text>
+      </button>
+    </view>
+  </view>
+  
+  <!-- 评论区 -->
+  <view class="comment-section">
+    <view class="section-title">评论 ({{commentList.length}})</view>
+    
+    <!-- 评论列表 -->
+    <view class="comment-list" wx:if="{{commentList.length > 0}}">
+      <block wx:for="{{commentList}}" wx:key="id">
+        <view class="comment-item">
+          <image class="commenter-avatar" src="{{item.author.avatarUrl}}" mode="aspectFill"></image>
+          <view class="comment-right">
+            <view class="commenter-name">{{item.author.nickname}}</view>
+            <view class="comment-content">{{item.content}}</view>
+            <view class="comment-time">{{item.createTime}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+    
+    <!-- 空评论状态 -->
+    <view class="empty-comment" wx:else>
+      <text>暂无评论，快来说点什么吧~</text>
+    </view>
+  </view>
+  
+  <!-- 底部评论输入框 -->
+  <view class="comment-input-bar">
+    <input 
+      class="comment-input" 
+      placeholder="写评论..." 
+      value="{{commentText}}"
+      bindinput="onCommentInput"
+      confirm-type="send"
+      bindconfirm="onSubmitComment"
+    ></input>
+    <view class="send-btn {{canSend ? 'active' : ''}}" bindtap="onSubmitComment">发送</view>
+  </view>
+</view> 

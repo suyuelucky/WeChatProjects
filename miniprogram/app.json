@@ -16,7 +16,16 @@
     "pages/photo-capture/index",
     "pages/test/index",
     "pages/cloud-test/index",
-    "pages/cloud-test/extreme-tests/index"
+    "pages/cloud-test/extreme-tests/index",
+    "pages/test/b1-photo-test",
+    "pages/blog/test/index",
+    "pages/blog/test/performance-test",
+    "pages/blog/index/index",
+    "pages/blog/publish/index",
+    "pages/blog/detail/index",
+    "pages/blog/user/index",
+    "pages/index/index",
+    "pages/userConsole/userConsole"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -45,8 +54,8 @@
         "selectedIconPath": "static/images/diary-active.png"
       },
       {
-        "pagePath": "pages/photo-capture/index",
-        "text": "拍照",
+        "pagePath": "pages/blog/index/index",
+        "text": "博客",
         "iconPath": "static/images/ledger.png",
         "selectedIconPath": "static/images/ledger-active.png"
       },

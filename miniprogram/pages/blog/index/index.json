@@ -1,0 +1,6 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "博客",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f6f6f6"
+} 

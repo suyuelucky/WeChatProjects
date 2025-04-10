@@ -1,0 +1,214 @@
+<!-- 博客诊断工具视图
+创建时间：2025-04-10 23:20:03
+创建者：Claude助手
+-->
+
+<view class="diagnostic-container">
+  <!-- 顶部标题 -->
+  <view class="header">
+    <view class="title">博客诊断工具</view>
+    <view class="subtitle">全面检测博客健康状态</view>
+  </view>
+  
+  <!-- 系统信息 -->
+  <view class="section">
+    <view class="section-title">系统信息</view>
+    <view class="system-info">
+      <view class="info-item">
+        <text class="info-label">设备型号:</text>
+        <text class="info-value">{{systemInfo.deviceModel}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">系统版本:</text>
+        <text class="info-value">{{systemInfo.system}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">微信版本:</text>
+        <text class="info-value">{{systemInfo.wxVersion}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">基础库版本:</text>
+        <text class="info-value">{{systemInfo.SDKVersion}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 诊断进度与控制 -->
+  <view class="section">
+    <view class="section-title">诊断控制</view>
+    <view class="control-panel">
+      <view class="progress-container">
+        <progress percent="{{progress}}" active="{{diagnosing}}" stroke-width="4" show-info="{{false}}" />
+        <view class="progress-text">{{progressText}}</view>
+      </view>
+      
+      <view class="button-group">
+        <button wx:if="{{!diagnosing && !completed}}" class="primary-btn" bindtap="startDiagnostic">开始诊断</button>
+        <button wx:if="{{diagnosing}}" class="primary-btn" disabled>诊断中...</button>
+        <button wx:if="{{completed}}" class="primary-btn" bindtap="restartDiagnostic">重新诊断</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 诊断结果摘要 -->
+  <view class="section" wx:if="{{completed}}">
+    <view class="section-title">诊断摘要</view>
+    <view class="issues-summary">
+      <view class="summary-item">
+        <text class="summary-label">检测到的问题:</text>
+        <text class="summary-value">{{summary.totalIssues}}</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">已自动修复:</text>
+        <text class="summary-value success-text">{{summary.autoFixed}}</text>
+      </view>
+      <view class="summary-item">
+        <text class="summary-label">需要处理:</text>
+        <text class="summary-value {{summary.needAction > 0 ? 'warning-text' : ''}}">{{summary.needAction}}</text>
+      </view>
+      <view class="summary-actions" wx:if="{{summary.totalIssues > 0}}">
+        <button class="normal-btn" bindtap="clearBlogCache" wx:if="{{summary.needAction > 0}}">清理缓存</button>
+        <button class="normal-btn" bindtap="exportReport">导出报告</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 未解决问题列表 -->
+  <view class="section" wx:if="{{completed && unresolvedIssues.length > 0}}">
+    <view class="section-title">需要处理的问题</view>
+    <view class="issues-list unresolved">
+      <block wx:for="{{unresolvedIssues}}" wx:key="timestamp">
+        <view class="issue-item {{item.severity}}">
+          <view class="issue-severity">
+            <text class="severity-indicator"></text>
+            <text class="severity-text">{{item.severity === 'critical' ? '严重' : item.severity === 'warning' ? '警告' : '提示'}}</text>
+          </view>
+          <view class="issue-content">{{item.message}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 已解决问题列表 -->
+  <view class="section" wx:if="{{completed && resolvedIssues.length > 0}}">
+    <view class="section-title">已解决的问题</view>
+    <view class="issues-list resolved">
+      <block wx:for="{{resolvedIssues}}" wx:key="timestamp">
+        <view class="issue-item {{item.severity}}">
+          <view class="issue-severity">
+            <text class="severity-indicator"></text>
+            <text class="severity-text">{{item.severity === 'critical' ? '严重' : item.severity === 'warning' ? '警告' : '提示'}}</text>
+          </view>
+          <view class="issue-content">{{item.message}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 诊断日志 -->
+  <view class="section" wx:if="{{logs.length > 0}}">
+    <view class="section-title">诊断日志
+      <text class="view-detail" bindtap="viewDetailLogs" wx:if="{{logs.length > 5}}">查看详细 ></text>
+    </view>
+    <view class="log-container">
+      <block wx:for="{{logs}}" wx:key="index" wx:if="{{index >= logs.length - 5}}">
+        <view class="log-entry {{item.type}}">
+          <text class="log-time">{{item.timestamp}}</text>
+          <text class="log-message">{{item.message}}</text>
+        </view>
+      </block>
+
+  <!-- 系统信息显示区 -->
+  <view class="system-info">
+    <view class="section-title">系统信息</view>
+    <view class="info-row">
+      <text class="label">设备型号:</text>
+      <text class="value">{{systemInfo.brand}} {{systemInfo.model}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">操作系统:</text>
+      <text class="value">{{systemInfo.system}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">微信版本:</text>
+      <text class="value">{{systemInfo.wechatVersion}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">基础库版本:</text>
+      <text class="value">{{systemInfo.SDKVersion}}</text>
+    </view>
+  </view>
+
+  <!-- 诊断操作区 -->
+  <view class="control-area">
+    <view wx:if="{{!isRunning && !hasResults}}" class="button-group">
+      <button class="primary-btn" bindtap="startDiagnostics">开始诊断</button>
+    </view>
+    
+    <!-- 诊断进度显示 -->
+    <view wx:if="{{isRunning}}" class="progress-container">
+      <progress percent="{{progress}}" stroke-width="6" active active-mode="forwards" />
+      <view class="progress-text">正在诊断 {{progress}}%</view>
+    </view>
+
+    <!-- 诊断结果操作区 -->
+    <view wx:if="{{hasResults}}" class="result-actions">
+      <button class="normal-btn" bindtap="copyResults">复制诊断结果</button>
+      <button class="normal-btn" bindtap="navigateToBlog">返回博客页面</button>
+      <button class="primary-btn" bindtap="startDiagnostics">重新诊断</button>
+    </view>
+  </view>
+
+  <!-- 诊断结果摘要 -->
+  <view wx:if="{{hasResults}}" class="issues-summary">
+    <view class="section-title">诊断报告</view>
+    <view class="summary-row">
+      <text class="summary-label">检测到问题:</text>
+      <text class="summary-value">{{diagnosticSummary.total}}个</text>
+    </view>
+    <view class="summary-row">
+      <text class="summary-label">已自动修复:</text>
+      <text class="summary-value">{{diagnosticSummary.fixed}}个</text>
+    </view>
+    <view class="summary-row">
+      <text class="summary-label">需手动处理:</text>
+      <text class="summary-value">{{diagnosticSummary.unfixed}}个</text>
+    </view>
+  </view>
+
+  <!-- 问题列表 -->
+  <block wx:if="{{hasResults}}">
+    <!-- 未修复问题 -->
+    <view wx:if="{{unfixedIssues.length > 0}}" class="issues-section">
+      <view class="section-title unresolved">需要处理的问题</view>
+      <view class="issues-list">
+        <view wx:for="{{unfixedIssues}}" wx:key="index" class="issue-item">
+          <view class="issue-severity {{item.severity}}"></view>
+          <view class="issue-content">{{item.description}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 已修复问题 -->
+    <view wx:if="{{fixedIssues.length > 0}}" class="issues-section">
+      <view class="section-title resolved">已修复的问题</view>
+      <view class="issues-list">
+        <view wx:for="{{fixedIssues}}" wx:key="index" class="issue-item fixed">
+          <view class="issue-severity {{item.severity}}"></view>
+          <view class="issue-content">{{item.description}}</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 诊断日志 -->
+  <view class="log-container">
+    <view class="section-title">诊断日志</view>
+    <scroll-view scroll-y class="log-scroll" enable-flex>
+      <view wx:for="{{logs}}" wx:key="index" class="log-entry {{item.type}}">
+        <text class="log-time">[{{item.time}}]</text>
+        <text class="log-message">{{item.message}}</text>
+      </view>
+    </scroll-view>
+  </view>
+</view> 

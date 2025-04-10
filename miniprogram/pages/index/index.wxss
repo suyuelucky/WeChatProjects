@@ -78,4 +78,19 @@
   margin-top: 120rpx;
   font-size: 24rpx;
   color: #999;
+}
+
+/* 错误测试链接样式 */
+.error-test-link {
+  margin-top: 40rpx;
+  width: 100%;
+}
+
+.error-test-link button {
+  width: 90%;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+  background-color: #4a6bff;
 } 

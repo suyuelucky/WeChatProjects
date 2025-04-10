@@ -1,0 +1,25 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/camera/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "工作留痕系统",
+    "navigationBarTextStyle": "black"
+  },
+  "permission": {
+    "scope.camera": {
+      "desc": "用于拍摄工作现场照片，记录工作留痕"
+    }
+  },
+  "requiredBackgroundModes": [],
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation",
+    "chooseAddress"
+  ],
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+} 

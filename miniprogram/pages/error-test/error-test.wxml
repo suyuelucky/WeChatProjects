@@ -1,0 +1,200 @@
+<view class="container">
+  <view class="header">
+    <view class="title">错误收集测试</view>
+    <text class="description">用于测试错误收集和诊断功能</text>
+  </view>
+
+  <!-- 系统信息 -->
+  <view class="section info-section">
+    <view class="section-title">系统信息</view>
+    <view class="info-item">
+      <text class="info-label">设备:</text>
+      <text class="info-value">{{systemInfo.brand}} {{systemInfo.model}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">系统:</text>
+      <text class="info-value">{{systemInfo.system}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">微信版本:</text>
+      <text class="info-value">{{systemInfo.version}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">SDK版本:</text>
+      <text class="info-value">{{systemInfo.SDKVersion}}</text>
+    </view>
+  </view>
+
+  <!-- 存储信息 -->
+  <view class="section info-section">
+    <view class="section-title">存储信息</view>
+    <view class="info-item">
+      <text class="info-label">已用空间:</text>
+      <text class="info-value">{{storageInfo.currentSize || 0}} KB</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">总空间:</text>
+      <text class="info-value">{{storageInfo.limitSize || 0}} KB</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">存储项数:</text>
+      <text class="info-value">{{storageInfo.keys.length || 0}}个</text>
+    </view>
+    <view class="storage-progress">
+      <progress percent="{{storageInfo.currentSize / storageInfo.limitSize * 100}}" 
+                stroke-width="3" 
+                activeColor="{{storageInfo.currentSize / storageInfo.limitSize > 0.7 ? '#ff5252' : '#4caf50'}}" />
+    </view>
+  </view>
+
+  <!-- 测试按钮 -->
+  <view class="section action-section">
+    <view class="section-title">测试操作</view>
+    <view class="button-group">
+      <button class="test-button" bindtap="generateError">生成错误</button>
+      <button class="test-button" bindtap="generateWarning">生成警告</button>
+      <button class="test-button" bindtap="generateFeatureUnavailable">功能不可用</button>
+      <button class="test-button" bindtap="generateAsyncError">异步错误</button>
+      <button class="test-button" bindtap="testFileSystemError">文件系统错误</button>
+      <button class="test-button" bindtap="testCameraError">相机错误</button>
+      <button class="test-button" bindtap="testStorageCleanup">存储清理</button>
+      <button class="test-button" bindtap="getDiagnosticReport">获取诊断</button>
+      <button class="test-button clear-button" bindtap="clearAllLogs">清除日志</button>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-mask" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">操作进行中...</text>
+  </view>
+
+  <!-- 测试结果 -->
+  <view class="section result-section">
+    <view class="section-title">测试结果</view>
+    <view class="no-data" wx:if="{{testResults.length === 0}}">
+      <text>暂无测试结果</text>
+    </view>
+    <view class="result-list" wx:else>
+      <view class="result-item" wx:for="{{testResults}}" wx:key="time">
+        <view class="result-header">
+          <text class="result-name">{{item.name}}</text>
+          <text class="result-status {{item.success ? 'success' : 'error'}}">
+            {{item.success ? '成功' : '失败'}}
+          </text>
+        </view>
+        <text class="result-message">{{item.message}}</text>
+        <text class="result-time">{{item.time}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 诊断报告 -->
+  <view class="section diagnostic-section" wx:if="{{diagnosticReport}}">
+    <view class="section-title">诊断报告</view>
+    <view class="diagnostic-content">
+      <!-- 应用信息 -->
+      <view class="diagnostic-group">
+        <view class="diagnostic-header">应用信息</view>
+        <view class="diagnostic-item">
+          <text class="diagnostic-label">版本:</text>
+          <text class="diagnostic-value">{{diagnosticReport.appVersion}}</text>
+        </view>
+        <view class="diagnostic-item">
+          <text class="diagnostic-label">性能级别:</text>
+          <text class="diagnostic-value">{{diagnosticReport.performanceLevel}}</text>
+        </view>
+      </view>
+      
+      <!-- 错误统计 -->
+      <view class="diagnostic-group">
+        <view class="diagnostic-header">错误统计</view>
+        <view class="diagnostic-item">
+          <text class="diagnostic-label">错误:</text>
+          <text class="diagnostic-value {{diagnosticReport.errors.count > 0 ? 'error-text' : ''}}">
+            {{diagnosticReport.errors.count}}个
+          </text>
+        </view>
+        <view class="diagnostic-item">
+          <text class="diagnostic-label">警告:</text>
+          <text class="diagnostic-value {{diagnosticReport.warnings.count > 10 ? 'warning-text' : ''}}">
+            {{diagnosticReport.warnings.count}}个
+          </text>
+        </view>
+      </view>
+      
+      <!-- 网络状态 -->
+      <view class="diagnostic-group">
+        <view class="diagnostic-header">网络状态</view>
+        <view class="diagnostic-item">
+          <text class="diagnostic-label">类型:</text>
+          <text class="diagnostic-value">{{diagnosticReport.network.type}}</text>
+        </view>
+        <view class="diagnostic-item">
+          <text class="diagnostic-label">连接:</text>
+          <text class="diagnostic-value {{diagnosticReport.network.isConnected ? 'success-text' : 'error-text'}}">
+            {{diagnosticReport.network.isConnected ? '已连接' : '未连接'}}
+          </text>
+        </view>
+      </view>
+      
+      <!-- 存储状态 -->
+      <view class="diagnostic-group">
+        <view class="diagnostic-header">存储状态</view>
+        <view class="diagnostic-item">
+          <text class="diagnostic-label">使用率:</text>
+          <text class="diagnostic-value {{diagnosticReport.storage.isCritical ? 'error-text' : (diagnosticReport.storage.needsCleanup ? 'warning-text' : '')}}">
+            {{diagnosticReport.storage.storage.usagePercent}}%
+          </text>
+        </view>
+        <view class="diagnostic-item">
+          <text class="diagnostic-label">状态:</text>
+          <text class="diagnostic-value {{diagnosticReport.storage.isCritical ? 'error-text' : (diagnosticReport.storage.needsCleanup ? 'warning-text' : 'success-text')}}">
+            {{diagnosticReport.storage.isCritical ? '紧急' : (diagnosticReport.storage.needsCleanup ? '需要清理' : '正常')}}
+          </text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日志列表 -->
+  <view class="section log-section">
+    <view class="section-title">错误日志 (最新20条)</view>
+    <view class="no-data" wx:if="{{logs.length === 0}}">
+      <text>暂无日志记录</text>
+    </view>
+    <view class="log-list" wx:else>
+      <view class="log-item {{item.type === 'error' ? 'error-log' : (item.type === 'warning' ? 'warning-log' : 'info-log')}}" 
+            wx:for="{{logs}}" wx:key="timestamp">
+        <view class="log-header">
+          <text class="log-type">{{item.type}}</text>
+          <text class="log-category">{{item.category || item.feature}}</text>
+          <text class="log-time">{{item.timestamp ? tools.formatTime(item.timestamp) : ''}}</text>
+        </view>
+        <text class="log-message">{{item.message || item.reason}}</text>
+        <text class="log-stack" wx:if="{{item.stack}}">{{item.stack}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 时间格式化工具 -->
+<wxs module="tools">
+  function formatTime(timestamp) {
+    var date = getDate(timestamp);
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var seconds = date.getSeconds();
+    
+    // 补零
+    hours = hours < 10 ? ('0' + hours) : hours;
+    minutes = minutes < 10 ? ('0' + minutes) : minutes;
+    seconds = seconds < 10 ? ('0' + seconds) : seconds;
+    
+    return hours + ':' + minutes + ':' + seconds;
+  }
+  
+  module.exports = {
+    formatTime: formatTime
+  };
+</wxs> 

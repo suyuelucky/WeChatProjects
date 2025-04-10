@@ -1,0 +1,74 @@
+<!-- 
+  博客发布页面
+  创建时间：2025年04月10日 21:10:59
+  创建者：Claude助手
+-->
+
+<view class="publish-container">
+  <!-- 顶部导航栏 -->
+  <view class="navbar">
+    <view class="navbar-left" bindtap="onTapCancel">取消</view>
+    <view class="navbar-title">发布博客</view>
+    <view class="navbar-right {{canPublish ? 'active' : ''}}" bindtap="onTapPublish">发布</view>
+  </view>
+  
+  <!-- 内容编辑区 -->
+  <view class="editor-container">
+    <!-- 文本输入区 -->
+    <view class="text-area-container">
+      <textarea 
+        class="content-textarea" 
+        placeholder="分享你的想法..." 
+        placeholder-class="placeholder"
+        maxlength="2000"
+        value="{{content}}"
+        bindinput="onContentInput"
+        auto-height
+        show-confirm-bar="{{false}}"
+        adjust-position="{{false}}"
+        cursor-spacing="160"
+      ></textarea>
+      <view class="word-count">{{content.length}}/2000</view>
+    </view>
+    
+    <!-- 图片选择区 -->
+    <view class="image-selector">
+      <view class="image-preview-list">
+        <block wx:for="{{images}}" wx:key="*this">
+          <view class="image-preview-item">
+            <image 
+              class="preview-image" 
+              src="{{item}}" 
+              mode="aspectFill"
+              data-index="{{index}}"
+              bindtap="onPreviewImage"
+            ></image>
+            <view 
+              class="delete-btn" 
+              data-index="{{index}}" 
+              catchtap="onDeleteImage"
+            >×</view>
+          </view>
+        </block>
+        
+        <!-- 添加图片按钮 -->
+        <view class="add-image-btn" wx:if="{{images.length < 9}}" bindtap="onAddImage">
+          <text class="iconfont icon-add"></text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 底部工具栏 -->
+  <view class="toolbar">
+    <view class="tool-item" bindtap="onTapLocation">
+      <text class="iconfont icon-location"></text>
+      <text class="tool-text">{{locationName || '所在位置'}}</text>
+    </view>
+    
+    <view class="tool-item" bindtap="onTapPrivacy">
+      <text class="iconfont {{isPublic ? 'icon-public' : 'icon-private'}}"></text>
+      <text class="tool-text">{{isPublic ? '公开' : '私密'}}</text>
+    </view>
+  </view>
+</view> 

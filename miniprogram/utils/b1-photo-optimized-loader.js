@@ -1,6 +1,9 @@
 /**
  * B1照片优化加载器
  * 专为基础照片采集功能优化的图片加载器
+ * 
+ * 创建时间: 2025-04-10 12:45:38
+ * 创建者: Claude AI 3.7 Sonnet
  */
 
 // 导入依赖
@@ -11,7 +14,7 @@ const NetworkMonitor = require('./network-monitor');
 /**
  * B1照片优化加载器
  */
-const B1PhotoOptimizedLoader = {
+var B1PhotoOptimizedLoader = {
   // 缓存管理器
   _cacheManager: null,
   
@@ -53,17 +56,20 @@ const B1PhotoOptimizedLoader = {
    * @param {Object} options 配置选项
    * @returns {Object} 当前实例
    */
-  init(options = {}) {
+  init: function(options) {
     if (this._initialized) {
-      console.warn('[B1PhotoOptimizedLoader] 已经初始化，忽略重复调用');
+      this._log(2, '[B1PhotoOptimizedLoader] 已经初始化，忽略重复调用');
       return this;
     }
     
     // 合并配置
-    this._config = {
-      ...this._config,
-      ...options
-    };
+    if (options && typeof options === 'object') {
+      for (var key in options) {
+        if (options.hasOwnProperty(key)) {
+          this._config[key] = options[key];
+        }
+      }
+    }
     
     // 初始化缓存管理器
     this._cacheManager = EnhancedImageCacheManager.init({
@@ -97,7 +103,7 @@ const B1PhotoOptimizedLoader = {
    * @param {Object} data 附加数据
    * @private
    */
-  _log(level, message, data) {
+  _log: function(level, message, data) {
     if (level <= this._config.logLevel) {
       switch (level) {
         case 1:
@@ -117,7 +123,7 @@ const B1PhotoOptimizedLoader = {
    * 设置内存警告监听
    * @private
    */
-  _setupMemoryWarningListener() {
+  _setupMemoryWarningListener: function() {
     wx.onMemoryWarning(res => {
       this._log(2, `[B1PhotoOptimizedLoader] 收到内存警告，级别: ${res.level}`);
       
@@ -140,23 +146,23 @@ const B1PhotoOptimizedLoader = {
    * 开始定时清理
    * @private
    */
-  _startCleanupTimer() {
+  _startCleanupTimer: function() {
     // 清理旧的定时器
     if (this._cleanupTimer) {
       clearInterval(this._cleanupTimer);
     }
     
     // 创建新的定时器
-    this._cleanupTimer = setInterval(() => {
-      this._cleanTempFiles();
-    }, this._config.cleanupInterval);
+    this._cleanupTimer = setInterval(function() {
+      this._cleanTempFiles(false);
+    }.bind(this), this._config.cleanupInterval);
   },
   
   /**
    * 停止定时清理
    * @private
    */
-  _stopCleanupTimer() {
+  _stopCleanupTimer: function() {
     if (this._cleanupTimer) {
       clearInterval(this._cleanupTimer);
       this._cleanupTimer = null;
@@ -167,14 +173,17 @@ const B1PhotoOptimizedLoader = {
    * 加载照片
    * @param {String} url 照片URL
    * @param {Object} options 加载选项
-   * @returns {Promise<Object>} 加载结果
+   * @returns {Promise} 加载结果
    */
-  loadPhoto(url, options = {}) {
+  loadPhoto: function(url, options) {
+    var that = this;
+    
     if (!this._initialized) {
       this.init();
     }
     
-    const defaultOptions = {
+    // 默认选项
+    var defaultOptions = {
       mode: 'preview', // 可选: 'thumbnail', 'preview', 'full'
       cacheKey: null,
       customSize: null,
@@ -182,201 +191,254 @@ const B1PhotoOptimizedLoader = {
       useCache: true
     };
     
-    const opts = { ...defaultOptions, ...options };
-    const cacheKey = opts.cacheKey || this._getCacheKey(url, opts.mode, opts.customSize);
-    
-    // 如果启用缓存，先检查缓存
-    if (opts.useCache) {
-      const cached = this._cacheManager.get(cacheKey);
-      if (cached) {
-        return Promise.resolve(cached);
+    // 合并选项
+    var opts = {};
+    for (var key in defaultOptions) {
+      if (defaultOptions.hasOwnProperty(key)) {
+        opts[key] = defaultOptions[key];
       }
     }
     
-    // 获取最佳加载策略
-    const strategy = this._loadingStrategy.getStrategy(opts.mode);
+    if (options && typeof options === 'object') {
+      for (var key in options) {
+        if (options.hasOwnProperty(key)) {
+          opts[key] = options[key];
+        }
+      }
+    }
+    
+    // 生成缓存键
+    var cacheKey = opts.cacheKey || this._getCacheKey(url, opts.mode);
     
     // 构建加载参数
-    const loadParams = {
+    var loadParams = {
       src: url,
-      quality: opts.quality || strategy.quality,
-      maxWidth: opts.customSize ? opts.customSize.width : strategy.maxWidth,
-      maxHeight: opts.customSize ? opts.customSize.height : strategy.maxHeight
+      quality: opts.quality || this._config.defaultQuality,
+      maxWidth: 0,
+      maxHeight: 0
     };
     
-    // 加载照片
-    return this._loadWithStrategy(loadParams, cacheKey, opts.mode);
+    // 根据模式设置尺寸
+    switch (opts.mode) {
+      case 'thumbnail':
+        loadParams.maxWidth = this._config.thumbnailMaxSize;
+        loadParams.maxHeight = this._config.thumbnailMaxSize;
+        break;
+      case 'preview':
+        loadParams.maxWidth = this._config.previewMaxSize;
+        loadParams.maxHeight = this._config.previewMaxSize;
+        break;
+      case 'full':
+        // 全尺寸，不设置限制
+        break;
+    }
+    
+    // 应用自定义尺寸
+    if (opts.customSize && typeof opts.customSize === 'object') {
+      if (opts.customSize.width) {
+        loadParams.maxWidth = opts.customSize.width;
+      }
+      if (opts.customSize.height) {
+        loadParams.maxHeight = opts.customSize.height;
+      }
+    }
+    
+    return this._loadImage(loadParams);
   },
   
   /**
-   * 使用策略加载照片
-   * @param {Object} params 加载参数
-   * @param {String} cacheKey 缓存键
-   * @param {String} mode 加载模式
-   * @returns {Promise<Object>} 加载结果
-   * @private
+   * 预加载照片
+   * @param {Array|String} urls 照片URL或URL数组
+   * @param {Object} options 加载选项
+   * @returns {Promise} 加载结果
    */
-  _loadWithStrategy(params, cacheKey, mode) {
-    return new Promise((resolve, reject) => {
-      let loadTask;
-      
-      // 网络图片
-      if (params.src.startsWith('http')) {
-        // 获取网络状态
-        const networkType = this._networkMonitor.getNetworkType();
-        
-        // 如果网络不好并且是完整图片模式，降级处理
-        if (mode === 'full' && (networkType === 'none' || networkType === '2g')) {
-          this._log(2, '[B1PhotoOptimizedLoader] 网络状况不佳，降级加载模式');
-          // 降级为预览图
-          params.maxWidth = this._config.previewMaxSize;
-          params.maxHeight = this._config.previewMaxSize;
-          params.quality = params.quality * 0.8; // 降低质量
+  preloadPhotos: function(urls, options) {
+    var that = this;
+    
+    if (!urls) {
+      return Promise.resolve([]);
+    }
+    
+    // 确保urls是数组
+    if (!Array.isArray(urls)) {
+      urls = [urls];
+    }
+    
+    if (urls.length === 0) {
+      return Promise.resolve([]);
+    }
+    
+    // 默认选项
+    options = options || {};
+    options.mode = options.mode || 'thumbnail'; // 默认加载缩略图
+    
+    // 并发加载限制
+    var limit = Math.min(urls.length, 3); // 最多同时加载3张
+    var completed = 0;
+    var results = [];
+    var errors = [];
+    
+    return new Promise(function(resolve) {
+      function startNext(index) {
+        if (index >= urls.length) {
+          // 所有任务已添加到队列
+          return;
         }
         
-        // 下载图片
-        loadTask = wx.downloadFile({
-          url: params.src,
-          success: (res) => {
-            if (res.statusCode === 200) {
-              // 下载成功
-              this._processTempFile(res.tempFilePath, params, cacheKey, mode)
-                .then(resolve)
-                .catch(reject);
+        that.loadPhoto(urls[index], options)
+          .then(function(result) {
+            results.push({
+              url: urls[index],
+              result: result,
+              success: true
+            });
+          })
+          .catch(function(error) {
+            errors.push({
+              url: urls[index],
+              error: error,
+              success: false
+            });
+          })
+          .finally(function() {
+            completed++;
+            
+            // 检查是否所有照片都处理完成
+            if (completed === urls.length) {
+              resolve({
+                results: results,
+                errors: errors
+              });
             } else {
-              reject(new Error(`下载失败，状态码: ${res.statusCode}`));
+              // 继续加载下一张
+              startNext(index + limit);
             }
-          },
-          fail: (err) => {
-            this._log(1, `[B1PhotoOptimizedLoader] 下载图片失败: ${params.src}`, err);
-            reject(err);
-          }
-        });
-      } else if (params.src.startsWith('wxfile://') || params.src.indexOf('://') === -1) {
-        // 本地文件，直接处理
-        this._processTempFile(params.src, params, cacheKey, mode)
-          .then(resolve)
-          .catch(reject);
-      } else {
-        reject(new Error(`不支持的图片源: ${params.src}`));
+          });
+      }
+      
+      // 启动初始批次的加载
+      for (var i = 0; i < limit; i++) {
+        startNext(i);
       }
     });
   },
   
   /**
-   * 处理临时文件
-   * @param {String} filePath 文件路径
-   * @param {Object} params 处理参数
-   * @param {String} cacheKey 缓存键
-   * @param {String} mode 加载模式
-   * @returns {Promise<Object>} 处理结果
+   * 加载图片
+   * @param {Object} params 加载参数
+   * @returns {Promise} 加载结果
    * @private
    */
-  _processTempFile(filePath, params, cacheKey, mode) {
-    return new Promise((resolve, reject) => {
-      // 记录临时文件
-      if (filePath.indexOf('wxfile://tmp_') === 0 || filePath.indexOf('http://tmp/') === 0) {
-        this._tempFiles.push({
-          path: filePath,
-          createTime: Date.now()
-        });
-      }
-      
-      // 检查是否需要压缩
-      if (params.quality < 1.0 || params.maxWidth || params.maxHeight) {
-        // 获取图片信息
-        wx.getImageInfo({
-          src: filePath,
-          success: (info) => {
+  _loadImage: function(params) {
+    var that = this;
+    
+    return new Promise(function(resolve, reject) {
+      // 获取图片信息
+      wx.getImageInfo({
+        src: params.src,
+        success: function(info) {
+          // 检查是否需要调整大小
+          if ((params.maxWidth > 0 && info.width > params.maxWidth) || 
+              (params.maxHeight > 0 && info.height > params.maxHeight)) {
+            
             // 计算目标尺寸
-            const targetSize = this._calculateTargetSize(
-              info.width, 
+            var targetSize = that._calculateTargetSize(
+              info.width,
               info.height,
-              params.maxWidth,
-              params.maxHeight
+              params.maxWidth || info.width,
+              params.maxHeight || info.height
             );
             
-            // 如果尺寸或质量需要调整，执行压缩
-            if ((targetSize.width < info.width || targetSize.height < info.height || params.quality < 1.0)
-                && mode !== 'full') { // 全尺寸模式不压缩
-              this._compressImage(filePath, targetSize, params.quality)
-                .then(compressedPath => {
-                  // 添加到缓存
-                  this._cacheManager.set(cacheKey, compressedPath, {
-                    originalWidth: info.width,
-                    originalHeight: info.height,
-                    width: targetSize.width,
-                    height: targetSize.height,
-                    mode: mode,
-                    quality: params.quality
-                  }).then(result => {
-                    resolve(result);
-                  }).catch(err => {
-                    resolve({ src: compressedPath }); // 缓存失败也返回路径
-                  });
-                })
-                .catch(err => {
-                  // 压缩失败，使用原图
-                  this._log(1, `[B1PhotoOptimizedLoader] 压缩图片失败，使用原图`, err);
-                  resolve({ src: filePath });
+            // 压缩图片
+            that._compressImage(params.src, targetSize, params.quality)
+              .then(function(res) {
+                // 记录临时文件
+                that._recordTempFile(res.tempFilePath);
+                
+                // 返回结果
+                resolve({
+                  path: res.tempFilePath,
+                  width: targetSize.width,
+                  height: targetSize.height,
+                  original: {
+                    path: params.src,
+                    width: info.width,
+                    height: info.height
+                  }
                 });
-            } else {
-              // 不需要压缩，直接使用
-              this._cacheManager.set(cacheKey, filePath, {
-                width: info.width,
-                height: info.height,
-                mode: mode
-              }).then(result => {
-                resolve(result);
-              }).catch(err => {
-                resolve({ src: filePath }); // 缓存失败也返回路径
+              })
+              .catch(function(err) {
+                that._log(1, '[B1PhotoOptimizedLoader] 压缩图片失败:', err);
+                
+                // 压缩失败时，返回原图
+                resolve({
+                  path: params.src,
+                  width: info.width,
+                  height: info.height,
+                  original: {
+                    path: params.src,
+                    width: info.width,
+                    height: info.height
+                  }
+                });
               });
-            }
-          },
-          fail: (err) => {
-            this._log(1, `[B1PhotoOptimizedLoader] 获取图片信息失败`, err);
-            // 获取信息失败，直接使用原图
-            resolve({ src: filePath });
+          } else {
+            // 不需要调整大小，直接返回原图
+            resolve({
+              path: params.src,
+              width: info.width,
+              height: info.height,
+              original: {
+                path: params.src,
+                width: info.width,
+                height: info.height
+              }
+            });
           }
-        });
-      } else {
-        // 不需要压缩，直接使用
-        resolve({ src: filePath });
-      }
+        },
+        fail: function(err) {
+          that._log(1, '[B1PhotoOptimizedLoader] 获取图片信息失败:', err);
+          reject(err);
+        }
+      });
     });
   },
   
   /**
    * 压缩图片
-   * @param {String} filePath 文件路径
+   * @param {String} filePath 图片路径
    * @param {Object} targetSize 目标尺寸
-   * @param {Number} quality 质量
-   * @returns {Promise<String>} 压缩后的文件路径
+   * @param {Number} quality 压缩质量
+   * @returns {Promise} 压缩结果
    * @private
    */
-  _compressImage(filePath, targetSize, quality) {
-    return new Promise((resolve, reject) => {
+  _compressImage: function(filePath, targetSize, quality) {
+    return new Promise(function(resolve, reject) {
       wx.compressImage({
         src: filePath,
         quality: Math.floor(quality * 100),
         compressedWidth: targetSize.width,
         compressedHeight: targetSize.height,
-        success: (res) => {
-          // 记录新的临时文件
-          if (res.tempFilePath.indexOf('wxfile://tmp_') === 0 || 
-              res.tempFilePath.indexOf('http://tmp/') === 0) {
-            this._tempFiles.push({
-              path: res.tempFilePath,
-              createTime: Date.now()
-            });
-          }
-          resolve(res.tempFilePath);
-        },
-        fail: (err) => {
-          reject(err);
-        }
+        success: resolve,
+        fail: reject
       });
     });
+  },
+  
+  /**
+   * 记录临时文件
+   * @param {String} filePath 文件路径
+   * @private
+   */
+  _recordTempFile: function(filePath) {
+    // 只记录以临时路径开头的文件
+    if (filePath && filePath.indexOf('wxfile://') === 0 || 
+        filePath.indexOf('http://tmp/') === 0) {
+      this._tempFiles.push({
+        path: filePath,
+        timestamp: Date.now()
+      });
+    }
   },
   
   /**
@@ -385,64 +447,51 @@ const B1PhotoOptimizedLoader = {
    * @param {Number} height 原始高度
    * @param {Number} maxWidth 最大宽度
    * @param {Number} maxHeight 最大高度
-   * @returns {Object} 目标尺寸
+   * @returns {Object} 目标尺寸 {width, height}
    * @private
    */
-  _calculateTargetSize(width, height, maxWidth, maxHeight) {
-    if (!maxWidth && !maxHeight) {
-      return { width, height };
+  _calculateTargetSize: function(width, height, maxWidth, maxHeight) {
+    // 检查尺寸是否超出限制
+    if (width <= maxWidth && height <= maxHeight) {
+      return { width: width, height: height };
     }
     
-    let targetWidth = width;
-    let targetHeight = height;
+    // 计算缩放比例
+    var ratio = Math.min(maxWidth / width, maxHeight / height);
     
-    if (maxWidth && width > maxWidth) {
-      targetWidth = maxWidth;
-      targetHeight = Math.floor(height * (maxWidth / width));
-    }
+    // 计算新尺寸
+    var newWidth = Math.floor(width * ratio);
+    var newHeight = Math.floor(height * ratio);
     
-    if (maxHeight && targetHeight > maxHeight) {
-      targetWidth = Math.floor(targetWidth * (maxHeight / targetHeight));
-      targetHeight = maxHeight;
-    }
-    
-    return { width: targetWidth, height: targetHeight };
+    return { width: newWidth, height: newHeight };
   },
   
   /**
    * 获取缓存键
    * @param {String} url 图片URL
    * @param {String} mode 加载模式
-   * @param {Object} customSize 自定义尺寸
    * @returns {String} 缓存键
    * @private
    */
-  _getCacheKey(url, mode, customSize) {
-    let key = `b1_${mode}_${url.replace(/[^a-z0-9]/gi, '_')}`;
-    
-    if (customSize) {
-      key += `_${customSize.width}x${customSize.height}`;
-    }
-    
+  _getCacheKey: function(url, mode) {
+    var key = 'b1_' + mode + '_' + url.replace(/[^a-z0-9]/gi, '_');
     return key;
   },
   
   /**
    * 清理未使用的缓存
    */
-  clearUnusedCache() {
-    // 仅清理过期或长时间未访问的缓存
-    this._log(3, '[B1PhotoOptimizedLoader] 清理未使用的缓存');
-    
+  clearUnusedCache: function() {
     // 清理临时文件
-    this._cleanTempFiles();
+    this._cleanTempFiles(false);
+    return true;
   },
   
   /**
    * 清理缓存
    * @param {Boolean} aggressive 是否积极清理
    */
-  clearCache(aggressive = false) {
+  clearCache: function(aggressive = false) {
     if (aggressive) {
       this._log(2, '[B1PhotoOptimizedLoader] 积极清理缓存');
       
@@ -459,7 +508,7 @@ const B1PhotoOptimizedLoader = {
   /**
    * 紧急清理
    */
-  emergencyCleanup() {
+  emergencyCleanup: function() {
     this._log(1, '[B1PhotoOptimizedLoader] 执行紧急清理');
     
     // 清理所有缓存
@@ -473,91 +522,69 @@ const B1PhotoOptimizedLoader = {
   },
   
   /**
-   * 预加载照片
-   * @param {String|Array} urls 照片URL或URL数组
-   * @param {Object} options 加载选项
-   * @returns {Promise<Array>} 加载结果
-   */
-  preloadPhotos(urls, options = {}) {
-    if (!Array.isArray(urls)) {
-      urls = [urls];
-    }
-    
-    // 默认使用缩略图模式
-    const opts = { 
-      mode: 'thumbnail',
-      ...options
-    };
-    
-    // 创建加载任务
-    const tasks = urls.map(url => {
-      return this.loadPhoto(url, opts)
-        .catch(err => {
-          this._log(2, `[B1PhotoOptimizedLoader] 预加载失败: ${url}`, err);
-          return null; // 忽略错误，继续加载其他图片
-        });
-    });
-    
-    return Promise.all(tasks);
-  },
-  
-  /**
    * 清理临时文件
-   * @param {Boolean} cleanAll 是否清理所有临时文件
+   * @param {Boolean} cleanAll 是否清理所有文件
    * @private
    */
-  _cleanTempFiles(cleanAll = false) {
+  _cleanTempFiles: function(cleanAll) {
     if (this._tempFiles.length === 0) {
       return;
     }
     
-    const now = Date.now();
-    const fs = wx.getFileSystemManager();
-    const MAX_AGE = 10 * 60 * 1000; // 10分钟
-    let cleanCount = 0;
+    var now = Date.now();
+    var filesToRemove = cleanAll ? this._tempFiles.slice() : [];
     
-    // 过滤需要清理的文件
-    const filesToKeep = this._tempFiles.filter(file => {
-      if (cleanAll || (now - file.createTime > MAX_AGE)) {
-        // 删除文件
-        try {
-          fs.unlink({
-            filePath: file.path,
-            fail: () => {} // 忽略错误
-          });
-          cleanCount++;
-        } catch (e) {
-          // 忽略错误
+    if (!cleanAll) {
+      // 找出超过5分钟的临时文件
+      for (var i = 0; i < this._tempFiles.length; i++) {
+        var fileInfo = this._tempFiles[i];
+        // 如果文件创建时间超过5分钟，加入清理列表
+        if (now - fileInfo.timestamp > 5 * 60 * 1000) {
+          filesToRemove.push(fileInfo);
         }
-        return false;
       }
-      return true;
-    });
+    }
     
-    // 更新临时文件列表
-    this._tempFiles = filesToKeep;
+    if (filesToRemove.length === 0) {
+      return;
+    }
     
-    if (cleanCount > 0) {
-      this._log(3, `[B1PhotoOptimizedLoader] 已清理 ${cleanCount} 个临时文件`);
+    this._log(3, '[B1PhotoOptimizedLoader] 清理临时文件: ' + filesToRemove.length + '个');
+    
+    // 清理文件
+    for (var i = 0; i < filesToRemove.length; i++) {
+      var fileInfo = filesToRemove[i];
+      wx.removeSavedFile({
+        filePath: fileInfo.path,
+        fail: function(err) {
+          // 清理失败不做特殊处理
+        }
+      });
+      
+      // 从数组中移除
+      var index = this._tempFiles.indexOf(fileInfo);
+      if (index >= 0) {
+        this._tempFiles.splice(index, 1);
+      }
     }
   },
   
   /**
-   * 销毁加载器
+   * 销毁实例
    */
-  destroy() {
+  destroy: function() {
     // 停止定时清理
     this._stopCleanupTimer();
     
     // 清理所有临时文件
     this._cleanTempFiles(true);
     
-    // 重置状态
-    this._initialized = false;
     this._tempFiles = [];
+    this._initialized = false;
     
     this._log(3, '[B1PhotoOptimizedLoader] 已销毁');
   }
 };
 
+// 导出模块
 module.exports = B1PhotoOptimizedLoader; 

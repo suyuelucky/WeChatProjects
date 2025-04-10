@@ -1,0 +1,527 @@
+/* 
+ * 博客滑动性能测试页面样式
+ * 创建者：Claude助手
+ * 创建时间：2025年04月10日 21:30:58
+ */
+
+.performance-test-container {
+  padding: 20rpx;
+  background-color: #f6f6f6;
+  min-height: 100vh;
+}
+
+/* 测试页面头部 */
+.test-header {
+  background-color: #ffffff;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.test-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+  color: #333;
+}
+
+.test-subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.realtime-metrics {
+  display: flex;
+  justify-content: space-between;
+  padding: 16rpx;
+  background-color: #f9f9f9;
+  border-radius: 6rpx;
+  margin-top: 16rpx;
+  border-left: 4rpx solid #ddd;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.realtime-metrics.active {
+  opacity: 1;
+  border-left-color: #3c8dbc;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+}
+
+.metric-label {
+  font-size: 26rpx;
+  color: #666;
+  margin-right: 8rpx;
+}
+
+.metric-value {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  padding: 4rpx 12rpx;
+  border-radius: 30rpx;
+  background-color: #efefef;
+}
+
+.metric-value.excellent {
+  color: #fff;
+  background-color: #4caf50;
+}
+
+.metric-value.good {
+  color: #fff;
+  background-color: #8bc34a;
+}
+
+.metric-value.acceptable {
+  color: #fff;
+  background-color: #ffc107;
+}
+
+.metric-value.poor {
+  color: #fff;
+  background-color: #f44336;
+}
+
+/* 测试控制面板 */
+.test-control-panel {
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.control-group {
+  margin-bottom: 24rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.control-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.group-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.picker-view {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx;
+  background-color: #f5f5f5;
+  border-radius: 6rpx;
+}
+
+.picker-arrow {
+  color: #999;
+  font-size: 24rpx;
+}
+
+.scenario-description {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 12rpx;
+  padding: 0 16rpx;
+}
+
+.param-item {
+  margin-bottom: 16rpx;
+}
+
+.param-item:last-child {
+  margin-bottom: 0;
+}
+
+.param-label {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  margin-right: 30rpx;
+  margin-bottom: 10rpx;
+  font-size: 26rpx;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20rpx;
+}
+
+.action-buttons button {
+  flex: 0.48;
+  font-size: 28rpx;
+}
+
+/* 测试运行中视图 */
+.test-running-view {
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.progress-info {
+  margin-bottom: 20rpx;
+}
+
+.progress-text {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 8rpx;
+  text-align: center;
+}
+
+.test-content-preview {
+  height: 70vh;
+  overflow-y: auto;
+  border: 1rpx solid #eee;
+  border-radius: 6rpx;
+  padding: 10rpx;
+  background-color: #fafafa;
+}
+
+/* 瀑布流布局 */
+.waterfall-layout {
+  column-count: 2;
+  column-gap: 10rpx;
+  width: 100%;
+}
+
+.blog-card {
+  break-inside: avoid;
+  padding: 16rpx;
+  background-color: #fff;
+  border-radius: 8rpx;
+  margin-bottom: 10rpx;
+  box-shadow: 0 1rpx 3rpx rgba(0, 0, 0, 0.05);
+}
+
+.blog-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.author-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  margin-right: 10rpx;
+}
+
+.author-name {
+  font-size: 26rpx;
+  color: #333;
+  flex: 1;
+}
+
+.blog-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.blog-content {
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 10rpx;
+}
+
+.blog-images {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10rpx;
+}
+
+.blog-images image {
+  width: 100%;
+  height: 200rpx;
+  object-fit: cover;
+  border-radius: 6rpx;
+  margin-bottom: 6rpx;
+}
+
+.blog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.blog-stats {
+  display: flex;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.like-count, .comment-count {
+  margin-left: 16rpx;
+}
+
+/* 测试结果展示 */
+.test-results {
+  background-color: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+}
+
+.result-header {
+  text-align: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.result-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.scenario-name {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.result-overall {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30rpx 0;
+  margin-bottom: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.score-display {
+  text-align: center;
+  margin-right: 40rpx;
+}
+
+.score-value {
+  display: block;
+  font-size: 80rpx;
+  font-weight: bold;
+  color: #3c8dbc;
+  line-height: 1;
+}
+
+.score-label {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 8rpx;
+}
+
+.score-classification {
+  padding: 10rpx 30rpx;
+  background-color: #f5f5f5;
+  border-radius: 30rpx;
+}
+
+.classification {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.classification.excellent {
+  color: #4caf50;
+}
+
+.classification.good {
+  color: #8bc34a;
+}
+
+.classification.acceptable {
+  color: #ffc107;
+}
+
+.classification.poor {
+  color: #f44336;
+}
+
+/* 指标组 */
+.result-metrics-group {
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.metrics-group-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+  padding-left: 16rpx;
+  border-left: 6rpx solid #3c8dbc;
+}
+
+.metrics-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.metrics-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12rpx 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.metrics-row:last-child {
+  border-bottom: none;
+}
+
+.metrics-row:nth-child(odd) {
+  background-color: #fafafa;
+}
+
+.metric-name {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.metric-value {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+/* 验收结果 */
+.acceptance-criteria {
+  display: flex;
+  flex-direction: column;
+}
+
+.criteria-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx;
+  margin-bottom: 10rpx;
+  border-radius: 6rpx;
+  background-color: #f9f9f9;
+}
+
+.criteria-item.passed {
+  background-color: rgba(76, 175, 80, 0.1);
+  border-left: 6rpx solid #4caf50;
+}
+
+.criteria-item.failed {
+  background-color: rgba(244, 67, 54, 0.1);
+  border-left: 6rpx solid #f44336;
+}
+
+.criteria-level {
+  font-size: 26rpx;
+  color: #333;
+}
+
+.criteria-status {
+  font-size: 26rpx;
+  font-weight: bold;
+}
+
+.criteria-item.passed .criteria-status {
+  color: #4caf50;
+}
+
+.criteria-item.failed .criteria-status {
+  color: #f44336;
+}
+
+/* 优化建议 */
+.recommendations-list {
+  padding: 16rpx;
+  background-color: #f9f9f9;
+  border-radius: 6rpx;
+}
+
+.recommendation-item {
+  font-size: 26rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+  line-height: 1.5;
+}
+
+.recommendation-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 结果操作 */
+.result-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30rpx;
+}
+
+.result-actions button {
+  flex: 0.48;
+  font-size: 28rpx;
+}
+
+.test-config-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.test-config-item text {
+  min-width: 160rpx;
+  color: #333;
+}
+
+/* 测试控制面板样式 */
+.test-controls {
+  margin: 20rpx 0;
+  padding: 20rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+}
+
+/* Picker样式 */
+.picker {
+  padding: 10rpx 20rpx;
+  background: #f5f7fa;
+  border-radius: 8rpx;
+  text-align: center;
+  color: #0366d6;
+  font-weight: bold;
+} 

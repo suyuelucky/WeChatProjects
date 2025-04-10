@@ -1,0 +1,59 @@
+<view class="container">
+  <view class="header">
+    <view class="title">云环境配置测试工具</view>
+    <view class="subtitle">当前时间: {{currentTime}}</view>
+  </view>
+
+  <view class="section env-info">
+    <view class="section-title">环境信息</view>
+    <view class="info-item">
+      <text class="label">当前环境ID:</text>
+      <text class="value">{{currentEnvId || '未初始化'}}</text>
+    </view>
+    <view class="info-item" wx:if="{{checkResult}}">
+      <text class="label">检测结果:</text>
+      <text class="value {{checkResult.success ? 'success' : 'error'}}">
+        {{checkResult.success ? '成功' : '失败'}} - {{checkResult.message}}
+      </text>
+    </view>
+  </view>
+
+  <view class="section actions">
+    <view class="section-title">操作</view>
+    <button class="action-btn primary" bindtap="checkAndFixEnvironment" loading="{{isChecking}}">
+      {{isChecking ? '检测中...' : '检测并修复环境'}}
+    </button>
+    <button class="action-btn" bindtap="testCloudFunction">测试云函数调用</button>
+    <button class="action-btn" bindtap="clearLogs">清空日志</button>
+    <button class="action-btn" bindtap="copyErrorDetails" wx:if="{{errorDetails}}">复制错误详情</button>
+  </view>
+
+  <view class="section environments" wx:if="{{availableEnvironments.length > 0}}">
+    <view class="section-title">可用环境列表</view>
+    <view class="env-list">
+      <view class="env-item" wx:for="{{availableEnvironments}}" wx:key="id">
+        <text class="env-name">{{item.name || item.id}}</text>
+        <text class="env-id">{{item.id}}</text>
+        <button 
+          class="env-switch-btn {{currentEnvId === item.id ? 'active' : ''}}" 
+          bindtap="switchEnvironment" 
+          data-env="{{item.id}}">
+          {{currentEnvId === item.id ? '当前环境' : '切换'}}
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view class="section log">
+    <view class="section-title">操作日志</view>
+    <scroll-view scroll-y class="log-container">
+      <view class="log-item" wx:for="{{logMessages}}" wx:key="*this">{{item}}</view>
+      <view class="log-empty" wx:if="{{logMessages.length === 0}}">暂无日志</view>
+    </scroll-view>
+  </view>
+
+  <view class="footer">
+    <text>云环境配置测试工具 v1.0.0</text>
+    <text>创建时间: 2025-04-10</text>
+  </view>
+</view> 

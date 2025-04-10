@@ -1,0 +1,273 @@
+<!-- 
+  博客滑动性能测试页面WXML
+  创建者：Claude助手
+  创建时间：2025年04月10日 21:30:58 
+-->
+
+<view class="performance-test-container">
+  <view class="test-header">
+    <view class="header-title">
+      <text class="title">博客滑动性能测试</text>
+      <text class="subtitle">工业级极端验收标准</text>
+    </view>
+    
+    <view class="real-time-metrics" wx:if="{{isTestRunning}}">
+      <view class="metric-item">
+        <text class="metric-label">FPS</text>
+        <text class="metric-value {{currentFps >= 120 ? 'excellent' : currentFps >= 90 ? 'good' : currentFps >= 60 ? 'acceptable' : 'poor'}}">{{currentFps}}</text>
+      </view>
+      <view class="metric-item">
+        <text class="metric-label">卡顿</text>
+        <text class="metric-value {{currentJanks === 0 ? 'excellent' : currentJanks <= 3 ? 'acceptable' : 'poor'}}">{{currentJanks}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 测试控制面板 -->
+  <view class="test-controls" wx:if="{{!isTestRunning && !showResults}}">
+    <view class="control-section">
+      <view class="section-title">选择测试场景</view>
+      <picker bindchange="onScenarioSelect" value="{{selectedScenario}}" range="{{scenarios}}" range-key="name">
+        <view class="picker-view">
+          <text>当前选择: {{scenarios[selectedScenario] ? scenarios[selectedScenario].name : '请选择场景'}}</text>
+          <text class="picker-arrow">▼</text>
+        </view>
+      </picker>
+      <text class="scenario-description" wx:if="{{selectedScenario}}">
+        {{scenarios[selectedScenario].description}}
+      </text>
+    </view>
+    
+    <view class="control-section">
+      <view class="section-title">测试参数设置</view>
+      <view class="test-params">
+        <view class="param-item">
+          <text class="param-label">测试时长:</text>
+          <slider 
+            min="5" max="30" step="5" 
+            value="{{testDuration}}" 
+            bindchange="setTestDuration" 
+            show-value="true"
+            active-color="#07c160"
+            block-color="#07c160"
+            class="duration-slider"
+          />
+          <text class="param-value">{{testDuration}}秒</text>
+        </view>
+        
+        <view class="param-item">
+          <text class="param-label">目标帧率:</text>
+          <picker 
+            mode="selector" 
+            range="{{fpsOptions}}" 
+            value="{{fpsIndex}}" 
+            bindchange="bindFPSChange"
+            class="fps-picker"
+          >
+            <view class="picker-text">{{targetFPS}}fps</view>
+          </picker>
+        </view>
+      </view>
+    </view>
+    
+    <button class="primary-btn" bindtap="startTest" disabled="{{!selectedScenario}}">开始测试</button>
+  </view>
+  
+  <!-- 测试进行中的数据展示 -->
+  <view class="test-in-progress" wx:if="{{isTestRunning}}">
+    <view class="progress-section">
+      <progress class="test-progress" percent="{{testProgress}}" stroke-width="4" activeColor="#3c8dbc" backgroundColor="#f0f0f0" />
+      <text class="progress-text">测试进行中 {{testProgress}}%</text>
+      <text class="scenario-running">正在执行: {{currentScenario.name}}</text>
+    </view>
+    
+    <!-- 预览内容区域（展示测试数据的滚动列表） -->
+    <scroll-view 
+      class="test-content-preview"
+      scroll-y="true"
+      bindscroll="onScroll"
+      scroll-with-animation="{{true}}"
+      enhanced="{{true}}"
+      bounces="{{true}}"
+      show-scrollbar="{{true}}"
+      fast-deceleration="{{true}}"
+    >
+      <view class="waterfall">
+        <view class="waterfall-column">
+          <block wx:for="{{testData}}" wx:key="id" wx:if="{{index % 2 === 0}}">
+            <view class="test-blog-card">
+              <!-- 作者信息 -->
+              <view class="blog-author">
+                <image class="author-avatar" src="{{item.author.avatarUrl}}" mode="aspectFill"></image>
+                <text class="author-name">{{item.author.nickname}}</text>
+                <text class="blog-time">{{item.createTime}}</text>
+              </view>
+              
+              <!-- 博客内容 -->
+              <view class="blog-content">
+                <text class="content-text">{{item.content}}</text>
+                
+                <!-- 图片展示 -->
+                <block wx:if="{{item.images.length > 0}}">
+                  <view class="image-container">
+                    <image 
+                      wx:for="{{item.images}}" 
+                      wx:for-item="img" 
+                      wx:key="*this" 
+                      src="{{img}}" 
+                      mode="widthFix" 
+                      class="content-image"
+                      lazy-load="true"
+                    ></image>
+                  </view>
+                </block>
+              </view>
+              
+              <!-- 交互栏 -->
+              <view class="blog-footer">
+                <view class="action-btn">
+                  <text class="action-icon">👍</text>
+                  <text class="count">{{item.likes}}</text>
+                </view>
+                <view class="action-btn">
+                  <text class="action-icon">💬</text>
+                  <text class="count">{{item.comments}}</text>
+                </view>
+              </view>
+            </view>
+          </block>
+        </view>
+        
+        <view class="waterfall-column">
+          <block wx:for="{{testData}}" wx:key="id" wx:if="{{index % 2 === 1}}">
+            <view class="test-blog-card">
+              <!-- 作者信息 -->
+              <view class="blog-author">
+                <image class="author-avatar" src="{{item.author.avatarUrl}}" mode="aspectFill"></image>
+                <text class="author-name">{{item.author.nickname}}</text>
+                <text class="blog-time">{{item.createTime}}</text>
+              </view>
+              
+              <!-- 博客内容 -->
+              <view class="blog-content">
+                <text class="content-text">{{item.content}}</text>
+                
+                <!-- 图片展示 -->
+                <block wx:if="{{item.images.length > 0}}">
+                  <view class="image-container">
+                    <image 
+                      wx:for="{{item.images}}" 
+                      wx:for-item="img" 
+                      wx:key="*this" 
+                      src="{{img}}" 
+                      mode="widthFix" 
+                      class="content-image"
+                      lazy-load="true"
+                    ></image>
+                  </view>
+                </block>
+              </view>
+              
+              <!-- 交互栏 -->
+              <view class="blog-footer">
+                <view class="action-btn">
+                  <text class="action-icon">👍</text>
+                  <text class="count">{{item.likes}}</text>
+                </view>
+                <view class="action-btn">
+                  <text class="action-icon">💬</text>
+                  <text class="count">{{item.comments}}</text>
+                </view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+    </scroll-view>
+    
+    <button class="secondary-btn" bindtap="stopTest">停止测试</button>
+  </view>
+  
+  <!-- 测试结果页面 -->
+  <view class="test-results" wx:if="{{showResults}}">
+    <view class="result-header">
+      <view class="result-title">测试结果</view>
+      <view class="result-overall {{testResult.overallScore >= 90 ? 'good' : testResult.overallScore >= 70 ? 'warning' : 'bad'}}">
+        <text class="score-label">总评分</text>
+        <text class="score-value">{{testResult.overallScore}}</text>
+      </view>
+    </view>
+    
+    <view class="results-section">
+      <view class="section-title">帧率指标</view>
+      <view class="result-metrics">
+        <view class="metric-row">
+          <text class="metric-name">平均帧率</text>
+          <text class="metric-value {{testResult.fps.avg >= targetFps ? 'good' : testResult.fps.avg >= 60 ? 'warning' : 'bad'}}">{{testResult.fps.avg}} fps</text>
+        </view>
+        <view class="metric-row">
+          <text class="metric-name">最低帧率</text>
+          <text class="metric-value {{testResult.fps.min >= 60 ? 'good' : testResult.fps.min >= 30 ? 'warning' : 'bad'}}">{{testResult.fps.min}} fps</text>
+        </view>
+        <view class="metric-row">
+          <text class="metric-name">卡顿帧数</text>
+          <text class="metric-value {{testResult.fps.jankFrames === 0 ? 'good' : testResult.fps.jankFrames <= 5 ? 'warning' : 'bad'}}">{{testResult.fps.jankFrames}} 帧</text>
+        </view>
+        <view class="metric-row">
+          <text class="metric-name">卡顿比例</text>
+          <text class="metric-value {{testResult.fps.jankPercentage === '0%' ? 'good' : parseFloat(testResult.fps.jankPercentage) <= 1 ? 'warning' : 'bad'}}">{{testResult.fps.jankPercentage}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="results-section">
+      <view class="section-title">渲染指标</view>
+      <view class="result-metrics">
+        <view class="metric-row">
+          <text class="metric-name">平均帧时间</text>
+          <text class="metric-value {{parseFloat(testResult.render.avgFrameTime) < 8.33 ? 'good' : parseFloat(testResult.render.avgFrameTime) < 16.67 ? 'warning' : 'bad'}}">{{testResult.render.avgFrameTime}}</text>
+        </view>
+        <view class="metric-row">
+          <text class="metric-name">渲染阻塞时间</text>
+          <text class="metric-value {{parseFloat(testResult.jank.renderBlockTime) === 0 ? 'good' : parseFloat(testResult.jank.renderBlockTime) < 100 ? 'warning' : 'bad'}}">{{testResult.jank.renderBlockTime}}</text>
+        </view>
+        <view class="metric-row">
+          <text class="metric-name">阻塞比例</text>
+          <text class="metric-value {{parseFloat(testResult.jank.totalBlocking) === 0 ? 'good' : parseFloat(testResult.jank.totalBlocking) < 5 ? 'warning' : 'bad'}}">{{testResult.jank.totalBlocking}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="results-section">
+      <view class="section-title">验收结果</view>
+      <view class="result-conclusion">
+        <view class="conclusion-item {{testResult.result.passLevel1 ? 'passed' : 'failed'}}">
+          <text class="level-label">基础验收 (60fps)</text>
+          <text class="level-status">{{testResult.result.passLevel1 ? '通过' : '未通过'}}</text>
+        </view>
+        <view class="conclusion-item {{testResult.result.passLevel2 ? 'passed' : 'failed'}}">
+          <text class="level-label">高级验收 (90fps)</text>
+          <text class="level-status">{{testResult.result.passLevel2 ? '通过' : '未通过'}}</text>
+        </view>
+        <view class="conclusion-item {{testResult.result.passLevel3 ? 'passed' : 'failed'}}">
+          <text class="level-label">极限验收 (120fps)</text>
+          <text class="level-status">{{testResult.result.passLevel3 ? '通过' : '未通过'}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="recommendations">
+      <view class="section-title">优化建议</view>
+      <view class="recommendation-list">
+        <block wx:for="{{testResult.result.recommendation}}" wx:key="*this">
+          <view class="recommendation-item">{{item}}</view>
+        </block>
+      </view>
+    </view>
+    
+    <view class="result-actions">
+      <button class="secondary-btn" bindtap="backToTests">返回测试列表</button>
+      <button class="primary-btn" bindtap="applyOptimizations">应用优化</button>
+    </view>
+  </view>
+</view> 

@@ -27,7 +27,8 @@ function getStorageUtils() {
 
 function getStorageManager() {
   if (!_storageManager) {
-    _storageManager = require('../utils/storageManager').getStorageManagerInstance();
+    var storageManagerModule = require('../utils/storageManager');
+    _storageManager = storageManagerModule.getStorageManagerInstance();
   }
   return _storageManager;
 }

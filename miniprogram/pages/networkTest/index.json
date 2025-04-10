@@ -1,6 +1,5 @@
 {
-  "usingComponents": {
-    "OfflineStatusDisplay": "../../components/OfflineStatusDisplay/index"
-  },
-  "navigationBarTitleText": "网络适应性测试"
+  "navigationBarTitleText": "网络状态诊断",
+  "enablePullDownRefresh": true,
+  "usingComponents": {}
 } 

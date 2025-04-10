@@ -7,6 +7,8 @@ var EventBus = require('../../utils/eventBus.js');
 // 导入安全过滤器和照片元数据净化工具
 const SecurityFilter = require('../../utils/security-filter.js');
 const PhotoMetadataCleaner = require('../../utils/photo-metadata-cleaner.js');
+const SystemUtils = require('../../utils/systemUtils.js'); // 导入系统工具
+const ErrorCollector = require('../../utils/error-collector.js'); // 导入错误收集器
 
 Component({
   /**
@@ -32,6 +34,11 @@ Component({
     timerDelay: {
       type: Number,
       value: 3
+    },
+    // 是否启用诊断模式
+    enableDiagnostics: {
+      type: Boolean,
+      value: false
     }
   },
 
@@ -56,7 +63,16 @@ Component({
     continuousCount: 0,
     
     // 照片管理
-    photoList: []
+    photoList: [],
+    
+    // 诊断信息
+    diagnostics: {
+      errors: 0,
+      lastError: null,
+      storageAvailable: true,
+      cameraAvailable: false,
+      lastDiagnosticRun: null
+    }
   },
 
   /**
@@ -69,11 +85,22 @@ Component({
         currentMode: this.properties.initialMode
       });
       
+      // 初始设备检查
+      this._runDiagnostics();
+      
       // 检查相机权限
       this.checkCameraPermission();
       
       // 注册内存警告监听
       this._setupMemoryWarning();
+    },
+    
+    ready: function() {
+      // 组件完全初始化时记录状态
+      ErrorCollector.reportWarning('camera-manager', '相机组件已加载', {
+        initialMode: this.properties.initialMode,
+        resolution: this.properties.resolution
+      });
     },
     
     detached: function() {
@@ -94,6 +121,9 @@ Component({
       if (this.cameraContext) {
         this.cameraContext = null;
       }
+      
+      // 记录组件卸载
+      ErrorCollector.reportWarning('camera-manager', '相机组件已卸载');
     }
   },
 
@@ -108,48 +138,131 @@ Component({
     checkCameraPermission: function() {
       var that = this;
       
-      wx.getSetting({
-        success: function(res) {
-          if (res.authSetting['scope.camera']) {
-            // 已授权
+      try {
+        wx.getSetting({
+          success: function(res) {
+            if (res.authSetting['scope.camera']) {
+              // 已授权
+              that.setData({
+                hasPermission: true,
+                'diagnostics.cameraAvailable': true
+              });
+              
+              // 初始化相机
+              that.initCamera();
+            } else if (res.authSetting['scope.camera'] === false) {
+              // 已拒绝授权
+              that.setData({
+                hasPermission: false,
+                'diagnostics.cameraAvailable': false
+              });
+              
+              // 记录权限拒绝
+              ErrorCollector.reportFeatureUnavailable('camera', '用户拒绝相机权限');
+              
+              // 触发权限拒绝事件
+              that.triggerEvent('permissionDenied');
+            } else {
+              // 首次使用，请求授权
+              wx.authorize({
+                scope: 'scope.camera',
+                success: function() {
+                  that.setData({
+                    hasPermission: true,
+                    'diagnostics.cameraAvailable': true
+                  });
+                  
+                  // 初始化相机
+                  that.initCamera();
+                },
+                fail: function(err) {
+                  that.setData({
+                    hasPermission: false,
+                    'diagnostics.cameraAvailable': false
+                  });
+                  
+                  // 记录权限拒绝
+                  ErrorCollector.reportFeatureUnavailable('camera', '用户拒绝相机权限', { error: err });
+                  
+                  // 触发权限拒绝事件
+                  that.triggerEvent('permissionDenied');
+                }
+              });
+            }
+          },
+          fail: function(err) {
+            ErrorCollector.reportError('camera-auth', '获取设置失败', { error: err });
             that.setData({
-              hasPermission: true
-            });
-            
-            // 初始化相机
-            that.initCamera();
-          } else if (res.authSetting['scope.camera'] === false) {
-            // 已拒绝授权
-            that.setData({
-              hasPermission: false
-            });
-            
-            // 触发权限拒绝事件
-            that.triggerEvent('permissionDenied');
-          } else {
-            // 首次使用，请求授权
-            wx.authorize({
-              scope: 'scope.camera',
-              success: function() {
-                that.setData({
-                  hasPermission: true
-                });
-                
-                // 初始化相机
-                that.initCamera();
-              },
-              fail: function() {
-                that.setData({
-                  hasPermission: false
-                });
-                
-                // 触发权限拒绝事件
-                that.triggerEvent('permissionDenied');
-              }
+              hasPermission: false,
+              'diagnostics.cameraAvailable': false
             });
           }
-        }
-      });
+        });
+      } catch (err) {
+        ErrorCollector.reportError('camera-auth', '检查相机权限异常', { error: err });
+        this.setData({
+          hasPermission: false,
+          'diagnostics.cameraAvailable': false,
+          'diagnostics.lastError': '检查相机权限异常: ' + err.message
+        });
+      }
+    },
+    
+    /**
+     * 运行相机诊断
+     * @private
+     */
+    _runDiagnostics: function() {
+      try {
+        // 检查存储空间
+        wx.getStorageInfo({
+          success: (res) => {
+            const availableSize = res.limitSize - res.currentSize;
+            const isStorageAvailable = availableSize > 20 * 1024; // 至少20MB可用空间
+            
+            this.setData({
+              'diagnostics.storageAvailable': isStorageAvailable,
+              'diagnostics.lastDiagnosticRun': Date.now()
+            });
+            
+            // 记录诊断结果
+            if (!isStorageAvailable) {
+              ErrorCollector.reportWarning('storage', '存储空间不足', {
+                available: availableSize / 1024,
+                limitSize: res.limitSize / 1024,
+                currentSize: res.currentSize / 1024
+              });
+            }
+          },
+          fail: (err) => {
+            ErrorCollector.reportError('storage-check', '获取存储信息失败', { error: err });
+            this.setData({
+              'diagnostics.storageAvailable': false,
+              'diagnostics.lastDiagnosticRun': Date.now(),
+              'diagnostics.lastError': '获取存储信息失败: ' + err.errMsg
+            });
+          }
+        });
+        
+        // 检查设备信息
+        const systemInfo = wx.getSystemInfoSync();
+        
+        // 记录设备信息
+        ErrorCollector.reportWarning('device-info', '设备信息', {
+          brand: systemInfo.brand,
+          model: systemInfo.model,
+          system: systemInfo.system,
+          SDKVersion: systemInfo.SDKVersion,
+          benchmarkLevel: systemInfo.benchmarkLevel || '未知'
+        });
+        
+      } catch (err) {
+        ErrorCollector.reportError('diagnostics', '运行诊断失败', { error: err });
+        this.setData({
+          'diagnostics.errors': this.data.diagnostics.errors + 1,
+          'diagnostics.lastError': '运行诊断失败: ' + err.message
+        });
+      }
     },
     
     /**
@@ -161,16 +274,31 @@ Component({
         return;
       }
       
-      // 初始化相机上下文
-      this.cameraContext = wx.createCameraContext(this);
-      
-      // 标记相机就绪
-      this.setData({
-        isReady: true
-      });
-      
-      // 触发相机就绪事件
-      this.triggerEvent('cameraReady');
+      try {
+        // 初始化相机上下文
+        this.cameraContext = wx.createCameraContext(this);
+        
+        if (!this.cameraContext) {
+          throw new Error('创建相机上下文失败');
+        }
+        
+        // 标记相机就绪
+        this.setData({
+          isReady: true,
+          'diagnostics.cameraAvailable': true
+        });
+        
+        // 触发相机就绪事件
+        this.triggerEvent('cameraReady');
+      } catch (err) {
+        ErrorCollector.reportError('camera-init', '初始化相机失败', { error: err });
+        this.setData({
+          isReady: false,
+          'diagnostics.cameraAvailable': false,
+          'diagnostics.errors': this.data.diagnostics.errors + 1,
+          'diagnostics.lastError': '初始化相机失败: ' + err.message
+        });
+      }
     },
     
     /**
@@ -266,6 +394,9 @@ Component({
       
       this.setData({ isTakingPhoto: true });
       
+      // 记录开始拍照
+      const startTime = Date.now();
+      
       // 获取照片质量级别 - 根据分辨率正确设置
       const qualityMapping = {
         low: 'low',
@@ -289,7 +420,15 @@ Component({
             quality: quality,
             success: (res) => {
               try {
-                console.log('拍照成功:', res.tempImagePath);
+                const processingTime = Date.now() - startTime;
+                console.log('拍照成功:', res.tempImagePath, '耗时:', processingTime + 'ms');
+                
+                // 记录拍照成功信息
+                ErrorCollector.reportWarning('camera-photo', '拍照成功', {
+                  quality: quality, 
+                  processingTime: processingTime,
+                  tempPath: res.tempImagePath
+                });
                 
                 // 处理照片（安全清理和添加元数据）
                 this._processPhoto(res.tempImagePath)
@@ -307,6 +446,7 @@ Component({
                     });
                   })
                   .catch((err) => {
+                    ErrorCollector.reportError('photo-process', '处理照片失败', { error: err });
                     console.error('处理照片失败:', err);
                     wx.showToast({
                       title: '照片处理失败',
@@ -315,30 +455,169 @@ Component({
                     this.setData({ isTakingPhoto: false });
                   });
               } catch (error) {
+                ErrorCollector.reportError('photo-handling', '拍照处理异常', { error: error });
                 console.error('拍照处理异常:', error);
                 this.setData({ isTakingPhoto: false });
               }
             },
             fail: (err) => {
+              ErrorCollector.reportError('camera-capture', '拍照失败', { error: err });
               console.error('拍照失败:', err);
               this.triggerEvent('error', { error: err });
+              
+              // 更新诊断信息
+              this.setData({
+                isTakingPhoto: false,
+                'diagnostics.errors': this.data.diagnostics.errors + 1,
+                'diagnostics.lastError': '拍照失败: ' + (err.errMsg || JSON.stringify(err))
+              });
               
               wx.showToast({
                 title: '拍照失败',
                 icon: 'none'
               });
-              this.setData({ isTakingPhoto: false });
             }
           });
         })
         .catch(err => {
+          ErrorCollector.reportError('memory-check', '拍照前内存检查失败', { error: err });
           console.error('拍照前内存检查失败:', err);
-          this.setData({ isTakingPhoto: false });
+          this.setData({ 
+            isTakingPhoto: false,
+            'diagnostics.errors': this.data.diagnostics.errors + 1,
+            'diagnostics.lastError': '内存检查失败: ' + err.message
+          });
+          
           wx.showToast({
             title: err.message || '内存不足',
             icon: 'none'
           });
         });
+    },
+    
+    /**
+     * 重试拍照
+     * 在拍照失败后，尝试恢复相机状态并重新拍照
+     */
+    retryPhoto: function() {
+      try {
+        // 重置相机状态
+        this.setData({ isTakingPhoto: false });
+        
+        // 记录重试操作
+        ErrorCollector.reportWarning('camera-retry', '重试拍照');
+        
+        // 运行诊断
+        this._runDiagnostics();
+        
+        // 重新初始化相机
+        if (!this.cameraContext) {
+          this.initCamera();
+        }
+        
+        // 延迟一点时间再重试拍照
+        setTimeout(() => {
+          this.takePhoto();
+        }, 500);
+      } catch (err) {
+        ErrorCollector.reportError('camera-retry', '重试拍照失败', { error: err });
+      }
+    },
+    
+    /**
+     * 获取诊断报告
+     * 收集相机组件当前的状态和错误信息
+     */
+    getDiagnosticReport: function() {
+      try {
+        // 再次运行诊断
+        this._runDiagnostics();
+        
+        // 收集日志
+        const logs = ErrorCollector.getLogs();
+        const cameraLogs = logs.filter(log => 
+          log.category === 'camera-capture' || 
+          log.category === 'camera-init' ||
+          log.category === 'camera-auth' ||
+          log.category === 'photo-process' ||
+          log.feature === 'camera'
+        );
+        
+        // 构建报告
+        const report = {
+          timestamp: Date.now(),
+          camera: {
+            isReady: this.data.isReady,
+            hasPermission: this.data.hasPermission,
+            devicePosition: this.data.devicePosition,
+            flashMode: this.data.flashMode,
+            currentMode: this.data.currentMode,
+            photoCount: this.data.photoList.length
+          },
+          diagnostics: this.data.diagnostics,
+          recentLogs: cameraLogs.slice(-10)
+        };
+        
+        return report;
+      } catch (err) {
+        ErrorCollector.reportError('diagnostics', '获取诊断报告失败', { error: err });
+        return {
+          error: true,
+          message: '获取诊断报告失败: ' + err.message,
+          timestamp: Date.now()
+        };
+      }
+    },
+    
+    /**
+     * 收集调试信息并尝试自我修复
+     */
+    selfRepair: function() {
+      try {
+        // 记录自修复尝试
+        ErrorCollector.reportWarning('camera-repair', '尝试自修复相机');
+        
+        // 清理资源
+        this._cleanupTempFiles();
+        
+        // 释放相机上下文
+        this.cameraContext = null;
+        
+        // 重置状态
+        this.setData({
+          isReady: false,
+          isTakingPhoto: false
+        });
+        
+        // 重新初始化相机
+        setTimeout(() => {
+          this.initCamera();
+          
+          // 检查初始化结果
+          if (this.data.isReady) {
+            ErrorCollector.reportWarning('camera-repair', '相机自修复成功');
+            wx.showToast({
+              title: '相机已重置',
+              icon: 'success'
+            });
+          } else {
+            ErrorCollector.reportFeatureUnavailable('camera', '相机重置后仍不可用');
+            wx.showToast({
+              title: '相机重置失败',
+              icon: 'none'
+            });
+          }
+        }, 1000);
+        
+        return true;
+      } catch (err) {
+        ErrorCollector.reportError('camera-repair', '相机自修复失败', { error: err });
+        this.setData({
+          'diagnostics.errors': this.data.diagnostics.errors + 1,
+          'diagnostics.lastError': '自修复失败: ' + err.message
+        });
+        return false;
+      }
     },
     
     /**
@@ -389,26 +668,243 @@ Component({
      */
     _checkMemoryBeforeCapture: function() {
       return new Promise((resolve, reject) => {
-        // 检查本地存储空间
-        wx.getStorageInfo({
-          success: (res) => {
-            const availableSize = res.limitSize - res.currentSize;
+        // 先尝试清理临时文件以释放空间
+        this._partialCleanup();
+
+        // 检查微信小程序本地存储空间
+        try {
+          const fs = wx.getFileSystemManager();
+          
+          // 判断是否能写入文件作为检查存储空间的方法
+          const testFilePath = wx.env.USER_DATA_PATH + '/test_write_' + Date.now() + '.tmp';
+          
+          try {
+            // 创建一个1KB的测试文件
+            const testData = new ArrayBuffer(1024);
+            fs.writeFileSync(testFilePath, testData);
             
-            // 如果可用空间小于20MB，提示用户
-            if (availableSize < 20 * 1024) {
-              reject(new Error('存储空间不足，请清理空间'));
-              return;
+            // 成功写入，说明有足够空间，删除测试文件
+            try {
+              fs.unlinkSync(testFilePath);
+            } catch(e) {
+              // 忽略删除错误
             }
             
+            // 可以进行拍照
             resolve();
-          },
-          fail: (err) => {
-            console.error('获取存储信息失败:', err);
-            // 出错时仍然允许继续，但记录错误
-            resolve();
+          } catch(writeErr) {
+            console.warn('测试写入失败，可能存储空间不足:', writeErr);
+            
+            // 尝试清理小程序存储
+            this._emergencyDirectCleanup().then(() => {
+              // 清理后再尝试写入
+              try {
+                const testData = new ArrayBuffer(1024);
+                fs.writeFileSync(testFilePath, testData);
+                
+                // 成功写入，删除测试文件
+                try {
+                  fs.unlinkSync(testFilePath);
+                } catch(e) {
+                  // 忽略删除错误
+                }
+                
+                // 清理成功，可以拍照
+                resolve();
+              } catch(e) {
+                // 如果仍然失败，提示用户
+                console.error('存储空间严重不足:', e);
+                
+                // 此处修改为继续允许拍照，只是显示警告
+                wx.showToast({
+                  title: '存储空间偏低，可能影响照片存储',
+                  icon: 'none',
+                  duration: 2000
+                });
+                
+                // 即使空间不足，也允许用户尝试拍照
+                resolve();
+              }
+            });
           }
-        });
+        } catch (e) {
+          console.error('检查存储空间出错:', e);
+          // 发生异常也尝试继续
+          resolve();
+        }
       });
+    },
+    
+    /**
+     * 紧急直接清理 - 最后的清理方法
+     * @private
+     */
+    _emergencyDirectCleanup: function() {
+      return new Promise((resolve) => {
+        try {
+          // 清理所有临时文件
+          this._cleanupTempFiles();
+          
+          // 直接清理wx.env.USER_DATA_PATH目录
+          const fs = wx.getFileSystemManager();
+          const userDir = wx.env.USER_DATA_PATH;
+          
+          // 尝试清理常见临时目录
+          const dirsToClean = [
+            userDir + '/temp',
+            userDir + '/tmp',
+            userDir + '/cache',
+            userDir + '/wxafiles',
+            userDir
+          ];
+          
+          // 尝试清理每个目录
+          let cleaned = 0;
+          let toClean = dirsToClean.length;
+          
+          const checkComplete = () => {
+            cleaned++;
+            if (cleaned >= toClean) {
+              resolve();
+            }
+          };
+          
+          // 尝试清理每个目录
+          dirsToClean.forEach((dir) => {
+            try {
+              fs.readdir({
+                dirPath: dir,
+                success: (res) => {
+                  const files = res.files || [];
+                  
+                  // 检查每个文件是否可以删除
+                  files.forEach((file) => {
+                    // 跳过关键文件和目录
+                    if (file === '.' || 
+                        file === '..' || 
+                        file === 'miniprogramRoot' || 
+                        file === 'appservice') {
+                      return;
+                    }
+                    
+                    // 尝试获取文件信息
+                    try {
+                      fs.stat({
+                        path: dir + '/' + file,
+                        success: (stat) => {
+                          // 如果是临时文件则删除
+                          if (stat.isFile() && 
+                              (file.endsWith('.tmp') || 
+                               file.endsWith('.jpg') || 
+                               file.endsWith('.png') || 
+                               file.indexOf('temp') !== -1)) {
+                            try {
+                              fs.unlinkSync(dir + '/' + file);
+                            } catch (e) {
+                              // 忽略删除错误
+                            }
+                          }
+                        }
+                      });
+                    } catch (e) {
+                      // 忽略文件操作错误
+                    }
+                  });
+                },
+                complete: checkComplete
+              });
+            } catch (e) {
+              // 目录操作失败，继续下一个
+              checkComplete();
+            }
+          });
+          
+          // 尝试同步清理存储
+          try {
+            const res = wx.getStorageInfoSync();
+            const keys = res.keys || [];
+            
+            // 清理所有临时数据
+            for (let i = 0; i < keys.length; i++) {
+              const key = keys[i];
+              try {
+                if (key !== 'logs') { 
+                  wx.removeStorageSync(key);
+                }
+              } catch (e) {
+                // 忽略清理错误
+              }
+            }
+          } catch (e) {
+            // 忽略清理错误
+          }
+        } catch (err) {
+          console.error('紧急清理失败:', err);
+        }
+        
+        // 无论成功失败都继续
+        resolve();
+      });
+    },
+    
+    /**
+     * 深度清理资源
+     * @returns {Promise<void>}
+     * @private
+     */
+    _deepCleanup: function() {
+      return new Promise((resolve) => {
+        try {
+          // 1. 清除所有临时照片
+          this._cleanupTempFiles();
+          
+          // 2. 使用SystemUtils清理系统存储
+          SystemUtils.cleanupSystemStorage()
+            .then(() => {
+              resolve();
+            })
+            .catch((err) => {
+              console.error('系统存储清理失败:', err);
+              resolve();
+            });
+        } catch (e) {
+          console.error('深度清理过程出错:', e);
+          resolve(); // 出错也继续执行
+        }
+      });
+    },
+    
+    /**
+     * 清理存储
+     * @private
+     */
+    _clearStorage: function() {
+      try {
+        const res = wx.getStorageInfoSync();
+        const keys = res.keys || [];
+        
+        // 临时数据和日志优先清理
+        const tempKeys = [];
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i];
+          if (key.startsWith('temp_') || key.startsWith('log_') || key.startsWith('cache_')) {
+            tempKeys.push(key);
+          }
+        }
+        
+        // 清理临时数据
+        for (let i = 0; i < tempKeys.length; i++) {
+          const key = tempKeys[i];
+          try {
+            wx.removeStorageSync(key);
+            console.log('已清理存储项:', key);
+          } catch (e) {
+            console.warn('清理存储项失败:', e);
+          }
+        }
+      } catch (err) {
+        console.error('清理存储失败:', err);
+      }
     },
     
     /**

@@ -206,12 +206,15 @@ var TraceService = {
       
       // 模拟异步更新
       setTimeout(function() {
-        // 模拟找到并更新记录
-        resolve(Object.assign({}, updateData, {
+        // 更新时间戳
+        updateData.updateTime = new Date().toISOString();
+        
+        // 返回更新后的完整记录
+        resolve(Object.assign({
           id: id,
-          updateTime: new Date().toISOString(),
-          status: 'local' // 更新后状态变为本地
-        }));
+          createTime: new Date(Date.now() - 86400000).toISOString(), // 模拟创建时间为昨天
+          status: 'local'
+        }, updateData));
       }, 500);
     });
   },
@@ -230,7 +233,11 @@ var TraceService = {
       
       // 模拟异步删除
       setTimeout(function() {
-        resolve({ success: true, message: '删除成功' });
+        resolve({
+          success: true,
+          id: id,
+          deletedAt: new Date().toISOString()
+        });
       }, 400);
     });
   },
@@ -244,9 +251,9 @@ var TraceService = {
       // 模拟同步过程
       setTimeout(function() {
         resolve({
-          synced: 3,
-          failed: 0,
-          total: 3
+          success: true,
+          syncedCount: 3,
+          syncTime: new Date().toISOString()
         });
       }, 1000);
     });
@@ -254,22 +261,21 @@ var TraceService = {
 
   /**
    * 处理数据更新事件
-   * @param {object} data 更新的数据
+   * @param {Object} data - 更新的数据
    * @private
    */
   handleDataUpdated: function(data) {
     console.log('留痕数据已更新:', data.id);
     
-    // 如果数据需要同步且网络正常，则添加到同步队列
-    if (data.syncStatus === 'local') {
-      const syncService = this.container.get('syncService');
-      syncService.addToSyncQueue('traces', data.id, data)
-        .then(() => {
-          console.log('添加到同步队列成功:', data.id);
-        })
-        .catch(err => {
-          console.error('添加到同步队列失败:', err);
-        });
+    // 如果更新包含删除操作，可能需要特殊处理
+    if (data.action === 'delete') {
+      console.log('留痕记录已删除:', data.id);
+      
+      // 这里可以触发其他事件或执行清理操作
+      EventBus.emit('trace:deleted', {
+        id: data.id,
+        timestamp: new Date().toISOString()
+      });
     }
   }
 };

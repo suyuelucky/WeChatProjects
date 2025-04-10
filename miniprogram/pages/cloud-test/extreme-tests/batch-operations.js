@@ -127,7 +127,10 @@ async function testBatchFileUpload() {
           // 上传文件
           const uploadResult = await wx.cloud.uploadFile({
             cloudPath,
-            filePath: tempFilePath
+            filePath: tempFilePath,
+            config: {
+              env: 'cloudbase-5giucop314e2cd87'
+            }
           });
           
           clearTimeout(uploadTimer);
@@ -149,6 +152,9 @@ async function testBatchFileUpload() {
                 extension: '.jpg',
                 testBatch: true
               }
+            },
+            config: {
+              env: 'cloudbase-5giucop314e2cd87'
             }
           });
           
@@ -223,6 +229,9 @@ async function testBatchDBQuery() {
               page: 1,
               pageSize: 10,
               type: 'image'
+            },
+            config: {
+              env: 'cloudbase-5giucop314e2cd87'
             }
           });
           
@@ -301,6 +310,9 @@ async function testBatchCloudFunction() {
             data: {
               testIndex: index,
               timestamp: Date.now()
+            },
+            config: {
+              env: 'cloudbase-5giucop314e2cd87'
             }
           });
           
@@ -371,6 +383,9 @@ async function cleanupTestData() {
         page: 1,
         pageSize: 100,
         testOnly: true
+      },
+      config: {
+        env: 'cloudbase-5giucop314e2cd87'
       }
     });
     
@@ -396,6 +411,9 @@ async function cleanupTestData() {
       data: {
         action: 'batchDelete',
         fileIDs
+      },
+      config: {
+        env: 'cloudbase-5giucop314e2cd87'
       }
     });
     

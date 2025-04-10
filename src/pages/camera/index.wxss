@@ -1,0 +1,175 @@
+/* 相机页面样式 */
+
+.camera-page {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 顶部导航栏 */
+.navigation-bar {
+  width: 100%;
+  height: 90rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.nav-left {
+  position: absolute;
+  left: 30rpx;
+  display: flex;
+  align-items: center;
+}
+
+.back-icon {
+  font-size: 36rpx;
+  color: #fff;
+  margin-right: 5rpx;
+}
+
+.back-text {
+  font-size: 28rpx;
+  color: #fff;
+}
+
+.nav-title {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 存储空间信息 */
+.space-info {
+  width: 100%;
+  padding: 10rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.space-text {
+  font-size: 24rpx;
+  color: #fff;
+  margin-bottom: 8rpx;
+}
+
+.space-bar {
+  width: 100%;
+  height: 10rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5rpx;
+  overflow: hidden;
+}
+
+.space-used {
+  height: 100%;
+  background-color: #0078d7;
+  border-radius: 5rpx;
+}
+
+/* 底部控制栏 */
+.control-bar {
+  width: 100%;
+  height: 180rpx;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 10;
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120rpx;
+}
+
+.control-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-bottom: 10rpx;
+}
+
+.control-text {
+  font-size: 24rpx;
+  color: #fff;
+}
+
+/* 拍照按钮 */
+.capture-button-container {
+  width: 150rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.capture-button {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background-color: rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.capture-button-inner {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50rpx;
+  background-color: #fff;
+}
+
+.capture-button.disabled {
+  opacity: 0.5;
+}
+
+/* 错误提示 */
+.error-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.error-title {
+  font-size: 36rpx;
+  color: #fff;
+  margin: 40rpx 0 20rpx;
+}
+
+.error-message {
+  font-size: 28rpx;
+  color: #ccc;
+  text-align: center;
+  max-width: 80%;
+  margin-bottom: 60rpx;
+}
+
+.retry-button {
+  background-color: #0078d7;
+  color: #fff;
+  font-size: 32rpx;
+  padding: 15rpx 60rpx;
+  border-radius: 10rpx;
+  border: none;
+}

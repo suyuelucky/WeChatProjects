@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "照片采集",
+  "navigationStyle": "custom",
+  "disableScroll": true,
+  "usingComponents": {
+    "photo-capture": "../../components/PhotoCapture/index"
+  }
+} 

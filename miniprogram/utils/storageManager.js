@@ -12,21 +12,115 @@ var _eventBus = null;
 // 内部获取依赖函数
 function getStorageUtils() {
   if (!_storageUtils) {
-    _storageUtils = require('./storageUtils');
+    try {
+      _storageUtils = require('./storageUtils');
+    } catch (err) {
+      console.error('加载storageUtils失败:', err);
+      _storageUtils = {
+        storage: {
+          info: function() {
+            return new Promise(function(resolve) {
+              wx.getStorageInfo({
+                success: function(res) {
+                  resolve({
+                    currentSize: res.currentSize || 0,
+                    limitSize: res.limitSize || 50 * 1024 * 1024,
+                    keys: res.keys || []
+                  });
+                },
+                fail: function(err) {
+                  console.error('获取存储信息失败:', err);
+                  resolve({
+                    currentSize: 0,
+                    limitSize: 50 * 1024 * 1024,
+                    keys: []
+                  });
+                }
+              });
+            });
+          },
+          keys: function() {
+            return new Promise(function(resolve) {
+              wx.getStorageInfo({
+                success: function(res) {
+                  resolve(res.keys || []);
+                },
+                fail: function() {
+                  resolve([]);
+                }
+              });
+            });
+          }
+        },
+        StorageItemType: {
+          TEMP: 'temp',
+          USER: 'user',
+          SYSTEM: 'system',
+          CACHE: 'cache'
+        }
+      };
+    }
   }
   return _storageUtils;
 }
 
 function getStorage() {
   if (!_storage) {
-    _storage = getStorageUtils().storage;
+    var utils = getStorageUtils();
+    _storage = utils && utils.storage ? utils.storage : {
+      info: function() {
+        return new Promise(function(resolve) {
+          wx.getStorageInfo({
+            success: function(res) {
+              resolve({
+                currentSize: res.currentSize || 0,
+                limitSize: res.limitSize || 50 * 1024 * 1024,
+                keys: res.keys || []
+              });
+            },
+            fail: function(err) {
+              console.error('获取存储信息失败:', err);
+              resolve({
+                currentSize: 0,
+                limitSize: 50 * 1024 * 1024,
+                keys: []
+              });
+            }
+          });
+        });
+      },
+      keys: function() {
+        return new Promise(function(resolve) {
+          wx.getStorageInfo({
+            success: function(res) {
+              resolve(res.keys || []);
+            },
+            fail: function() {
+              resolve([]);
+            }
+          });
+        });
+      }
+    };
   }
   return _storage;
 }
 
 function getEventBus() {
   if (!_eventBus) {
-    _eventBus = require('./eventBus');
+    try {
+      _eventBus = require('./eventBus');
+    } catch (err) {
+      console.error('加载eventBus失败:', err);
+      _eventBus = {
+        emit: function() {
+          // 空函数，防止调用出错
+        },
+        on: function() {
+          // 空函数，防止调用出错
+        }
+      };
+    }
   }
   return _eventBus;
 }
@@ -100,7 +194,23 @@ StorageManager.prototype.init = function() {
   var self = this;
   
   // 确保延迟加载完成
-  StorageItemType = getStorageUtils().StorageItemType;
+  try {
+    var utils = getStorageUtils();
+    StorageItemType = utils && utils.StorageItemType ? utils.StorageItemType : {
+      TEMP: 'temp',
+      USER: 'user',
+      SYSTEM: 'system',
+      CACHE: 'cache'
+    };
+  } catch (err) {
+    console.error('初始化存储类型失败:', err);
+    StorageItemType = {
+      TEMP: 'temp',
+      USER: 'user',
+      SYSTEM: 'system',
+      CACHE: 'cache'
+    };
+  }
   
   // 获取初始存储信息
   this.getStorageInfo().then(function(info) {
@@ -114,7 +224,7 @@ StorageManager.prototype.init = function() {
     // 如果空间使用超过警告阈值，触发警告
     if (info.status === StorageStatus.WARNING || info.status === StorageStatus.CRITICAL) {
       var eventBus = getEventBus();
-      if (eventBus) {
+      if (eventBus && typeof eventBus.emit === 'function') {
         eventBus.emit('storage:spaceWarning', info);
       }
     }
@@ -122,7 +232,7 @@ StorageManager.prototype.init = function() {
   
   // 监听存储变化事件
   var eventBus = getEventBus();
-  if (eventBus) {
+  if (eventBus && typeof eventBus.on === 'function') {
     eventBus.on('storage:dataChanged', function(data) {
       // 更新存储信息
       self.updateStorageInfo();
@@ -138,47 +248,118 @@ StorageManager.prototype.getStorageInfo = function() {
   var self = this;
   
   return new Promise(function(resolve) {
-    getStorage().info().then(function(info) {
-      // 计算使用比例和状态
-      var usedSize = info.currentSize || 0;
-      var limitSize = info.limitSize || self.config.maxStorageSize;
-      var usedRatio = usedSize / limitSize;
-      
-      var status = StorageStatus.NORMAL;
-      if (usedRatio >= self.config.criticalThreshold) {
-        status = StorageStatus.CRITICAL;
-      } else if (usedRatio >= self.config.warningThreshold) {
-        status = StorageStatus.WARNING;
+    try {
+      var storage = getStorage();
+      if (storage && typeof storage.info === 'function') {
+        storage.info().then(function(info) {
+          // 计算使用比例和状态
+          var usedSize = info.currentSize || 0;
+          var limitSize = info.limitSize || self.config.maxStorageSize;
+          var usedRatio = usedSize / limitSize;
+          
+          var status = StorageStatus.NORMAL;
+          if (usedRatio >= self.config.criticalThreshold) {
+            status = StorageStatus.CRITICAL;
+          } else if (usedRatio >= self.config.warningThreshold) {
+            status = StorageStatus.WARNING;
+          }
+          
+          var result = {
+            usedSize: usedSize,
+            limitSize: limitSize,
+            freeSize: limitSize - usedSize,
+            percentUsed: Math.round(usedRatio * 100),
+            keysCount: info.keys ? info.keys.length : 0,
+            keys: info.keys || [],
+            status: status,
+            timestamp: Date.now()
+          };
+          
+          self.storageInfo = result;
+          resolve(result);
+        }).catch(function(error) {
+          console.error('获取存储信息失败:', error);
+          // 使用备用方法获取存储信息
+          self._getStorageInfoFallback(resolve);
+        });
+      } else {
+        // 直接使用备用方法
+        self._getStorageInfoFallback(resolve);
       }
-      
-      var result = {
-        usedSize: usedSize,
-        limitSize: limitSize,
-        freeSize: limitSize - usedSize,
-        percentUsed: Math.round(usedRatio * 100),
-        keysCount: info.keys.length,
-        keys: info.keys,
-        status: status,
-        timestamp: Date.now()
-      };
-      
-      self.storageInfo = result;
-      resolve(result);
-    }).catch(function(error) {
-      console.error('获取存储信息失败:', error);
-      resolve({
-        usedSize: 0,
-        limitSize: self.config.maxStorageSize,
-        freeSize: self.config.maxStorageSize,
-        percentUsed: 0,
-        keysCount: 0,
-        keys: [],
-        status: StorageStatus.NORMAL,
-        timestamp: Date.now(),
-        error: error
-      });
-    });
+    } catch (error) {
+      console.error('获取存储信息异常:', error);
+      // 使用备用方法获取存储信息
+      self._getStorageInfoFallback(resolve);
+    }
   });
+};
+
+/**
+ * 备用方法获取存储信息
+ * @private
+ */
+StorageManager.prototype._getStorageInfoFallback = function(resolve) {
+  var self = this;
+  
+  try {
+    wx.getStorageInfo({
+      success: function(res) {
+        var usedSize = res.currentSize || 0;
+        var limitSize = res.limitSize || self.config.maxStorageSize;
+        var usedRatio = usedSize / limitSize;
+        
+        var status = StorageStatus.NORMAL;
+        if (usedRatio >= self.config.criticalThreshold) {
+          status = StorageStatus.CRITICAL;
+        } else if (usedRatio >= self.config.warningThreshold) {
+          status = StorageStatus.WARNING;
+        }
+        
+        var result = {
+          usedSize: usedSize,
+          limitSize: limitSize,
+          freeSize: limitSize - usedSize,
+          percentUsed: Math.round(usedRatio * 100),
+          keysCount: res.keys ? res.keys.length : 0,
+          keys: res.keys || [],
+          status: status,
+          timestamp: Date.now()
+        };
+        
+        self.storageInfo = result;
+        resolve(result);
+      },
+      fail: function(error) {
+        console.error('备用方法获取存储信息失败:', error);
+        // 返回默认值
+        resolve({
+          usedSize: 0,
+          limitSize: self.config.maxStorageSize,
+          freeSize: self.config.maxStorageSize,
+          percentUsed: 0,
+          keysCount: 0,
+          keys: [],
+          status: StorageStatus.NORMAL,
+          timestamp: Date.now(),
+          error: error
+        });
+      }
+    });
+  } catch (err) {
+    console.error('执行备用存储方法异常:', err);
+    // 返回默认值
+    resolve({
+      usedSize: 0,
+      limitSize: self.config.maxStorageSize,
+      freeSize: self.config.maxStorageSize,
+      percentUsed: 0,
+      keysCount: 0,
+      keys: [],
+      status: StorageStatus.NORMAL,
+      timestamp: Date.now(),
+      error: err
+    });
+  }
 };
 
 /**
@@ -463,7 +644,7 @@ StorageManager.prototype.getItemType = function(key) {
   }
   
   if (key.indexOf('user_') === 0 || key.indexOf('profile_') === 0) {
-    return StorageItemType.USER_DATA;
+    return StorageItemType.USER;
   }
   
   if (key.indexOf('sync_') === 0 || key.indexOf('_sync') !== -1 || key.indexOf('_queue') !== -1) {

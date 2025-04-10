@@ -1,0 +1,60 @@
+<view class="test-container">
+  <view class="test-header">
+    <view class="test-title">B1照片捕捉功能测试</view>
+    <view class="test-subtitle">测试环境: {{testStatus}}</view>
+  </view>
+  
+  <view class="test-options">
+    <view class="section-title">测试选项</view>
+    <view class="options-list">
+      <view wx:for="{{testOptions}}" wx:key="id" 
+            class="option-item {{item.selected ? 'selected' : ''}}"
+            bindtap="toggleOption" data-index="{{index}}">
+        <view class="option-checkbox">
+          <view class="checkbox-inner {{item.selected ? 'checked' : ''}}"></view>
+        </view>
+        <view class="option-name">{{item.name}}</view>
+      </view>
+    </view>
+    
+    <view class="actions">
+      <button class="btn-run" bindtap="runTests" disabled="{{isRunning}}">
+        {{isRunning ? '测试运行中...' : '运行测试'}}
+      </button>
+      <button class="btn-clear" bindtap="clearLogs">清空日志</button>
+    </view>
+  </view>
+  
+  <view class="test-results" wx:if="{{testResults.total > 0}}">
+    <view class="section-title">测试结果</view>
+    <view class="results-summary">
+      <view class="result-item">
+        <view class="result-label">总测试数:</view>
+        <view class="result-value">{{testResults.total}}</view>
+      </view>
+      <view class="result-item">
+        <view class="result-label">通过数:</view>
+        <view class="result-value pass">{{testResults.passed}}</view>
+      </view>
+      <view class="result-item">
+        <view class="result-label">失败数:</view>
+        <view class="result-value fail">{{testResults.failed}}</view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="test-logs">
+    <view class="section-title">测试日志</view>
+    <scroll-view scroll-y class="logs-container">
+      <block wx:for="{{testLogs}}" wx:key="index">
+        <view class="log-item {{item.type}}">
+          <text class="log-time">[{{item.time}}]</text>
+          <text class="log-message">{{item.message}}</text>
+        </view>
+      </block>
+      <view class="log-empty" wx:if="{{testLogs.length === 0}}">
+        暂无日志记录
+      </view>
+    </scroll-view>
+  </view>
+</view> 
